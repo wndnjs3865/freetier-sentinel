@@ -40,15 +40,28 @@ export default {
     const method = req.method;
 
     try {
-      if (path === "/" && method === "GET") return handleRoot(req, env);
-      if (path === "/signup" && method === "POST") return handleSignup(req, env);
-      if (path.startsWith("/auth/") && method === "GET") return handleAuthToken(req, env);
-      if (path === "/dash" && method === "GET") return handleDash(req, env);
-      if (path.startsWith("/api/services")) return handleApiServices(req, env);
-      if (path === "/api/alerts" && method === "POST") return handleApiAlerts(req, env);
-      if (path === "/webhooks/stripe" && method === "POST") return handleStripeWebhook(req, env);
+      // Treat HEAD as GET for routing; strip body before sending
+      const m = method === "HEAD" ? "GET" : method;
 
-      return new Response("Not found", { status: 404 });
+      let res: Response | null = null;
+      if (path === "/" && m === "GET") res = await handleRoot(req, env);
+      else if (path === "/health" && m === "GET") res = new Response("ok", { status: 200 });
+      else if (path === "/favicon.ico" && m === "GET") res = new Response(null, { status: 204 });
+      else if (path === "/robots.txt" && m === "GET") res = new Response("User-agent: *\nAllow: /\n", { status: 200, headers: { "content-type": "text/plain" } });
+      else if (path === "/signup" && method === "POST") res = await handleSignup(req, env);
+      else if (path.startsWith("/auth/") && m === "GET") res = await handleAuthToken(req, env);
+      else if (path === "/dash" && m === "GET") res = await handleDash(req, env);
+      else if (path.startsWith("/api/services")) res = await handleApiServices(req, env);
+      else if (path === "/api/alerts" && method === "POST") res = await handleApiAlerts(req, env);
+      else if (path === "/webhooks/stripe" && method === "POST") res = await handleStripeWebhook(req, env);
+
+      if (!res) return new Response("Not found", { status: 404 });
+
+      // For HEAD requests, return same headers but no body
+      if (method === "HEAD") {
+        return new Response(null, { status: res.status, headers: res.headers });
+      }
+      return res;
     } catch (e: any) {
       console.error("[error]", e?.stack || e);
       return new Response("Internal error", { status: 500 });
