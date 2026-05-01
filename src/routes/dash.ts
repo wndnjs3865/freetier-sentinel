@@ -408,8 +408,14 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
     ${(() => {
       const url = new URL(req.url);
       const checked = url.searchParams.get("checked");
-      if (checked === null) return "";
-      return `<div style="margin:0 0 18px;padding:12px 16px;background:#dcfce7;border:1px solid #86efac;border-radius:12px;color:#166534;font-size:14px">✓ Polled ${checked} service${checked === "1" ? "" : "s"} just now. Refresh to see updated usage.</div>`;
+      const alertSent = url.searchParams.get("alert_sent");
+      if (checked !== null) {
+        return `<div style="margin:0 0 18px;padding:12px 16px;background:#dcfce7;border:1px solid #86efac;border-radius:12px;color:#166534;font-size:14px">✓ Polled ${checked} service${checked === "1" ? "" : "s"} just now. Refresh to see updated usage.</div>`;
+      }
+      if (alertSent === "1") {
+        return `<div style="margin:0 0 18px;padding:12px 16px;background:#dbeafe;border:1px solid #93c5fd;border-radius:12px;color:#1e3a8a;font-size:14px">✓ Test alert sent to ${user.email}. Check your inbox (and spam folder).</div>`;
+      }
+      return "";
     })()}
 
     <section class="section" id="services">
@@ -449,7 +455,10 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
     <section class="section" id="alerts">
       <div class="section-head">
         <h2>Alert channels</h2>
-        <span class="count">${chnCount} active</span>
+        <span style="display:flex;gap:10px;align-items:center">
+          <span class="count">${chnCount} active</span>
+          <form method="POST" action="/api/test-alert" style="margin:0"><button type="submit" style="padding:7px 14px;font-size:13px;font-weight:600;background:var(--surface);color:var(--text);border:1px solid var(--border-strong);border-radius:8px;cursor:pointer;font-family:inherit">✉ Send test alert</button></form>
+        </span>
       </div>
       <div class="card">
         ${chans

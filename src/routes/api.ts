@@ -11,12 +11,34 @@ export async function handleCheckNow(req: Request, env: Env): Promise<Response> 
   const user = await getUserFromCookie(req, env);
   if (!user) return new Response("Unauthorized", { status: 401 });
   const result = await runScheduledCheck(env, { force: true, userId: user.id });
-  // Return JSON for AJAX or redirect for form
   const accept = req.headers.get("accept") || "";
   if (accept.includes("application/json")) {
     return new Response(JSON.stringify(result), { headers: { "content-type": "application/json" } });
   }
   return new Response(null, { status: 302, headers: { location: "/dash?checked=" + result.checked } });
+}
+
+// POST /api/test-alert — send a sample alert email to user (verifies alert delivery works)
+export async function handleTestAlert(req: Request, env: Env): Promise<Response> {
+  const user = await getUserFromCookie(req, env);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+
+  const { sendUsageAlert } = await import("../lib/email");
+  await sendUsageAlert(
+    env,
+    user.email,
+    "[TEST] Sample alert — Cloudflare Workers at 87%",
+    `This is a test alert to verify your alert delivery works.
+
+If you received this email, your alert channel is correctly set up. When a real service crosses its threshold, you'll get a notification just like this.
+
+Service: My Cloudflare (test sample)
+Usage: 87% of free tier
+Status: WARNING
+
+— FreeTier Sentinel`
+  );
+  return new Response(null, { status: 302, headers: { location: "/dash?alert_sent=1" } });
 }
 
 export async function handleApiServices(req: Request, env: Env): Promise<Response> {
