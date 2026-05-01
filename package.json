@@ -10,8 +10,16 @@
     "tail": "wrangler tail"
   },
   "devDependencies": {
-    "wrangler": "^3.80.0",
     "@cloudflare/workers-types": "^4.20240909.0",
-    "typescript": "^5.4.0"
-  }
+    "typescript": "^5.4.0",
+    "wrangler": "^3.114.17"
+  },
+  "description": "> Stop blowing free-tier limits. Get alerted before Cloudflare, GitHub Actions, Vercel, Supabase, Resend (and more) lock you out.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
