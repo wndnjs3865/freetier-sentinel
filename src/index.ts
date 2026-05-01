@@ -27,7 +27,7 @@ export interface Env {
 }
 
 import { handleRoot } from "./routes/root";
-import { handleSignup, handleAuthToken } from "./routes/auth";
+import { handleSignup, handleAuthToken, handleAuthTokenConsume } from "./routes/auth";
 import { handleDash } from "./routes/dash";
 import { handleApiServices, handleApiAlerts } from "./routes/api";
 import { handleStripeWebhook } from "./routes/stripe";
@@ -50,6 +50,7 @@ export default {
       else if (path === "/robots.txt" && m === "GET") res = new Response("User-agent: *\nAllow: /\n", { status: 200, headers: { "content-type": "text/plain" } });
       else if (path === "/signup" && method === "POST") res = await handleSignup(req, env);
       else if (path.startsWith("/auth/") && m === "GET") res = await handleAuthToken(req, env);
+      else if (path.startsWith("/auth/") && method === "POST") res = await handleAuthTokenConsume(req, env);
       else if (path === "/dash" && m === "GET") res = await handleDash(req, env);
       else if (path.startsWith("/api/services")) res = await handleApiServices(req, env);
       else if (path === "/api/alerts" && method === "POST") res = await handleApiAlerts(req, env);

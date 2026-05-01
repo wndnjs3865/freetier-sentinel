@@ -20,3 +20,8 @@
 ## TD-005 — 인증은 magic link (비밀번호 없음)
 - **결정**: 이메일 입력 → 15분 유효 토큰 → 클릭 → 세션 쿠키.
 - **사유**: 비밀번호 저장 회피. KV TTL로 자연 정리. 모바일 친화.
+
+## TD-006 — 매직 링크 GET은 확인 페이지만, POST에서 토큰 소비 (이메일 스캐너 우회)
+- **결정**: `/auth/{token}` GET → "Continue to dashboard" 버튼이 있는 HTML 페이지. 사용자가 버튼 누름 → 같은 URL로 POST → 토큰 소비 + 세션 발급 + `/dash` 리다이렉트.
+- **사유**: Gmail·Outlook 등 이메일 보안 스캐너가 메일 안의 URL을 미리 GET으로 방문해 phishing 검사. 우리 토큰이 GET 한 번에 소비되는 구조였으면 사용자가 클릭할 때 항상 "Link expired" 발생. 표준 magic-link 구현 패턴: GET=preview, POST=consume.
+- **재검토**: 향후 IdP(Google/GitHub OAuth) 연동 시 magic link 자체 deprecate 가능.
