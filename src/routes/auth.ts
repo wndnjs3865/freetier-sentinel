@@ -19,29 +19,63 @@ export async function handleSignup(req: Request, env: Env): Promise<Response> {
   });
 }
 
+const AUTH_PAGE_CSS = `
+*{box-sizing:border-box}
+body{font-family:'Inter',-apple-system,system-ui,sans-serif;background:#fafafa;color:#0f172a;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 12px 40px rgba(15,23,42,.08);padding:40px;max-width:440px;width:100%;text-align:center}
+.brand{font-weight:700;font-size:15px;color:#64748b;margin-bottom:24px;letter-spacing:-0.01em}
+.brand .dot{color:#fb923c}
+h1{font-size:24px;letter-spacing:-0.02em;font-weight:700;margin:0 0 8px;line-height:1.25}
+.email{font-weight:600;color:#1e40af;font-size:15px;margin:0 0 24px;word-break:break-all}
+.btn{display:inline-block;padding:12px 24px;font-size:15px;font-family:inherit;font-weight:600;background:#1e40af;color:white;border:0;border-radius:8px;cursor:pointer;text-decoration:none;width:100%;transition:background 120ms}
+.btn:hover{background:#1e3a8a}
+.btn-secondary{background:#fff;color:#0f172a;border:1px solid #cbd5e1}
+.btn-secondary:hover{background:#f8fafc}
+.note{color:#64748b;font-size:13px;line-height:1.55;margin:20px 0 0}
+.expired-icon{font-size:36px;margin-bottom:12px}
+.lede{color:#64748b;font-size:15px;margin:0 0 24px;line-height:1.55}
+`;
+
 // GET /auth/{token} — show a "click to confirm" page.
 // Token is NOT consumed on GET so email scanners (Gmail, Outlook) can't burn it.
 export async function handleAuthToken(req: Request, env: Env): Promise<Response> {
   const url = new URL(req.url);
   const token = url.pathname.split("/").pop()!;
   const email = await env.KV.get(`mlink:${token}`);
+
+  const head = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in — FreeTier Sentinel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>${AUTH_PAGE_CSS}</style></head><body>`;
+
   if (!email) {
-    return new Response(`<!DOCTYPE html><html><body style="font-family:system-ui;max-width:480px;margin:3rem auto;padding:0 1rem;line-height:1.6">
-<h1>Link expired</h1>
-<p>This sign-in link is no longer valid. Magic links are valid for 15 minutes.</p>
-<p><a href="/">Go back to request a new link</a></p>
+    return new Response(`${head}
+<div class="card">
+  <div class="brand">FreeTier<span class="dot">•</span>Sentinel</div>
+  <div class="expired-icon">⏱</div>
+  <h1>Link expired</h1>
+  <p class="lede">This sign-in link is no longer valid. Magic links are valid for 15 minutes and used at most once.</p>
+  <a href="/" class="btn">Request a new link</a>
+</div>
 </body></html>`, {
       status: 410,
       headers: { "content-type": "text/html; charset=utf-8" },
     });
   }
-  return new Response(`<!DOCTYPE html><html><body style="font-family:system-ui;max-width:480px;margin:3rem auto;padding:0 1rem;line-height:1.6;text-align:center">
-<h1>Sign in to FreeTier Sentinel</h1>
-<p>Signed in as <strong>${email}</strong></p>
-<form method="POST" action="/auth/${token}">
-  <button type="submit" style="padding:.7rem 1.4rem;font-size:1.05rem;background:#0a66c2;color:#fff;border:0;border-radius:6px;cursor:pointer">Continue to dashboard</button>
-</form>
-<p style="color:#888;font-size:.85rem;margin-top:2rem">Click required so email scanners don't consume the link before you do.</p>
+
+  return new Response(`${head}
+<div class="card">
+  <div class="brand">FreeTier<span class="dot">•</span>Sentinel</div>
+  <h1>Almost there</h1>
+  <p class="email">${email}</p>
+  <form method="POST" action="/auth/${token}">
+    <button type="submit" class="btn">Continue to dashboard →</button>
+  </form>
+  <p class="note">This extra click prevents email security scanners from consuming your sign-in link before you do.</p>
+</div>
 </body></html>`, {
     headers: { "content-type": "text/html; charset=utf-8" },
   });
