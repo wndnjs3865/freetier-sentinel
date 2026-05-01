@@ -2,8 +2,22 @@ import type { Env } from "../index";
 import { getUserFromCookie } from "./auth";
 import { encrypt } from "../lib/crypto";
 import { uuid } from "../lib/util";
+import { runScheduledCheck } from "../jobs/check";
 
 const FREE_LIMIT = 3;
+
+// POST /api/check-now — force-poll all of current user's services right now (bypasses interval)
+export async function handleCheckNow(req: Request, env: Env): Promise<Response> {
+  const user = await getUserFromCookie(req, env);
+  if (!user) return new Response("Unauthorized", { status: 401 });
+  const result = await runScheduledCheck(env, { force: true, userId: user.id });
+  // Return JSON for AJAX or redirect for form
+  const accept = req.headers.get("accept") || "";
+  if (accept.includes("application/json")) {
+    return new Response(JSON.stringify(result), { headers: { "content-type": "application/json" } });
+  }
+  return new Response(null, { status: 302, headers: { location: "/dash?checked=" + result.checked } });
+}
 
 export async function handleApiServices(req: Request, env: Env): Promise<Response> {
   const user = await getUserFromCookie(req, env);

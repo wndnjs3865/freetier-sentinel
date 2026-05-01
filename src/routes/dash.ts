@@ -405,10 +405,20 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
       </div>
     </div>
 
+    ${(() => {
+      const url = new URL(req.url);
+      const checked = url.searchParams.get("checked");
+      if (checked === null) return "";
+      return `<div style="margin:0 0 18px;padding:12px 16px;background:#dcfce7;border:1px solid #86efac;border-radius:12px;color:#166534;font-size:14px">✓ Polled ${checked} service${checked === "1" ? "" : "s"} just now. Refresh to see updated usage.</div>`;
+    })()}
+
     <section class="section" id="services">
       <div class="section-head">
         <h2>Services</h2>
-        <span class="count">${svcCount} connected</span>
+        <span style="display:flex;gap:10px;align-items:center">
+          <span class="count">${svcCount} connected</span>
+          ${svcCount > 0 ? `<form method="POST" action="/api/check-now" style="margin:0"><button type="submit" style="padding:7px 14px;font-size:13px;font-weight:600;background:var(--surface);color:var(--text);border:1px solid var(--border-strong);border-radius:8px;cursor:pointer;font-family:inherit">↻ Check now</button></form>` : ""}
+        </span>
       </div>
       <div class="card">
         ${svcRows

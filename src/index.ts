@@ -30,7 +30,7 @@ export interface Env {
 import { handleRoot } from "./routes/root";
 import { handleSignup, handleAuthToken, handleAuthTokenConsume, handleVerifyPage, handleVerifyConsume } from "./routes/auth";
 import { handleDash } from "./routes/dash";
-import { handleApiServices, handleApiAlerts } from "./routes/api";
+import { handleApiServices, handleApiAlerts, handleCheckNow } from "./routes/api";
 import { handleStripeWebhook } from "./routes/stripe";
 import { runScheduledCheck } from "./jobs/check";
 
@@ -57,6 +57,7 @@ export default {
       else if (path === "/dash" && m === "GET") res = await handleDash(req, env);
       else if (path.startsWith("/api/services")) res = await handleApiServices(req, env);
       else if (path === "/api/alerts" && method === "POST") res = await handleApiAlerts(req, env);
+      else if (path === "/api/check-now" && method === "POST") res = await handleCheckNow(req, env);
       else if (path === "/webhooks/stripe" && method === "POST") res = await handleStripeWebhook(req, env);
 
       if (!res) return new Response("Not found", { status: 404 });
