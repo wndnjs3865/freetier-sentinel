@@ -19,6 +19,7 @@ export interface Env {
   KV: KVNamespace;
   APP_URL: string;
   STRIPE_PRICE_ID: string;
+  STRIPE_PAYMENT_LINK: string;
   RESEND_FROM: string;
   MASTER_KEY: string;
   STRIPE_SECRET_KEY: string;

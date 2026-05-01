@@ -16,8 +16,8 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
   ).bind(user.id).all();
 
   const planBadge = user.plan === "pro" ? "★ Pro" : "Free";
-  const upgradeBlock = user.plan === "free"
-    ? `<a href="https://buy.stripe.com/REPLACE_LINK?prefilled_email=${encodeURIComponent(user.email)}" class="btn">Upgrade to Pro · $5/mo</a>`
+  const upgradeBlock = user.plan === "free" && env.STRIPE_PAYMENT_LINK
+    ? `<a href="${env.STRIPE_PAYMENT_LINK}?prefilled_email=${encodeURIComponent(user.email)}" class="btn">Upgrade to Pro · $5/mo</a>`
     : "";
 
   const rows = ((services.results || []) as any[]).map(s =>
