@@ -439,7 +439,7 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
               <option value="resend">Resend (soon)</option>
             </select>
             <input name="api_key" placeholder="Read-only API token" required>
-            <input name="threshold" type="number" value="80" min="50" max="95" title="Alert threshold (%)">
+            <input name="threshold" type="number" value="80" min="1" max="99" title="Alert threshold (%)">
             <button>Add</button>
           </div>
         </form>
