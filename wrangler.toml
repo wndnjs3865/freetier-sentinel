@@ -8,11 +8,11 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "freetier-sentinel-db"
-database_id = "REPLACE_AFTER_CREATE"
+database_id = "bb5edd36-0557-4d91-861c-37146bfa8494"
 
 [[kv_namespaces]]
 binding = "KV"
-id = "REPLACE_AFTER_CREATE"
+id = "dd8a3f635fe24c5eb1d3cf8285f425a9"
 
 [triggers]
 crons = ["0 */6 * * *"]   # every 6 hours
