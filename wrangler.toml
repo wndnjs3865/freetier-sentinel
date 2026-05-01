@@ -2,6 +2,7 @@ name = "freetier-sentinel"
 main = "src/index.ts"
 compatibility_date = "2026-04-01"
 compatibility_flags = ["nodejs_compat"]
+workers_dev = true
 
 # Replace database_id after running:
 #   npx wrangler d1 create freetier-sentinel-db
@@ -18,9 +19,9 @@ id = "dd8a3f635fe24c5eb1d3cf8285f425a9"
 crons = ["0 */6 * * *"]   # every 6 hours
 
 [vars]
-APP_URL = "https://freetier-sentinel.workers.dev"
+APP_URL = "https://freetier-sentinel.wndnjs3865.workers.dev"
 STRIPE_PRICE_ID = "price_REPLACE"
-RESEND_FROM = "alerts@freetier-sentinel.workers.dev"
+RESEND_FROM = "onboarding@resend.dev"
 
 # Secrets (set via: wrangler secret put NAME)
 # - MASTER_KEY            (32-byte base64 for AES-GCM)
