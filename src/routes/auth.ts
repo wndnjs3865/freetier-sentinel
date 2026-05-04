@@ -45,7 +45,15 @@ const HEAD = `<!DOCTYPE html><html lang="en"><head>
 <style>${PAGE_CSS}</style></head><body>`;
 
 function genCode(): string {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  // Crypto-secure 6-digit code (000000-999999), uniformly distributed via rejection sampling.
+  const buf = new Uint32Array(1);
+  while (true) {
+    crypto.getRandomValues(buf);
+    if (buf[0] < 4_294_967_000) {
+      // Avoid modulo bias by rejecting tail beyond a 1M-multiple ceiling
+      return String(buf[0] % 1_000_000).padStart(6, "0");
+    }
+  }
 }
 
 // POST /signup — create code + token, send email, redirect to /verify
@@ -138,6 +146,15 @@ i.addEventListener('paste', e => {
 
 // POST /verify — validate code, create session, redirect to /dash
 export async function handleVerifyConsume(req: Request, env: Env): Promise<Response> {
+  const ip = getClientIP(req);
+  const rl = await checkRateLimit(env, { key: `verify:${ip}`, limit: 10, windowSec: 600 });
+  if (!rl.allowed) {
+    return new Response(`Too many code attempts. Try again in ${rl.resetSec}s.`, {
+      status: 429,
+      headers: { "retry-after": String(rl.resetSec) },
+    });
+  }
+
   const form = await req.formData();
   const email = String(form.get("email") || "").trim().toLowerCase();
   const code = String(form.get("code") || "").trim();

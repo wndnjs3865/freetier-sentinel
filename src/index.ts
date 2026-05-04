@@ -72,13 +72,21 @@ export default {
       else if (path === "/privacy" && m === "GET") res = await handlePrivacy(req, env);
       else if (path === "/terms" && m === "GET") res = await handleTerms(req, env);
 
-      if (!res) return new Response("Not found", { status: 404 });
+      if (!res) res = new Response("Not found", { status: 404 });
+
+      // Security headers — applied to every response
+      const headers = new Headers(res.headers);
+      headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+      headers.set("X-Frame-Options", "DENY");
+      headers.set("X-Content-Type-Options", "nosniff");
+      headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+      headers.set("Permissions-Policy", "geolocation=(), camera=(), microphone=()");
 
       // For HEAD requests, return same headers but no body
       if (method === "HEAD") {
-        return new Response(null, { status: res.status, headers: res.headers });
+        return new Response(null, { status: res.status, headers });
       }
-      return res;
+      return new Response(res.body, { status: res.status, headers });
     } catch (e: any) {
       console.error("[error]", e?.stack || e);
       return new Response("Internal error", { status: 500 });
