@@ -66,3 +66,23 @@ export async function handleFavicon(_req: Request, _env: Env): Promise<Response>
     },
   });
 }
+
+// og.png — 1200×630 social-share image, base64-inlined.
+// Replace OG_PNG_BASE64 with the actual asset once generated.
+const OG_PNG_BASE64 = "";
+
+export async function handleOgImage(_req: Request, _env: Env): Promise<Response> {
+  if (!OG_PNG_BASE64) {
+    // Fallback: redirect to favicon SVG so social cards still show *something*
+    return new Response(FAVICON_SVG, {
+      headers: { "content-type": "image/svg+xml", "cache-control": "public, max-age=300" },
+    });
+  }
+  const bytes = Uint8Array.from(atob(OG_PNG_BASE64), (c) => c.charCodeAt(0));
+  return new Response(bytes, {
+    headers: {
+      "content-type": "image/png",
+      "cache-control": "public, max-age=86400, immutable",
+    },
+  });
+}

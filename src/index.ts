@@ -37,7 +37,7 @@ import { handleApiServices, handleApiAlerts, handleCheckNow, handleTestAlert } f
 import { handleStripeWebhook } from "./routes/stripe";
 import { handleNotify } from "./routes/notify";
 import { handlePrivacy, handleTerms } from "./routes/legal";
-import { handleSitemap, handleFavicon } from "./routes/sitemap";
+import { handleSitemap, handleFavicon, handleOgImage } from "./routes/sitemap";
 import { runScheduledCheck } from "./jobs/check";
 
 export default {
@@ -56,6 +56,7 @@ export default {
       else if ((path === "/favicon.ico" || path === "/favicon.svg") && m === "GET") res = await handleFavicon(req, env);
       else if (path === "/robots.txt" && m === "GET") res = new Response(`User-agent: *\nAllow: /\nSitemap: ${env.APP_URL}/sitemap.xml\n`, { status: 200, headers: { "content-type": "text/plain" } });
       else if (path === "/sitemap.xml" && m === "GET") res = await handleSitemap(req, env);
+      else if (path === "/og.png" && m === "GET") res = await handleOgImage(req, env);
       else if (path === "/signup" && method === "POST") res = await handleSignup(req, env);
       else if (path === "/verify" && m === "GET") res = await handleVerifyPage(req, env);
       else if (path === "/verify" && method === "POST") res = await handleVerifyConsume(req, env);
