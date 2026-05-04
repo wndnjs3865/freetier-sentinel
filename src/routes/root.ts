@@ -629,6 +629,7 @@ function renderHTML(t: Translations, locale: Locale): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google-site-verification" content="s8lC6HTB_lfX5toRWARssmpN5GcqR8IcFB23YwP7UdA">
 <title>${t.title}</title>
 <meta name="description" content="${t.description}">
 <meta name="theme-color" content="#1e40af">
