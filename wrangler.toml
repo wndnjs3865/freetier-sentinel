@@ -22,8 +22,7 @@ crons = ["0 */6 * * *"]   # every 6 hours
 APP_URL = "https://freetier-sentinel.dev"
 STRIPE_PRICE_ID = "price_REPLACE"
 STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_8x2fZi6Ywbay0Wl3ve8Ra00"
-# RESEND_FROM kept on shared sender until DNS verifies — switch to noreply@freetier-sentinel.dev after Resend "Verified".
-RESEND_FROM = "onboarding@resend.dev"
+RESEND_FROM = "FreeTier Sentinel <noreply@freetier-sentinel.dev>"
 
 # Secrets (set via: wrangler secret put NAME)
 # - MASTER_KEY            (32-byte base64 for AES-GCM)
