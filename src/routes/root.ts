@@ -1,4 +1,8 @@
 import type { Env } from "../index";
+import type { Locale, Translations } from "../i18n";
+import { LOCALE_META, SUPPORTED_LOCALES, T, getLocaleFromPath } from "../i18n";
+
+const ORIGIN = "https://freetier-sentinel.wndnjs3865.workers.dev";
 
 const CSS = String.raw`
 :root {
@@ -486,6 +490,55 @@ footer {
 .foot-meta { color: var(--muted); font-size: 13px; line-height: 1.6; }
 .foot-meta strong { color: var(--text); font-weight: 600; }
 .foot-bottom { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; }
+
+/* ───── LANGUAGE SWITCHER ───── */
+.lang-switch { position: relative; }
+.lang-switch summary {
+  list-style: none;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px;
+  font-size: 13.5px; font-weight: 500;
+  color: var(--text-2);
+  cursor: pointer;
+  border-radius: var(--r-sm);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.lang-switch summary::-webkit-details-marker { display: none; }
+.lang-switch summary::after {
+  content: "";
+  width: 8px; height: 8px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform var(--t-fast);
+  margin-left: 2px;
+}
+.lang-switch[open] summary::after { transform: rotate(-135deg) translateY(-2px); }
+.lang-switch summary:hover { background: var(--surface-2); color: var(--text); }
+.lang-switch[open] summary { background: var(--surface-2); color: var(--text); }
+.lang-switch .menu {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  padding: 4px;
+  min-width: 160px;
+  z-index: 100;
+}
+.lang-switch .menu a {
+  display: block;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--text);
+  border-radius: 6px;
+  transition: background var(--t-fast);
+}
+.lang-switch .menu a:hover { background: var(--surface-2); }
+.lang-switch .menu a.active { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+@media (max-width: 720px) {
+  .lang-switch .menu { right: auto; left: 0; }
+}
 `;
 
 const ICONS = {
@@ -498,18 +551,73 @@ const ICONS = {
   check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
 };
 
-const HTML = `<!DOCTYPE html>
-<html lang="en">
+function localeHref(locale: Locale): string {
+  return locale === "en" ? "/" : `/${locale}`;
+}
+
+function renderLangSwitcher(currentLocale: Locale): string {
+  const items = SUPPORTED_LOCALES.map((l) => {
+    const meta = LOCALE_META[l];
+    const active = l === currentLocale ? " active" : "";
+    return `<a href="${localeHref(l)}" class="${active.trim()}" hreflang="${meta.htmlLang}">${meta.nativeName}</a>`;
+  }).join("\n        ");
+  return `<details class="lang-switch">
+      <summary><span aria-hidden="true">🌐</span> ${LOCALE_META[currentLocale].nativeName}</summary>
+      <div class="menu">
+        ${items}
+      </div>
+    </details>`;
+}
+
+function renderHTML(t: Translations, locale: Locale): string {
+  const htmlLang = LOCALE_META[locale].htmlLang;
+  const canonical = `${ORIGIN}${locale === "en" ? "/" : `/${locale}`}`;
+  const hreflangTags = SUPPORTED_LOCALES.map((l) => {
+    const href = `${ORIGIN}${l === "en" ? "/" : `/${l}`}`;
+    return `<link rel="alternate" hreflang="${LOCALE_META[l].htmlLang}" href="${href}">`;
+  }).join("\n");
+
+  const featuresHTML = t.features.map((f, i) => {
+    const iconKeys = ["bell", "shield", "zap", "cloud", "eye", "code"] as const;
+    const icon = ICONS[iconKeys[i] ?? "bell"];
+    return `      <div class="feature">
+        <div class="feature-icon">${icon}</div>
+        <h3>${f.title}</h3>
+        <p>${f.desc}</p>
+      </div>`;
+  }).join("\n");
+
+  const stepsHTML = t.steps.map((s, i) => `      <div class="step">
+        <div class="step-n">${i + 1}</div>
+        <h3>${s.title}</h3>
+        <p>${s.desc}</p>
+      </div>`).join("\n");
+
+  const freeFeaturesHTML = t.tier_free_features.map((f) => `          <li>${f}</li>`).join("\n");
+  const proFeaturesHTML = t.tier_pro_features.map((f) => `          <li>${f}</li>`).join("\n");
+
+  const faqsHTML = t.faqs.map((f) => `      <details>
+        <summary>${f.q}</summary>
+        <p>${f.a}</p>
+      </details>`).join("\n");
+
+  return `<!DOCTYPE html>
+<html lang="${htmlLang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FreeTier Sentinel — Datadog for free tiers</title>
-<meta name="description" content="Like Datadog, but for free-tier limits. We email you at 80% — before the cliff. One dashboard for Cloudflare, GitHub Actions, Vercel, Supabase, Resend, and 4 more.">
+<title>${t.title}</title>
+<meta name="description" content="${t.description}">
 <meta name="theme-color" content="#1e40af">
-<meta property="og:title" content="FreeTier Sentinel — Datadog for free tiers">
-<meta property="og:description" content="Like Datadog, but for free-tier limits. Email at 80%, before the cliff.">
+<meta property="og:title" content="${t.title}">
+<meta property="og:description" content="${t.description}">
 <meta property="og:type" content="website">
+<meta property="og:url" content="${canonical}">
+<meta property="og:locale" content="${htmlLang}">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="${canonical}">
+${hreflangTags}
+<link rel="alternate" hreflang="x-default" href="${ORIGIN}/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -519,30 +627,31 @@ const HTML = `<!DOCTYPE html>
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a href="/" class="brand"><span class="brand-logo">F</span> FreeTier Sentinel</a>
+    <a href="${localeHref(locale)}" class="brand"><span class="brand-logo">F</span> FreeTier Sentinel</a>
     <div class="nav-links">
-      <a href="#features">Features</a>
-      <a href="#how">How it works</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#faq">FAQ</a>
-      <a href="/dash" class="nav-cta">Sign in →</a>
+      <a href="#features">${t.nav_features}</a>
+      <a href="#how">${t.nav_how}</a>
+      <a href="#pricing">${t.nav_pricing}</a>
+      <a href="#faq">${t.nav_faq}</a>
+      ${renderLangSwitcher(locale)}
+      <a href="/dash" class="nav-cta">${t.nav_signin}</a>
     </div>
   </div>
 </nav>
 
 <header class="hero">
   <div class="container">
-    <div class="eyebrow"><span class="pulse"></span> Watching 8 services. More coming weekly.</div>
-    <h1>Watch every free tier.<br>Sleep at night.</h1>
-    <p class="lede">Like Datadog, but for free-tier limits.<br>We email at 80% — before the cliff.</p>
+    <div class="eyebrow"><span class="pulse"></span> ${t.hero_eyebrow}</div>
+    <h1>${t.hero_h1_line1}<br>${t.hero_h1_line2}</h1>
+    <p class="lede">${t.hero_sub_line1}<br>${t.hero_sub_line2}</p>
     <form class="hero-form" method="POST" action="/signup">
-      <input name="email" type="email" placeholder="you@example.com" required autocomplete="email">
-      <button type="submit">Get started →</button>
+      <input name="email" type="email" placeholder="${t.hero_email_placeholder}" required autocomplete="email">
+      <button type="submit">${t.hero_cta}</button>
     </form>
     <div class="micro">
-      <span>${ICONS.check} Free for 3 services</span>
-      <span>${ICONS.check} No credit card</span>
-      <span>${ICONS.check} 60-second setup</span>
+      <span>${ICONS.check} ${t.hero_micro_1}</span>
+      <span>${ICONS.check} ${t.hero_micro_2}</span>
+      <span>${ICONS.check} ${t.hero_micro_3}</span>
     </div>
   </div>
 
@@ -577,7 +686,7 @@ const HTML = `<!DOCTYPE html>
 
 <section class="strip">
   <div class="container">
-    <div class="label">Currently monitoring</div>
+    <div class="label">${t.strip_label}</div>
     <div class="strip-row">
       <span>Cloudflare</span>
       <span>GitHub Actions</span>
@@ -593,103 +702,51 @@ const HTML = `<!DOCTYPE html>
 
 <section class="section" id="features">
   <div class="container">
-    <p class="section-eyebrow center-flex" style="text-align:center;display:block">Why Sentinel</p>
-    <h2>Built for indie devs<br>who run real things on free tiers.</h2>
-    <p class="sub">Every cloud has a usage page. None of them email you before the cliff. We do.</p>
+    <p class="section-eyebrow center-flex" style="text-align:center;display:block">${t.features_eyebrow}</p>
+    <h2>${t.features_h2_line1}<br>${t.features_h2_line2}</h2>
+    <p class="sub">${t.features_sub}</p>
     <div class="features-grid">
-      <div class="feature">
-        <div class="feature-icon">${ICONS.bell}</div>
-        <h3>Pre-cliff alerts</h3>
-        <p>Default 80% threshold. Email immediately. Discord + Telegram on Pro. No more 11pm site-down emergencies.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">${ICONS.shield}</div>
-        <h3>Read-only by design</h3>
-        <p>We require usage-scope tokens only. AES-256-GCM encryption at rest. Master key in Workers Secrets, never in DB.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">${ICONS.zap}</div>
-        <h3>Hourly polling</h3>
-        <p>Free: every 12h. Pro: every 1h. Polling is the fastest you can know without webhooks (which most clouds don't expose).</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">${ICONS.cloud}</div>
-        <h3>Multi-cloud aggregate</h3>
-        <p>One dashboard for 8 services and growing. Each adapter ships in about a day. Want one we don't have? Open an issue.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">${ICONS.eye}</div>
-        <h3>Usage history</h3>
-        <p>7-day rolling history on free, 30-day on Pro. Spot the slow leaks before they become billing surprises.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">${ICONS.code}</div>
-        <h3>Open source core</h3>
-        <p>The Worker source is on GitHub. Self-host it for free, or pay $5/mo for the hosted version with hourly polling.</p>
-      </div>
+${featuresHTML}
     </div>
   </div>
 </section>
 
 <section class="how section" id="how">
   <div class="container">
-    <p class="section-eyebrow center-flex" style="text-align:center;display:block">How it works</p>
-    <h2>Three steps. Zero late-night surprises.</h2>
-    <p class="sub">From sign-up to first alert in under 60 seconds.</p>
+    <p class="section-eyebrow center-flex" style="text-align:center;display:block">${t.how_eyebrow}</p>
+    <h2>${t.how_h2}</h2>
+    <p class="sub">${t.how_sub}</p>
     <div class="steps-grid">
-      <div class="step">
-        <div class="step-n">1</div>
-        <h3>Connect a service</h3>
-        <p>Paste a read-only API token from Cloudflare, GitHub Actions, Vercel, or any of the 8 supported SaaS. Tokens encrypted at rest.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">2</div>
-        <h3>Set your threshold</h3>
-        <p>Default is 80% of free-tier limit. Pick alert channels: email (free), Discord & Telegram (Pro). Multiple per account.</p>
-      </div>
-      <div class="step">
-        <div class="step-n">3</div>
-        <h3>Sleep at night</h3>
-        <p>We poll every hour (Pro) and notify you the moment usage trips your threshold. Before the cliff, not after.</p>
-      </div>
+${stepsHTML}
     </div>
   </div>
 </section>
 
 <section class="section" id="pricing">
   <div class="container">
-    <p class="section-eyebrow center-flex" style="text-align:center;display:block">Pricing</p>
-    <h2>Free tier you'll actually use.</h2>
-    <p class="sub">Pro is a fair $5/month for 1-hour polling and multi-channel alerts.</p>
+    <p class="section-eyebrow center-flex" style="text-align:center;display:block">${t.pricing_eyebrow}</p>
+    <h2>${t.pricing_h2}</h2>
+    <p class="sub">${t.pricing_sub}</p>
 
     <div class="tiers">
       <div class="tier">
-        <h3>Free</h3>
-        <div class="price">$0<small> / month</small></div>
-        <p class="price-sub">For solo devs validating side projects.</p>
+        <h3>${t.tier_free_label}</h3>
+        <div class="price">$0<small> ${t.tier_per}</small></div>
+        <p class="price-sub">${t.tier_free_sub}</p>
         <ul>
-          <li>Up to 3 connected services</li>
-          <li>Polling every 12 hours</li>
-          <li>Email alerts</li>
-          <li>7-day usage history</li>
-          <li>Magic-link auth, no passwords</li>
+${freeFeaturesHTML}
         </ul>
-        <a href="#" onclick="document.querySelector('.hero-form input').focus(); window.scrollTo({top:0,behavior:'smooth'}); return false;" class="cta">Start free</a>
+        <a href="#" onclick="document.querySelector('.hero-form input').focus(); window.scrollTo({top:0,behavior:'smooth'}); return false;" class="cta">${t.tier_free_cta}</a>
       </div>
       <div class="tier pro">
-        <span class="badge-pop">Most popular</span>
-        <h3>Pro</h3>
-        <div class="price">$5<small> / month</small></div>
-        <p class="price-sub">For people running real things on free tiers.</p>
+        <span class="badge-pop">${t.tier_pro_badge}</span>
+        <h3>${t.tier_pro_label}</h3>
+        <div class="price">$5<small> ${t.tier_per}</small></div>
+        <p class="price-sub">${t.tier_pro_sub}</p>
         <ul>
-          <li>Unlimited connected services</li>
-          <li>Polling every hour</li>
-          <li>Email + Discord + Telegram alerts</li>
-          <li>30-day usage history</li>
-          <li>Priority response on bugs</li>
-          <li>Self-host the open-source version</li>
+${proFeaturesHTML}
         </ul>
-        <a href="#" onclick="document.querySelector('.hero-form input').focus(); window.scrollTo({top:0,behavior:'smooth'}); return false;" class="cta">Start free, upgrade later</a>
+        <a href="#" onclick="document.querySelector('.hero-form input').focus(); window.scrollTo({top:0,behavior:'smooth'}); return false;" class="cta">${t.tier_pro_cta}</a>
       </div>
     </div>
   </div>
@@ -699,10 +756,10 @@ const HTML = `<!DOCTYPE html>
   <div class="container">
     <div class="code-grid">
       <div class="code-text">
-        <p class="section-eyebrow">Built on Cloudflare</p>
-        <h2>Runs on the same free tier it monitors.</h2>
-        <p>Workers + D1 + KV + Cron Triggers. The whole product runs on the free tier of the cloud it's named for. The dogfood is built in.</p>
-        <p>You can self-host the open-source version yourself, or pay $5/mo for the hosted version with hourly polling and multi-channel alerts.</p>
+        <p class="section-eyebrow">${t.code_eyebrow}</p>
+        <h2>${t.code_h2}</h2>
+        <p>${t.code_p1}</p>
+        <p>${t.code_p2}</p>
       </div>
       <div class="code-block">
 <pre><span class="c">// runs every 6 hours on Cloudflare Cron Triggers</span>
@@ -727,50 +784,23 @@ const HTML = `<!DOCTYPE html>
 
 <section class="section" id="faq">
   <div class="container">
-    <p class="section-eyebrow center-flex" style="text-align:center;display:block">FAQ</p>
-    <h2>Common questions.</h2>
-    <p class="sub">Reach out if yours isn't here.</p>
+    <p class="section-eyebrow center-flex" style="text-align:center;display:block">${t.faq_eyebrow}</p>
+    <h2>${t.faq_h2}</h2>
+    <p class="sub">${t.faq_sub}</p>
 
     <div class="faq">
-      <details>
-        <summary>How are my API tokens stored?</summary>
-        <p>AES-256-GCM encrypted in Cloudflare D1. The master key lives in Workers Secrets, separately from the database. We require read-only/usage-scope tokens — never tokens with provisioning or write permissions. If you're paranoid, the source is open — read the code yourself.</p>
-      </details>
-      <details>
-        <summary>Will FreeTier Sentinel monitor its own free tier?</summary>
-        <p>Yes. The Worker monitors its own usage. If it ever wakes me up because <em>it</em> hit a Cloudflare limit, that means it's working AND people are using it.</p>
-      </details>
-      <details>
-        <summary>Why $5/month instead of free forever?</summary>
-        <p>Polling every hour for unlimited services + Discord/Telegram alerts costs real Worker compute and Resend email volume at scale. $5/month is the lowest sustainable price. The free tier is genuinely useful, not a trial.</p>
-      </details>
-      <details>
-        <summary>Can I cancel anytime?</summary>
-        <p>One click via the Stripe customer portal. No "contact us to cancel" nonsense. Refunds within 7 days, no questions asked.</p>
-      </details>
-      <details>
-        <summary>What happens at 100%? Do you stop the request for me?</summary>
-        <p>No. We don't have permission to control your services — that's by design. We notify you at 80% (default, configurable) so you can act: upgrade the service, optimize traffic, or accept the cliff.</p>
-      </details>
-      <details>
-        <summary>Which SaaS are coming next?</summary>
-        <p>Currently shipped: Cloudflare Workers, GitHub Actions. Coming in next 2 weeks: Vercel, Supabase, Render, Resend, Neon, Cloudflare R2. Want one we don't have? <a href="https://github.com/wndnjs3865/freetier-sentinel/issues">Open an issue</a>.</p>
-      </details>
-      <details>
-        <summary>Is there an API or webhooks?</summary>
-        <p>Not yet — the Pro plan focus is hourly polling. If you'd find a webhook for usage events useful, tell us in an issue. We'll add it if there's demand.</p>
-      </details>
+${faqsHTML}
     </div>
   </div>
 </section>
 
 <section class="cta-bottom">
   <div class="container-narrow">
-    <h2>One dashboard. Zero late-night cliffs.</h2>
-    <p>Solo devs lose hours to overages every month. You don't have to.</p>
+    <h2>${t.cta_h2}</h2>
+    <p>${t.cta_p}</p>
     <form class="hero-form" method="POST" action="/signup">
-      <input name="email" type="email" placeholder="you@example.com" required autocomplete="email">
-      <button type="submit">Get magic link →</button>
+      <input name="email" type="email" placeholder="${t.hero_email_placeholder}" required autocomplete="email">
+      <button type="submit">${t.cta_button}</button>
     </form>
   </div>
 </section>
@@ -779,19 +809,19 @@ const HTML = `<!DOCTYPE html>
   <div class="container">
     <div class="foot-grid">
       <div class="foot-col">
-        <p class="foot-meta"><strong>FreeTier Sentinel</strong> — One dashboard for every free-tier SaaS limit you care about. Built solo on Cloudflare Workers, fully open source.</p>
+        <p class="foot-meta">${t.footer_tagline}</p>
       </div>
       <div class="foot-col">
-        <h4>Product</h4>
+        <h4>${t.footer_product}</h4>
         <ul>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="#faq">FAQ</a></li>
-          <li><a href="/dash">Sign in</a></li>
+          <li><a href="#features">${t.nav_features}</a></li>
+          <li><a href="#pricing">${t.nav_pricing}</a></li>
+          <li><a href="#faq">${t.nav_faq}</a></li>
+          <li><a href="/dash">${t.footer_signin}</a></li>
         </ul>
       </div>
       <div class="foot-col">
-        <h4>Open source</h4>
+        <h4>${t.footer_oss}</h4>
         <ul>
           <li><a href="https://github.com/wndnjs3865/freetier-sentinel">GitHub</a></li>
           <li><a href="https://github.com/wndnjs3865/freetier-sentinel/issues">Issues</a></li>
@@ -800,16 +830,20 @@ const HTML = `<!DOCTYPE html>
     </div>
     <div class="container foot-bottom">
       <span>© 2026 FreeTier Sentinel</span>
-      <span>Built with Cloudflare Workers · D1 · KV</span>
+      <span>${t.footer_built}</span>
     </div>
   </div>
 </footer>
 
 </body>
 </html>`;
+}
 
-export async function handleRoot(_req: Request, _env: Env): Promise<Response> {
-  return new Response(HTML, {
+export async function handleRoot(req: Request, _env: Env): Promise<Response> {
+  const url = new URL(req.url);
+  const locale = getLocaleFromPath(url.pathname);
+  const t = T[locale];
+  return new Response(renderHTML(t, locale), {
     headers: { "content-type": "text/html; charset=utf-8" },
   });
 }

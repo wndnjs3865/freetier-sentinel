@@ -49,7 +49,7 @@ export default {
       const m = method === "HEAD" ? "GET" : method;
 
       let res: Response | null = null;
-      if (path === "/" && m === "GET") res = await handleRoot(req, env);
+      if ((path === "/" || path === "/ko" || path === "/ja" || path === "/es" || path === "/de") && m === "GET") res = await handleRoot(req, env);
       else if (path === "/health" && m === "GET") res = new Response("ok", { status: 200 });
       else if (path === "/favicon.ico" && m === "GET") res = new Response(null, { status: 204 });
       else if (path === "/robots.txt" && m === "GET") res = new Response("User-agent: *\nAllow: /\n", { status: 200, headers: { "content-type": "text/plain" } });
