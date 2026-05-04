@@ -37,6 +37,7 @@ import { handleApiServices, handleApiAlerts, handleCheckNow, handleTestAlert } f
 import { handleStripeWebhook } from "./routes/stripe";
 import { handleNotify } from "./routes/notify";
 import { handlePrivacy, handleTerms } from "./routes/legal";
+import { handleSitemap, handleFavicon } from "./routes/sitemap";
 import { runScheduledCheck } from "./jobs/check";
 
 export default {
@@ -52,8 +53,9 @@ export default {
       let res: Response | null = null;
       if ((path === "/" || path === "/ko" || path === "/ja" || path === "/es" || path === "/de") && m === "GET") res = await handleRoot(req, env);
       else if (path === "/health" && m === "GET") res = new Response("ok", { status: 200 });
-      else if (path === "/favicon.ico" && m === "GET") res = new Response(null, { status: 204 });
-      else if (path === "/robots.txt" && m === "GET") res = new Response("User-agent: *\nAllow: /\n", { status: 200, headers: { "content-type": "text/plain" } });
+      else if ((path === "/favicon.ico" || path === "/favicon.svg") && m === "GET") res = await handleFavicon(req, env);
+      else if (path === "/robots.txt" && m === "GET") res = new Response(`User-agent: *\nAllow: /\nSitemap: ${env.APP_URL}/sitemap.xml\n`, { status: 200, headers: { "content-type": "text/plain" } });
+      else if (path === "/sitemap.xml" && m === "GET") res = await handleSitemap(req, env);
       else if (path === "/signup" && method === "POST") res = await handleSignup(req, env);
       else if (path === "/verify" && m === "GET") res = await handleVerifyPage(req, env);
       else if (path === "/verify" && method === "POST") res = await handleVerifyConsume(req, env);

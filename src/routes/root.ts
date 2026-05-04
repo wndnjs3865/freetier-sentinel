@@ -2,7 +2,7 @@ import type { Env } from "../index";
 import type { Locale, Translations } from "../i18n";
 import { LOCALE_META, SUPPORTED_LOCALES, T, getLocaleFromPath } from "../i18n";
 
-const ORIGIN = "https://freetier-sentinel.wndnjs3865.workers.dev";
+const ORIGIN = "https://freetier-sentinel.dev";
 
 const CSS = String.raw`
 :root {
@@ -625,6 +625,7 @@ function renderHTML(t: Translations, locale: Locale): string {
 <link rel="canonical" href="${canonical}">
 ${hreflangTags}
 <link rel="alternate" hreflang="x-default" href="${ORIGIN}/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">

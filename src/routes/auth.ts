@@ -1,6 +1,7 @@
 import type { Env } from "../index";
 import { sendSignInEmail } from "../lib/email";
 import { uuid } from "../lib/util";
+import { checkRateLimit, getClientIP } from "../lib/ratelimit";
 
 const TTL = 60 * 15; // 15 min
 const SESSION_TTL = 60 * 60 * 24 * 30; // 30 days
@@ -49,6 +50,15 @@ function genCode(): string {
 
 // POST /signup — create code + token, send email, redirect to /verify
 export async function handleSignup(req: Request, env: Env): Promise<Response> {
+  const ip = getClientIP(req);
+  const rl = await checkRateLimit(env, { key: `signup:${ip}`, limit: 5, windowSec: 600 });
+  if (!rl.allowed) {
+    return new Response(`Too many signup attempts. Try again in ${rl.resetSec}s.`, {
+      status: 429,
+      headers: { "retry-after": String(rl.resetSec) },
+    });
+  }
+
   const form = await req.formData();
   const email = String(form.get("email") || "").trim().toLowerCase();
   if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) {
