@@ -514,6 +514,31 @@ footer {
 .foot-meta strong { color: var(--text); font-weight: 600; }
 .foot-bottom { margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; }
 
+/* ───── PH LAUNCH BANNER ───── */
+.ph-banner {
+  background: linear-gradient(90deg, #da552f 0%, #ff6154 100%);
+  color: #fff;
+  text-align: center;
+  padding: 9px 18px;
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  position: relative;
+  z-index: 60;
+}
+.ph-banner a {
+  color: #fff !important;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.ph-banner a:hover { text-decoration: underline; }
+.ph-banner strong { font-weight: 700; }
+.ph-banner .arrow { transition: transform var(--t-fast); display: inline-block; }
+.ph-banner a:hover .arrow { transform: translateX(2px); }
+@media (max-width: 600px) { .ph-banner { font-size: 12px; padding: 8px 14px; } }
+
 /* ───── LANGUAGE SWITCHER ───── */
 .lang-switch { position: relative; }
 .lang-switch summary {
@@ -653,6 +678,12 @@ ${hreflangTags}
 <style>${CSS}</style>
 </head>
 <body>
+
+<div class="ph-banner">
+  <a href="https://www.producthunt.com/products/freetier-sentinel?launch=freetier-sentinel" target="_blank" rel="noopener">
+    🚀 <strong>Launching on Product Hunt May 12</strong> — Notify me <span class="arrow">→</span>
+  </a>
+</div>
 
 <nav class="nav">
   <div class="container nav-inner">
