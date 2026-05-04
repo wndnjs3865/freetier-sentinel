@@ -16,11 +16,7 @@ const CSS = String.raw`
   --primary-2: #2563eb;
   --primary-3: #3b82f6;
   --primary-soft: #eff6ff;
-  --accent: #fb923c;
-  --accent-2: #f97316;
-  --grad-1: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #60a5fa 100%);
-  --grad-2: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
-  --grad-text: linear-gradient(135deg, #1e40af 0%, #2563eb 60%, #3b82f6 100%);
+  --grad-1: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
   --shadow-xs: 0 1px 2px rgba(15,23,42,.04);
   --shadow-sm: 0 1px 2px rgba(15,23,42,.04), 0 4px 12px rgba(15,23,42,.04);
   --shadow-md: 0 4px 12px rgba(15,23,42,.06), 0 16px 40px rgba(15,23,42,.08);
@@ -91,18 +87,7 @@ button { font-family: inherit; }
 }
 .hero::before {
   content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(59,130,246,.15), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(251,146,60,.10), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 20% 30%, rgba(99,102,241,.08), transparent 60%);
-  pointer-events: none; z-index: -1;
-}
-.hero::after {
-  content: ''; position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(15,23,42,.04) 1px, transparent 1px);
-  background-size: 24px 24px;
-  -webkit-mask-image: radial-gradient(ellipse 50% 60% at 50% 0%, black 30%, transparent 80%);
-  mask-image: radial-gradient(ellipse 50% 60% at 50% 0%, black 30%, transparent 80%);
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(59,130,246,.10), transparent 70%);
   pointer-events: none; z-index: -1;
 }
 @media (max-width: 600px) { .hero { padding: 64px 0 48px; } }
@@ -118,23 +103,15 @@ button { font-family: inherit; }
   margin-bottom: 24px;
   box-shadow: var(--shadow-xs);
 }
-.eyebrow .pulse { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 3px rgba(34,197,94,.2); animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
+.eyebrow .pulse { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 0 3px rgba(34,197,94,.18); }
 
 .hero h1 {
-  font-size: clamp(40px, 6.5vw, 72px);
+  font-size: clamp(44px, 7vw, 84px);
   line-height: 1.02;
-  letter-spacing: -.04em;
+  letter-spacing: -.045em;
   font-weight: 800;
   margin: 0 0 22px;
-  max-width: 880px; margin-left: auto; margin-right: auto;
-}
-.hero h1 .grad {
-  background: var(--grad-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  display: inline-block;
+  max-width: 920px; margin-left: auto; margin-right: auto;
 }
 .hero .lede {
   font-size: clamp(17px, 2vw, 20px);
@@ -307,11 +284,6 @@ button { font-family: inherit; }
   position: relative;
   overflow: hidden;
 }
-.how::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(59,130,246,.08), transparent);
-  pointer-events: none;
-}
 .steps-grid { display: grid; gap: 16px; grid-template-columns: 1fr; }
 @media (min-width: 880px) { .steps-grid { grid-template-columns: repeat(3, 1fr); } }
 .step {
@@ -349,7 +321,7 @@ button { font-family: inherit; }
   transition: background var(--t-fast), color var(--t-fast);
 }
 .pricing-toggle button.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow-xs); }
-.pricing-toggle .save { color: var(--accent); font-size: 11px; margin-left: 4px; }
+.pricing-toggle .save { color: var(--primary-2); font-size: 11px; margin-left: 4px; }
 .center-flex { text-align: center; }
 
 .tiers { display: grid; gap: 18px; grid-template-columns: 1fr; max-width: 920px; margin: 0 auto; }
@@ -364,16 +336,26 @@ button { font-family: inherit; }
 }
 .tier:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
 .tier.pro {
-  border: 2px solid var(--text);
-  background: linear-gradient(135deg, #fff, #fafbff);
+  background: #0a0e1a;
+  border: 1px solid #0a0e1a;
+  color: #f8fafc;
   box-shadow: var(--shadow-lg);
+}
+.tier.pro h3 { color: rgba(255,255,255,.55); }
+.tier.pro .price { color: #fff; }
+.tier.pro .price small { color: rgba(255,255,255,.5); }
+.tier.pro .price-sub { color: rgba(255,255,255,.6); }
+.tier.pro li { color: #f1f5f9; }
+.tier.pro li::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
 }
 .tier .badge-pop {
   position: absolute; top: -12px; right: 28px;
   padding: 5px 12px;
-  background: var(--text); color: white;
+  background: #fff; color: var(--text);
   font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
   border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(15,23,42,.15);
 }
 .tier h3 { font-size: 16px; letter-spacing: .01em; text-transform: uppercase; color: var(--text-2); font-weight: 700; margin: 0 0 8px; }
 .tier .price { font-size: 48px; font-weight: 800; letter-spacing: -.025em; line-height: 1; margin: 12px 0 4px; }
@@ -400,8 +382,8 @@ button { font-family: inherit; }
   transition: background var(--t-fast), transform var(--t-fast);
 }
 .tier .cta:hover { background: var(--surface-2); }
-.tier.pro .cta { background: var(--text); color: white; border: 0; }
-.tier.pro .cta:hover { background: #1e2939; transform: translateY(-1px); }
+.tier.pro .cta { background: #fff; color: var(--text); border: 0; }
+.tier.pro .cta:hover { background: rgba(255,255,255,.92); transform: translateY(-1px); }
 
 /* ───── CODE BLOCK ───── */
 .code-section { background: var(--bg-mesh); border-top: 1px solid var(--border); }
@@ -465,16 +447,14 @@ button { font-family: inherit; }
 .cta-bottom {
   position: relative;
   text-align: center;
-  padding: 96px 0;
+  padding: 112px 0;
   background: var(--text);
   color: white;
   overflow: hidden;
 }
 .cta-bottom::before {
   content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 50% 50% at 30% 30%, rgba(59,130,246,.25), transparent 60%),
-    radial-gradient(ellipse 50% 50% at 70% 70%, rgba(251,146,60,.18), transparent 60%);
+  background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(59,130,246,.22), transparent 70%);
   pointer-events: none;
 }
 .cta-bottom h2 { color: white; margin-bottom: 14px; font-size: clamp(28px, 4vw, 42px); }
@@ -523,11 +503,11 @@ const HTML = `<!DOCTYPE html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FreeTier Sentinel — Watch every free-tier limit. Sleep at night.</title>
-<meta name="description" content="One dashboard for Cloudflare, GitHub Actions, Vercel, Supabase, Resend free-tier usage. Email, Discord, Telegram alerts before any limit cliff. Free for 3 services.">
+<title>FreeTier Sentinel — Datadog for free tiers</title>
+<meta name="description" content="Like Datadog, but for free-tier limits. We email you at 80% — before the cliff. One dashboard for Cloudflare, GitHub Actions, Vercel, Supabase, Resend, and 4 more.">
 <meta name="theme-color" content="#1e40af">
-<meta property="og:title" content="FreeTier Sentinel — Watch every free-tier limit">
-<meta property="og:description" content="One dashboard. Email + Discord alerts before any free-tier hits the cliff.">
+<meta property="og:title" content="FreeTier Sentinel — Datadog for free tiers">
+<meta property="og:description" content="Like Datadog, but for free-tier limits. Email at 80%, before the cliff.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -553,8 +533,8 @@ const HTML = `<!DOCTYPE html>
 <header class="hero">
   <div class="container">
     <div class="eyebrow"><span class="pulse"></span> Watching 8 services. More coming weekly.</div>
-    <h1>Watch every free-tier limit.<br><span class="grad">Sleep at night.</span></h1>
-    <p class="lede">Connect Cloudflare, GitHub Actions, Vercel, Supabase, Resend. We poll usage every hour and email you the moment any of them gets close to its limit.</p>
+    <h1>Watch every free tier.<br>Sleep at night.</h1>
+    <p class="lede">Like Datadog, but for free-tier limits.<br>We email at 80% — before the cliff.</p>
     <form class="hero-form" method="POST" action="/signup">
       <input name="email" type="email" placeholder="you@example.com" required autocomplete="email">
       <button type="submit">Get started →</button>
@@ -570,7 +550,7 @@ const HTML = `<!DOCTYPE html>
     <div class="preview-frame">
       <div class="preview-bar">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        <span class="url">freetier-sentinel.dev/dash</span>
+        <span class="url">freetier-sentinel.workers.dev/dash</span>
       </div>
       <div class="preview-body">
         <div class="preview-grid">
@@ -584,10 +564,10 @@ const HTML = `<!DOCTYPE html>
             <div class="svc-bar"><span style="width: 82%"></span></div>
             <div class="svc-meta"><span>82.4 / 100 GB</span><span>82%</span></div>
           </div>
-          <div class="svc-card crit">
-            <div class="svc-label"><span class="svc-name">Resend emails/day</span><span class="svc-pill">CRIT</span></div>
-            <div class="svc-bar"><span style="width: 96%"></span></div>
-            <div class="svc-meta"><span>96 / 100 sent</span><span>96%</span></div>
+          <div class="svc-card warn">
+            <div class="svc-label"><span class="svc-name">Resend emails/day</span><span class="svc-pill">WARN</span></div>
+            <div class="svc-bar"><span style="width: 73%"></span></div>
+            <div class="svc-meta"><span>73 / 100 sent</span><span>73%</span></div>
           </div>
         </div>
       </div>
