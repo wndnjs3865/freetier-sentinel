@@ -25,6 +25,9 @@ export interface Env {
   STRIPE_SECRET_KEY: string;
   STRIPE_WEBHOOK_SECRET: string;
   RESEND_API_KEY: string;
+  TELEGRAM_BOT_TOKEN: string;
+  TELEGRAM_CHAT_ID: string;
+  NOTIFY_API_KEY: string;
 }
 
 import { handleRoot } from "./routes/root";
@@ -32,6 +35,7 @@ import { handleSignup, handleAuthToken, handleAuthTokenConsume, handleVerifyPage
 import { handleDash } from "./routes/dash";
 import { handleApiServices, handleApiAlerts, handleCheckNow, handleTestAlert } from "./routes/api";
 import { handleStripeWebhook } from "./routes/stripe";
+import { handleNotify } from "./routes/notify";
 import { runScheduledCheck } from "./jobs/check";
 
 export default {
@@ -60,6 +64,7 @@ export default {
       else if (path === "/api/check-now" && method === "POST") res = await handleCheckNow(req, env);
       else if (path === "/api/test-alert" && method === "POST") res = await handleTestAlert(req, env);
       else if (path === "/webhooks/stripe" && method === "POST") res = await handleStripeWebhook(req, env);
+      else if (path === "/notify" && method === "POST") res = await handleNotify(req, env);
 
       if (!res) return new Response("Not found", { status: 404 });
 
