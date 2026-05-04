@@ -692,6 +692,66 @@ function renderHTML(t: Translations, locale: Locale): string {
   const freeFeaturesHTML = t.tier_free_features.map((f) => `          <li>${f}</li>`).join("\n");
   const proFeaturesHTML = t.tier_pro_features.map((f) => `          <li>${f}</li>`).join("\n");
 
+  // GEO (Generative Engine Optimization) — JSON-LD structured data so AI engines
+  // (ChatGPT, Perplexity, Claude, Gemini) can extract product facts cleanly.
+  const stripText = (html: string) => html.replace(/<[^>]+>/g, "");
+  const ldJson = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${ORIGIN}#org`,
+        name: "FreeTier Sentinel",
+        url: ORIGIN,
+        logo: `${ORIGIN}/favicon.svg`,
+        sameAs: ["https://github.com/wndnjs3865/freetier-sentinel"],
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": `${ORIGIN}#product`,
+        name: "FreeTier Sentinel",
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Cloud / Web",
+        description: t.description,
+        url: ORIGIN,
+        publisher: { "@id": `${ORIGIN}#org` },
+        offers: [
+          {
+            "@type": "Offer",
+            name: "Free",
+            price: "0",
+            priceCurrency: "USD",
+            description: t.tier_free_sub,
+          },
+          {
+            "@type": "Offer",
+            name: "Pro",
+            price: "5",
+            priceCurrency: "USD",
+            description: t.tier_pro_sub,
+          },
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: t.faqs.map((f) => ({
+          "@type": "Question",
+          name: stripText(f.q),
+          acceptedAnswer: { "@type": "Answer", text: stripText(f.a) },
+        })),
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${ORIGIN}#site`,
+        url: ORIGIN,
+        name: "FreeTier Sentinel",
+        inLanguage: htmlLang,
+        publisher: { "@id": `${ORIGIN}#org` },
+      },
+    ],
+  };
+  const ldJsonScript = `<script type="application/ld+json">${JSON.stringify(ldJson)}</script>`;
+
   const faqsHTML = t.faqs.map((f) => `      <details>
         <summary>${f.q}</summary>
         <p>${f.a}</p>
@@ -720,6 +780,7 @@ function renderHTML(t: Translations, locale: Locale): string {
 ${hreflangTags}
 <link rel="alternate" hreflang="x-default" href="${ORIGIN}/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+${ldJsonScript}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
