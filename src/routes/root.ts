@@ -70,10 +70,12 @@ button { font-family: inherit; }
   border-radius: 6px; background: var(--grad-1); color: white; font-size: 12px; font-weight: 800;
   box-shadow: 0 2px 8px rgba(30,64,175,.3);
 }
-.nav-links { display: none; gap: 28px; align-items: center; }
-@media (min-width: 720px) { .nav-links { display: flex; } }
-.nav-links a { color: var(--text-2); font-size: 14.5px; font-weight: 500; transition: color var(--t-fast); }
-.nav-links a:hover { color: var(--text); }
+.nav-links { display: flex; gap: 28px; align-items: center; }
+.nav-section-links { display: none; gap: 28px; align-items: center; }
+@media (min-width: 720px) { .nav-section-links { display: flex; } }
+.nav-links a, .nav-section-links a { color: var(--text-2); font-size: 14.5px; font-weight: 500; transition: color var(--t-fast); }
+.nav-links a:hover, .nav-section-links a:hover { color: var(--text); }
+@media (max-width: 600px) { .nav-links { gap: 12px; } .nav-cta { padding: 7px 12px; font-size: 13px; } }
 .nav-cta {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 8px 16px; background: var(--text); color: white !important;
@@ -139,10 +141,11 @@ button { font-family: inherit; }
 .hero-form input {
   flex: 1;
   padding: 12px 14px;
-  font-size: 15px;
+  font-size: 16px;
   font-family: inherit;
   border: 0; background: transparent;
   color: var(--text); outline: none;
+  min-width: 0;
 }
 .hero-form input::placeholder { color: var(--muted); }
 .hero-form button {
@@ -286,6 +289,9 @@ button { font-family: inherit; }
   margin: 0; color: var(--text-2);
   font-size: 15px; line-height: 1.62;
 }
+@media (max-width: 600px) {
+  .feature { padding: 22px 20px; }
+}
 
 /* ───── HOW ───── */
 .how {
@@ -346,6 +352,11 @@ button { font-family: inherit; }
   transition: transform var(--t-med), box-shadow var(--t-med);
 }
 .tier:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+@media (max-width: 600px) {
+  .tier { padding: 24px 22px; border-radius: var(--r-lg); }
+  .tier .price { font-size: 40px; }
+  .tier .badge-pop { right: 18px; }
+}
 .tier.pro {
   background: #0a0e1a;
   border: 1px solid #0a0e1a;
@@ -414,6 +425,11 @@ button { font-family: inherit; }
   overflow-x: auto;
   box-shadow: var(--shadow-md);
   position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+.code-block pre { white-space: pre; }
+@media (max-width: 600px) {
+  .code-block { padding: 20px 16px; font-size: 12px; }
 }
 .code-block::before {
   content: ''; position: absolute; top: 0; left: 0; right: 0; height: 36px;
@@ -641,10 +657,12 @@ ${hreflangTags}
   <div class="container nav-inner">
     <a href="${localeHref(locale)}" class="brand"><span class="brand-logo">F</span> FreeTier Sentinel</a>
     <div class="nav-links">
-      <a href="#features">${t.nav_features}</a>
-      <a href="#how">${t.nav_how}</a>
-      <a href="#pricing">${t.nav_pricing}</a>
-      <a href="#faq">${t.nav_faq}</a>
+      <div class="nav-section-links">
+        <a href="#features">${t.nav_features}</a>
+        <a href="#how">${t.nav_how}</a>
+        <a href="#pricing">${t.nav_pricing}</a>
+        <a href="#faq">${t.nav_faq}</a>
+      </div>
       ${renderLangSwitcher(locale)}
       <a href="/dash" class="nav-cta">${t.nav_signin}</a>
     </div>
