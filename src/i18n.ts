@@ -82,6 +82,11 @@ export interface Translations {
   footer_oss: string;
   footer_built: string;
   footer_signin: string;
+  team_callout_badge: string;
+  team_callout_title: string;
+  team_callout_desc: string;
+  team_callout_price: string;
+  team_callout_cta: string;
 }
 
 const en: Translations = {
@@ -174,6 +179,11 @@ const en: Translations = {
   footer_oss: "Open source",
   footer_built: "Built with Cloudflare Workers · D1 · KV",
   footer_signin: "Sign in",
+  team_callout_badge: "Coming late May",
+  team_callout_title: "Team — for 5+ devs sharing infrastructure",
+  team_callout_desc: "Slack alerts, webhook API, multi-user workspaces, 15-min polling. Pre-register to be notified when it ships.",
+  team_callout_price: "$25 / month",
+  team_callout_cta: "Email me when it's ready →",
 };
 
 const ko: Translations = {
@@ -266,6 +276,11 @@ const ko: Translations = {
   footer_oss: "오픈소스",
   footer_built: "Cloudflare Workers · D1 · KV로 구축",
   footer_signin: "로그인",
+  team_callout_badge: "5월 말 출시",
+  team_callout_title: "Team — 5명 이상 인프라를 공유하는 팀용",
+  team_callout_desc: "Slack 알림, 웹훅 API, 멀티 유저 워크스페이스, 15분 폴링. 출시 시 알림받으려면 사전 등록.",
+  team_callout_price: "월 $25",
+  team_callout_cta: "출시 시 알림 받기 →",
 };
 
 const ja: Translations = {
@@ -358,6 +373,11 @@ const ja: Translations = {
   footer_oss: "オープンソース",
   footer_built: "Cloudflare Workers · D1 · KV で構築",
   footer_signin: "ログイン",
+  team_callout_badge: "5 月末リリース予定",
+  team_callout_title: "Team — 5 人以上のチームで共有するインフラ向け",
+  team_callout_desc: "Slack 通知、Webhook API、マルチユーザーワークスペース、15 分ごとのポーリング。リリース時に通知を受け取るには事前登録を。",
+  team_callout_price: "月額 $25",
+  team_callout_cta: "リリース時に通知を受け取る →",
 };
 
 const es: Translations = {
@@ -450,6 +470,11 @@ const es: Translations = {
   footer_oss: "Código abierto",
   footer_built: "Construido con Cloudflare Workers · D1 · KV",
   footer_signin: "Iniciar sesión",
+  team_callout_badge: "Próximamente — finales de mayo",
+  team_callout_title: "Team — para equipos de 5+ que comparten infraestructura",
+  team_callout_desc: "Alertas en Slack, webhook API, espacios multiusuario, sondeo cada 15 min. Pre-regístrate para recibir aviso cuando salga.",
+  team_callout_price: "25 USD / mes",
+  team_callout_cta: "Avísame cuando esté listo →",
 };
 
 const de: Translations = {
@@ -542,6 +567,11 @@ const de: Translations = {
   footer_oss: "Open Source",
   footer_built: "Aufgebaut auf Cloudflare Workers · D1 · KV",
   footer_signin: "Anmelden",
+  team_callout_badge: "Demnächst — Ende Mai",
+  team_callout_title: "Team — für Teams ab 5 Personen mit gemeinsamer Infrastruktur",
+  team_callout_desc: "Slack-Alerts, Webhook-API, Multi-User-Workspaces, Polling alle 15 Minuten. Vorregistrieren und benachrichtigt werden, sobald verfügbar.",
+  team_callout_price: "25 $ / Monat",
+  team_callout_cta: "Bei Verfügbarkeit benachrichtigen →",
 };
 
 export const T: Record<Locale, Translations> = { en, ko, ja, es, de };

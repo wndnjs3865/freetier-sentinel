@@ -407,6 +407,54 @@ button { font-family: inherit; }
 .tier.pro .cta { background: #fff; color: var(--text); border: 0; }
 .tier.pro .cta:hover { background: rgba(255,255,255,.92); transform: translateY(-1px); }
 
+.team-callout {
+  max-width: 920px; margin: 28px auto 0;
+  background: linear-gradient(135deg, var(--surface-2), var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px 28px;
+  display: flex; align-items: center; gap: 22px;
+  flex-wrap: wrap;
+}
+.team-callout .left { flex: 1; min-width: 260px; }
+.team-callout .badge-soon {
+  display: inline-block;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase;
+  color: var(--primary-2); background: var(--primary-soft);
+  padding: 3px 10px; border-radius: 999px;
+  margin-bottom: 10px;
+}
+.team-callout h3 {
+  margin: 0 0 6px; font-size: 17px;
+  font-weight: 700; letter-spacing: -.01em;
+}
+.team-callout p {
+  margin: 0; color: var(--text-2);
+  font-size: 14px; line-height: 1.55;
+}
+.team-callout .right {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+}
+.team-callout .price {
+  font-size: 18px; font-weight: 700;
+  color: var(--text); letter-spacing: -.02em;
+}
+.team-callout .cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 18px;
+  background: var(--text); color: white !important;
+  border-radius: var(--r-sm);
+  font-size: 13.5px; font-weight: 600;
+  text-decoration: none;
+  transition: background var(--t-fast), transform var(--t-fast);
+}
+.team-callout .cta:hover { background: #1e2939; transform: translateY(-1px); text-decoration: none; }
+@media (max-width: 600px) {
+  .team-callout { padding: 20px 22px; flex-direction: column; align-items: stretch; }
+  .team-callout .right { align-items: flex-start; }
+}
+
 /* ───── CODE BLOCK ───── */
 .code-section { background: var(--bg-mesh); border-top: 1px solid var(--border); }
 .code-grid { display: grid; gap: 36px; grid-template-columns: 1fr; align-items: center; max-width: 1100px; margin: 0 auto; }
@@ -809,6 +857,18 @@ ${freeFeaturesHTML}
 ${proFeaturesHTML}
         </ul>
         <a href="#" onclick="document.querySelector('.hero-form input').focus(); window.scrollTo({top:0,behavior:'smooth'}); return false;" class="cta">${t.tier_pro_cta}</a>
+      </div>
+    </div>
+
+    <div class="team-callout">
+      <div class="left">
+        <span class="badge-soon">${t.team_callout_badge}</span>
+        <h3>${t.team_callout_title}</h3>
+        <p>${t.team_callout_desc}</p>
+      </div>
+      <div class="right">
+        <span class="price">${t.team_callout_price}</span>
+        <a href="mailto:wndnjs3865@gmail.com?subject=FreeTier%20Sentinel%20Team%20Tier%20Interest&body=Please%20notify%20me%20when%20the%20Team%20tier%20is%20available." class="cta">${t.team_callout_cta}</a>
       </div>
     </div>
   </div>
