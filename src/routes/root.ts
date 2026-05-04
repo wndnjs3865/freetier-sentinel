@@ -223,11 +223,18 @@ button { font-family: inherit; }
   margin-bottom: 20px;
 }
 .strip-row {
-  display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 38px;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 32px;
   font-size: 15px; font-weight: 600; color: var(--muted);
-  opacity: .85;
 }
-@media (max-width: 600px) { .strip-row { gap: 12px 22px; font-size: 13.5px; } }
+.strip-row > span { display: inline-flex; align-items: center; gap: 6px; }
+.strip-row .soon { opacity: .55; }
+.strip-row .badge {
+  font-size: 10px; font-weight: 600; padding: 2px 6px;
+  background: var(--surface-2); color: var(--muted);
+  border: 1px solid var(--border); border-radius: 999px;
+  letter-spacing: .04em;
+}
+@media (max-width: 600px) { .strip-row { gap: 10px 20px; font-size: 13.5px; } }
 
 /* ───── SECTION HEADS ───── */
 .section { padding: 96px 0; }
@@ -690,12 +697,12 @@ ${hreflangTags}
     <div class="strip-row">
       <span>Cloudflare</span>
       <span>GitHub Actions</span>
-      <span>Vercel</span>
-      <span>Render</span>
-      <span>Supabase</span>
-      <span>Neon</span>
-      <span>Resend</span>
-      <span>R2</span>
+      <span class="soon">Vercel <span class="badge">SOON</span></span>
+      <span class="soon">Supabase <span class="badge">SOON</span></span>
+      <span class="soon">Resend <span class="badge">SOON</span></span>
+      <span class="soon">Render <span class="badge">SOON</span></span>
+      <span class="soon">Neon <span class="badge">SOON</span></span>
+      <span class="soon">R2 <span class="badge">SOON</span></span>
     </div>
   </div>
 </section>
@@ -825,6 +832,8 @@ ${faqsHTML}
         <ul>
           <li><a href="https://github.com/wndnjs3865/freetier-sentinel">GitHub</a></li>
           <li><a href="https://github.com/wndnjs3865/freetier-sentinel/issues">Issues</a></li>
+          <li><a href="/privacy">Privacy</a></li>
+          <li><a href="/terms">Terms</a></li>
         </ul>
       </div>
     </div>
