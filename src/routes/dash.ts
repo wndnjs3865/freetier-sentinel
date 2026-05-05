@@ -440,7 +440,7 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
             <select name="kind">
               <option value="cloudflare">Cloudflare</option>
               <option value="github">GitHub Actions</option>
-              <option value="vercel">Vercel (soon)</option>
+              <option value="vercel">Vercel</option>
               <option value="supabase">Supabase (soon)</option>
               <option value="resend">Resend (soon)</option>
             </select>

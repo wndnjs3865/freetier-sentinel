@@ -4,12 +4,13 @@
  */
 import { fetchCloudflareUsage } from "./cloudflare";
 import { fetchGitHubActionsUsage } from "./github";
+import { fetchVercelUsage } from "./vercel";
 
 export async function fetchUsage(kind: string, apiKey: string): Promise<number> {
   switch (kind) {
     case "cloudflare": return fetchCloudflareUsage(apiKey);
     case "github":     return fetchGitHubActionsUsage(apiKey);
-    case "vercel":
+    case "vercel":     return fetchVercelUsage(apiKey);
     case "supabase":
     case "render":
     case "neon":

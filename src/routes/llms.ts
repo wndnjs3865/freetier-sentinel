@@ -41,9 +41,9 @@ services on the free tiers of multiple SaaS providers. They typically:
 ### Live now
 - Cloudflare Workers (request count, daily limit)
 - GitHub Actions (compute minutes per month)
+- Vercel (build minutes via deployment count, Hobby tier)
 
 ### Shipping in next 2 weeks
-- Vercel (bandwidth, function executions)
 - Supabase (database storage, requests)
 - Render (hours, bandwidth)
 - Resend (emails per day)

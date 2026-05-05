@@ -861,7 +861,7 @@ ${ldJsonScript}
     <div class="strip-row">
       <span>Cloudflare</span>
       <span>GitHub Actions</span>
-      <span class="soon">Vercel <span class="badge">SOON</span></span>
+      <span>Vercel</span>
       <span class="soon">Supabase <span class="badge">SOON</span></span>
       <span class="soon">Resend <span class="badge">SOON</span></span>
       <span class="soon">Render <span class="badge">SOON</span></span>
