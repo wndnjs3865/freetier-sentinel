@@ -309,13 +309,13 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
     ? '<span class="badge pro">★ Pro</span>'
     : '<span class="badge free">Free plan</span>';
 
-  const upgradeBlock = user.plan === "free" && env.STRIPE_PAYMENT_LINK
+  const upgradeBlock = user.plan === "free" && env.LS_CHECKOUT_URL
     ? `<div class="upgrade">
         <div class="upgrade-text">
           <h3>You're on the Free plan</h3>
           <p>Upgrade to Pro for unlimited services, hourly polling, Discord + Telegram alerts, and 30-day history.</p>
         </div>
-        <a href="${env.STRIPE_PAYMENT_LINK}?prefilled_email=${encodeURIComponent(user.email)}" class="btn-up">Upgrade · $5/mo →</a>
+        <a href="${env.LS_CHECKOUT_URL}?checkout[email]=${encodeURIComponent(user.email)}&checkout[custom][user_id]=${user.id}" class="btn-up">Upgrade · $5/mo →</a>
       </div>`
     : "";
 

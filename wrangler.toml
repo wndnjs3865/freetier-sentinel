@@ -20,12 +20,12 @@ crons = ["0 */6 * * *"]   # every 6 hours
 
 [vars]
 APP_URL = "https://freetier-sentinel.dev"
-STRIPE_PRICE_ID = "price_REPLACE"
-STRIPE_PAYMENT_LINK = "https://buy.stripe.com/test_8x2fZi6Ywbay0Wl3ve8Ra00"
 RESEND_FROM = "FreeTier Sentinel <noreply@freetier-sentinel.dev>"
 
 # Secrets (set via: wrangler secret put NAME)
 # - MASTER_KEY            (32-byte base64 for AES-GCM)
-# - STRIPE_SECRET_KEY     (sk_live_... or sk_test_...)
-# - STRIPE_WEBHOOK_SECRET (whsec_...)
 # - RESEND_API_KEY
+# - LS_CHECKOUT_URL       (https://<store>.lemonsqueezy.com/buy/<variant_id>)
+# - LS_API_KEY            (LS API key, for future programmatic ops)
+# - LS_WEBHOOK_SECRET     (signing secret from LS webhook config)
+# - CF_BEACON_TOKEN       (optional — Cloudflare Web Analytics)

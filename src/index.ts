@@ -9,7 +9,7 @@
  *   POST /api/services      add service
  *   DELETE /api/services/:id
  *   POST /api/alerts        add alert channel
- *   POST /webhooks/stripe   plan updates
+ *   POST /webhooks/lemonsqueezy   plan updates
  *
  * Scheduled: every 6h checks all services.
  */
@@ -18,16 +18,15 @@ export interface Env {
   DB: D1Database;
   KV: KVNamespace;
   APP_URL: string;
-  STRIPE_PRICE_ID: string;
-  STRIPE_PAYMENT_LINK: string;
   RESEND_FROM: string;
   MASTER_KEY: string;
-  STRIPE_SECRET_KEY: string;
-  STRIPE_WEBHOOK_SECRET: string;
   RESEND_API_KEY: string;
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_CHAT_ID: string;
   NOTIFY_API_KEY: string;
+  LS_CHECKOUT_URL?: string;
+  LS_API_KEY?: string;
+  LS_WEBHOOK_SECRET?: string;
   CF_BEACON_TOKEN?: string;
 }
 
@@ -35,7 +34,7 @@ import { handleRoot } from "./routes/root";
 import { handleSignup, handleAuthToken, handleAuthTokenConsume, handleVerifyPage, handleVerifyConsume } from "./routes/auth";
 import { handleDash } from "./routes/dash";
 import { handleApiServices, handleApiAlerts, handleCheckNow, handleTestAlert } from "./routes/api";
-import { handleStripeWebhook } from "./routes/stripe";
+import { handleLsWebhook } from "./routes/lemonsqueezy";
 import { handleNotify } from "./routes/notify";
 import { handlePrivacy, handleTerms } from "./routes/legal";
 import { handleSitemap, handleFavicon, handleOgImage } from "./routes/sitemap";
@@ -93,7 +92,7 @@ export default {
       else if (path === "/api/alerts" && method === "POST") res = await handleApiAlerts(req, env);
       else if (path === "/api/check-now" && method === "POST") res = await handleCheckNow(req, env);
       else if (path === "/api/test-alert" && method === "POST") res = await handleTestAlert(req, env);
-      else if (path === "/webhooks/stripe" && method === "POST") res = await handleStripeWebhook(req, env);
+      else if (path === "/webhooks/lemonsqueezy" && method === "POST") res = await handleLsWebhook(req, env);
       else if (path === "/notify" && method === "POST") res = await handleNotify(req, env);
       else if (path === "/privacy" && m === "GET") res = await handlePrivacy(req, env);
       else if (path === "/terms" && m === "GET") res = await handleTerms(req, env);

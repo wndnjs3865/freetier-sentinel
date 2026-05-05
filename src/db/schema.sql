@@ -5,12 +5,12 @@ CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   plan TEXT NOT NULL DEFAULT 'free',
-  stripe_customer_id TEXT,
-  stripe_subscription_id TEXT,
+  ls_customer_id TEXT,
+  ls_subscription_id TEXT,
   created_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-CREATE INDEX IF NOT EXISTS idx_users_stripe_cus ON users(stripe_customer_id);
+CREATE INDEX IF NOT EXISTS idx_users_ls_cus ON users(ls_customer_id);
 
 CREATE TABLE IF NOT EXISTS services (
   id TEXT PRIMARY KEY,
