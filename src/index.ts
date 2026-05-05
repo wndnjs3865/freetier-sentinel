@@ -28,6 +28,7 @@ export interface Env {
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_CHAT_ID: string;
   NOTIFY_API_KEY: string;
+  CF_BEACON_TOKEN?: string;
 }
 
 import { handleRoot } from "./routes/root";

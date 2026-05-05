@@ -2,6 +2,7 @@ import type { Env } from "../index";
 import { sendSignInEmail } from "../lib/email";
 import { uuid } from "../lib/util";
 import { checkRateLimit, getClientIP } from "../lib/ratelimit";
+import { analyticsBeacon } from "../lib/analytics";
 
 const TTL = 60 * 15; // 15 min
 const SESSION_TTL = 60 * 60 * 24 * 30; // 30 days
@@ -34,7 +35,7 @@ h1{font-size:24px;letter-spacing:-0.02em;font-weight:700;margin:0 0 6px;line-hei
 .expired-icon{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;background:#fee2e2;color:#dc2626;border-radius:50%;margin:0 auto 14px;font-size:30px}
 `;
 
-const HEAD = `<!DOCTYPE html><html lang="en"><head>
+const head = (beacon: string) => `<!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sign in — FreeTier Sentinel</title>
@@ -42,7 +43,7 @@ const HEAD = `<!DOCTYPE html><html lang="en"><head>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<style>${PAGE_CSS}</style></head><body>`;
+<style>${PAGE_CSS}</style>${beacon}</head><body>`;
 
 function genCode(): string {
   // Crypto-secure 6-digit code (000000-999999), uniformly distributed via rejection sampling.
@@ -91,12 +92,12 @@ export async function handleSignup(req: Request, env: Env): Promise<Response> {
 }
 
 // GET /verify — show code input form
-export async function handleVerifyPage(req: Request, _env: Env): Promise<Response> {
+export async function handleVerifyPage(req: Request, env: Env): Promise<Response> {
   const url = new URL(req.url);
   const email = url.searchParams.get("e") || "";
   const errParam = url.searchParams.get("err");
 
-  return new Response(`${HEAD}
+  return new Response(`${head(analyticsBeacon(env.CF_BEACON_TOKEN))}
 <div class="card">
   <div class="brand"><span class="brand-logo">F</span> FreeTier Sentinel</div>
   <h1>Check your email</h1>
@@ -179,7 +180,7 @@ export async function handleAuthToken(req: Request, env: Env): Promise<Response>
   const email = await env.KV.get(`mlink:${token}`);
 
   if (!email) {
-    return new Response(`${HEAD}
+    return new Response(`${head(analyticsBeacon(env.CF_BEACON_TOKEN))}
 <div class="card">
   <div class="brand"><span class="brand-logo">F</span> FreeTier Sentinel</div>
   <div class="expired-icon">⏱</div>
@@ -193,7 +194,7 @@ export async function handleAuthToken(req: Request, env: Env): Promise<Response>
     });
   }
 
-  return new Response(`${HEAD}
+  return new Response(`${head(analyticsBeacon(env.CF_BEACON_TOKEN))}
 <div class="card">
   <div class="brand"><span class="brand-logo">F</span> FreeTier Sentinel</div>
   <h1>One more step</h1>

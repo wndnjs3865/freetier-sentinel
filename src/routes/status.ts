@@ -1,4 +1,5 @@
 import type { Env } from "../index";
+import { analyticsBeacon } from "../lib/analytics";
 
 /**
  * Public status dashboard for FreeTier Sentinel itself.
@@ -196,6 +197,7 @@ export async function handleStatus(_req: Request, env: Env): Promise<Response> {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
+${analyticsBeacon(env.CF_BEACON_TOKEN)}
 </head>
 <body>
 <div class="wrap">

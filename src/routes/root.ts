@@ -1,6 +1,7 @@
 import type { Env } from "../index";
 import type { Locale, Translations } from "../i18n";
 import { LOCALE_META, SUPPORTED_LOCALES, T, getLocaleFromPath } from "../i18n";
+import { analyticsBeacon } from "../lib/analytics";
 
 const ORIGIN = "https://freetier-sentinel.dev";
 
@@ -665,7 +666,7 @@ function renderLangSwitcher(currentLocale: Locale): string {
     </details>`;
 }
 
-function renderHTML(t: Translations, locale: Locale): string {
+function renderHTML(t: Translations, locale: Locale, beacon: string): string {
   const htmlLang = LOCALE_META[locale].htmlLang;
   const canonical = `${ORIGIN}${locale === "en" ? "/" : `/${locale}`}`;
   const hreflangTags = SUPPORTED_LOCALES.map((l) => {
@@ -785,6 +786,7 @@ ${ldJsonScript}
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
+${beacon}
 </head>
 <body>
 
@@ -1024,11 +1026,12 @@ ${faqsHTML}
 </html>`;
 }
 
-export async function handleRoot(req: Request, _env: Env): Promise<Response> {
+export async function handleRoot(req: Request, env: Env): Promise<Response> {
   const url = new URL(req.url);
   const locale = getLocaleFromPath(url.pathname);
   const t = T[locale];
-  return new Response(renderHTML(t, locale), {
+  const beacon = analyticsBeacon(env.CF_BEACON_TOKEN);
+  return new Response(renderHTML(t, locale, beacon), {
     headers: { "content-type": "text/html; charset=utf-8" },
   });
 }

@@ -1,4 +1,5 @@
 import type { Env } from "../index";
+import { analyticsBeacon } from "../lib/analytics";
 
 const CSS = String.raw`
 * { box-sizing: border-box; }
@@ -63,7 +64,7 @@ code {
 const HEADER = `<a href="/" class="brand"><span class="brand-logo">F</span> FreeTier Sentinel</a>`;
 const FOOTER_NAV = `<a href="/" class="back">← Back to home</a>`;
 
-const PRIVACY_HTML = `<!DOCTYPE html>
+const privacyHtml = (beacon: string) => `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -74,6 +75,7 @@ const PRIVACY_HTML = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
+${beacon}
 </head>
 <body>
 <div class="container">
@@ -146,7 +148,7 @@ ${FOOTER_NAV}
 </body>
 </html>`;
 
-const TERMS_HTML = `<!DOCTYPE html>
+const termsHtml = (beacon: string) => `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -157,6 +159,7 @@ const TERMS_HTML = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
+${beacon}
 </head>
 <body>
 <div class="container">
@@ -227,14 +230,14 @@ ${FOOTER_NAV}
 </body>
 </html>`;
 
-export async function handlePrivacy(_req: Request, _env: Env): Promise<Response> {
-  return new Response(PRIVACY_HTML, {
+export async function handlePrivacy(_req: Request, env: Env): Promise<Response> {
+  return new Response(privacyHtml(analyticsBeacon(env.CF_BEACON_TOKEN)), {
     headers: { "content-type": "text/html; charset=utf-8" },
   });
 }
 
-export async function handleTerms(_req: Request, _env: Env): Promise<Response> {
-  return new Response(TERMS_HTML, {
+export async function handleTerms(_req: Request, env: Env): Promise<Response> {
+  return new Response(termsHtml(analyticsBeacon(env.CF_BEACON_TOKEN)), {
     headers: { "content-type": "text/html; charset=utf-8" },
   });
 }
