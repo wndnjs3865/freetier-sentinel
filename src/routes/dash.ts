@@ -1104,15 +1104,6 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
         </div>
       </div>`;
     }
-    if (env.LS_CHECKOUT_URL) {
-      return `<div class="upgrade">
-        <div class="upgrade-text">
-          <h3>You're on the Free plan</h3>
-          <p>Upgrade to Pro for unlimited services, hourly polling, and Discord + Telegram alerts.</p>
-        </div>
-        <a href="${env.LS_CHECKOUT_URL}?checkout[email]=${encodeURIComponent(user.email)}&checkout[custom][user_id]=${user.id}" class="btn-up">Upgrade · $5/mo →</a>
-      </div>`;
-    }
     return "";
   })();
 

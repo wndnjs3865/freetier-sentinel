@@ -9,7 +9,7 @@
  *   POST /api/services      add service
  *   DELETE /api/services/:id
  *   POST /api/alerts        add alert channel
- *   POST /webhooks/lemonsqueezy   plan updates
+ *   POST /webhooks/polar          plan updates (LS rejected 5/7, migrated to Polar)
  *
  * Scheduled: every 6h checks all services.
  */
@@ -24,21 +24,12 @@ export interface Env {
   TELEGRAM_BOT_TOKEN: string;
   TELEGRAM_CHAT_ID: string;
   NOTIFY_API_KEY: string;
-  LS_CHECKOUT_URL?: string;
-  LS_API_KEY?: string;
-  LS_WEBHOOK_SECRET?: string;
-  // Polar (replaces LS post-5/7 rejection)
+  // Polar (Merchant of Record). LS rejected 5/7, Paddle skeleton removed.
   POLAR_CHECKOUT_URL?: string;
   POLAR_PORTAL_URL?: string;
   POLAR_API_KEY?: string;
   POLAR_WEBHOOK_SECRET?: string;
   POLAR_WEBHOOK_BYPASS?: string;
-  // Paddle backup MoR (only used if LS verification stuck past 5/9 stop-loss).
-  // See routes/paddle.ts (skeleton, not wired in default flow).
-  PADDLE_NOTIFICATION_SECRET?: string;
-  PADDLE_API_KEY?: string;
-  PADDLE_PRODUCT_ID_PRO?: string;
-  PADDLE_CHECKOUT_URL?: string;
   CF_BEACON_TOKEN?: string;
   CLARITY_PROJECT_ID?: string;
   // x402 paid-API env
@@ -58,7 +49,6 @@ import { handleRoot } from "./routes/root";
 import { handleSignup, handleAuthToken, handleAuthTokenConsume, handleVerifyPage, handleVerifyConsume, handleLogout, handleResend } from "./routes/auth";
 import { handleDash } from "./routes/dash";
 import { handleApiServices, handleApiAlerts, handleCheckNow, handleTestAlert } from "./routes/api";
-import { handleLsWebhook } from "./routes/lemonsqueezy";
 import { handleNotify } from "./routes/notify";
 import { handleInboxPage, handleInboxSync, handleInboxDone, handleInboxList } from "./routes/inbox";
 import { handlePolarWebhook } from "./routes/polar";
@@ -131,7 +121,6 @@ export default {
       else if (path === "/api/alerts" && method === "POST") res = await handleApiAlerts(req, env);
       else if (path === "/api/check-now" && method === "POST") res = await handleCheckNow(req, env);
       else if (path === "/api/test-alert" && method === "POST") res = await handleTestAlert(req, env);
-      else if (path === "/webhooks/lemonsqueezy" && method === "POST") res = await handleLsWebhook(req, env);
       else if (path === "/webhooks/polar" && method === "POST") res = await handlePolarWebhook(req, env);
       else if (path === "/vs/datadog" && m === "GET") res = await handleVsDatadog(req, env);
       else if (path === "/launch/hero" && m === "GET") res = await handleLaunchHero(req, env);
