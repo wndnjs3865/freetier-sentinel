@@ -377,6 +377,7 @@ function renderDashboard(tasks: any[], status: any, notes: string, alerts: any[]
           <div class="text-xs text-slate-400">PH Launch (5/12)</div>
           <div class="text-2xl font-bold ${daysToLaunch <= 1 ? "text-red-400" : daysToLaunch <= 3 ? "text-amber-400" : "text-emerald-400"}">${dStr}</div>
         </div>
+        <a href="/admin/architecture" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded border border-slate-700 text-sm" title="Architecture mindmap">🗺️ Architecture</a>
         <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded border border-slate-700 text-sm" title="Refresh">↻</button>
       </div>
     </div>
@@ -1553,6 +1554,13 @@ export async function handleAdmin(req: Request, env: Env): Promise<Response> {
 
   await ensureTables(env);
 
+  // Architecture mindmap (live)
+  if (path === "/admin/architecture" && method === "GET") {
+    const data = await getArchitectureData(env);
+    const body = renderArchitecturePage(data);
+    return new Response(body, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+  }
+
   // Main dashboard
   if (path === "/admin" && method === "GET") {
     const tasks = await env.DB.prepare("SELECT * FROM tasks ORDER BY priority, ord, created_at").all<any>();
@@ -1652,4 +1660,222 @@ export async function handleAdmin(req: Request, env: Env): Promise<Response> {
   }
 
   return new Response("Not found", { status: 404 });
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Architecture mindmap (live)
+// ──────────────────────────────────────────────────────────────────────────
+
+async function getArchitectureData(env: Env): Promise<any> {
+  const now = new Date();
+  const daysToLaunch = Math.ceil((PH_LAUNCH.getTime() - now.getTime()) / 86400000);
+  const dStr = daysToLaunch > 0 ? `D-${daysToLaunch}` : daysToLaunch === 0 ? "LAUNCH DAY" : `+${-daysToLaunch}`;
+
+  // D1 row counts (parallel)
+  const [users, services, alerts7d, incidents, tasksRow, recentDeploy] = await Promise.all([
+    env.DB.prepare("SELECT COUNT(*) AS c FROM users").first<any>().catch(() => ({ c: 0 })),
+    env.DB.prepare("SELECT COUNT(*) AS c FROM services").first<any>().catch(() => ({ c: 0 })),
+    env.DB.prepare("SELECT COUNT(*) AS c FROM alert_log WHERE created_at > ?").bind(Math.floor(Date.now() / 1000) - 7 * 86400).first<any>().catch(() => ({ c: 0 })),
+    env.DB.prepare("SELECT COUNT(*) AS c FROM incidents WHERE status='open'").first<any>().catch(() => ({ c: 0 })),
+    env.DB.prepare("SELECT priority, COUNT(*) AS c, SUM(done) AS done FROM tasks GROUP BY priority").all<any>().catch(() => ({ results: [] })),
+    env.KV.get("cron:last:smoke").catch(() => null),
+  ]);
+
+  // KV smoke status (6 endpoints)
+  const smokeKeys = ["landing", "health", "x402-providers", "docs-api", "openapi", "x402-paid-402"];
+  const smokeStates = await Promise.all(
+    smokeKeys.map(async (k) => {
+      const v = await env.KV.get(`smoke:${k}`).catch(() => null);
+      try { return v ? { name: k, ...JSON.parse(v) } : { name: k, status: "unknown" }; }
+      catch { return { name: k, status: "unknown" }; }
+    }),
+  );
+  const smokeOk = smokeStates.filter((s) => s.status === "ok").length;
+
+  // x402 records count via lightweight self-import (avoid HTTP self-fetch)
+  let x402Records = 0;
+  try {
+    const limitsModule = await import("../data/limits");
+    x402Records = (limitsModule as any).LIMITS?.length || 0;
+  } catch { /* ignore */ }
+
+  // Tasks rolled up
+  const taskCounts: any = { p0: { total: 0, done: 0 }, p1: { total: 0, done: 0 }, p2: { total: 0, done: 0 } };
+  for (const r of tasksRow.results || []) {
+    if (taskCounts[r.priority]) {
+      taskCounts[r.priority].total = r.c;
+      taskCounts[r.priority].done = r.done || 0;
+    }
+  }
+
+  return {
+    daysToLaunch: dStr,
+    users: users?.c || 0,
+    services: services?.c || 0,
+    alerts7d: alerts7d?.c || 0,
+    incidents: incidents?.c || 0,
+    smokeOk,
+    smokeTotal: smokeStates.length,
+    smokeStates,
+    x402Records,
+    taskCounts,
+    lastSmokeRun: recentDeploy ? new Date(parseInt(recentDeploy) * 1000).toISOString().slice(0, 16) : "—",
+    timestamp: now.toISOString().slice(0, 19),
+  };
+}
+
+function renderArchitecturePage(d: any): string {
+  // Live values plugged into mindmap nodes
+  const smokeIcon = d.smokeOk === d.smokeTotal ? "✅" : "⚠️";
+  const incidentBadge = d.incidents === 0 ? "0 open" : `🚨 ${d.incidents} open`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Architecture · FreeTier Sentinel</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #0b0f1a; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif; }
+  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: #0f172a; border-bottom: 1px solid #1e293b; position: sticky; top: 0; z-index: 10; }
+  .topbar h1 { margin: 0; font-size: 18px; font-weight: 600; }
+  .topbar .meta { display: flex; gap: 14px; font-size: 12px; color: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .topbar a { color: #60a5fa; text-decoration: none; padding: 6px 12px; border: 1px solid #1e293b; border-radius: 6px; font-size: 13px; }
+  .topbar a:hover { background: #1e293b; }
+  .stat-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; padding: 12px 24px; background: #0f172a; border-bottom: 1px solid #1e293b; font-size: 12px; }
+  .stat { background: #0b1224; border: 1px solid #1e293b; border-radius: 6px; padding: 8px 10px; }
+  .stat-label { color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-value { font-size: 16px; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 2px; }
+  .map-container { padding: 24px; min-height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center; overflow: auto; }
+  .mermaid { font-size: 14px; max-width: 100%; }
+  .footnote { padding: 12px 24px; font-size: 11px; color: #64748b; text-align: center; border-top: 1px solid #1e293b; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🗺️ Architecture · FreeTier Sentinel + AutoBiz</h1>
+  <div class="meta">
+    <span>${d.timestamp}Z</span>
+    <span>${d.daysToLaunch}</span>
+    <a href="/admin">← Mission Control</a>
+  </div>
+</div>
+
+<div class="stat-bar">
+  <div class="stat"><div class="stat-label">Users</div><div class="stat-value">${d.users}</div></div>
+  <div class="stat"><div class="stat-label">Services tracked</div><div class="stat-value">${d.services}</div></div>
+  <div class="stat"><div class="stat-label">x402 records</div><div class="stat-value">${d.x402Records}</div></div>
+  <div class="stat"><div class="stat-label">Smoke 6/6</div><div class="stat-value">${smokeIcon} ${d.smokeOk}/${d.smokeTotal}</div></div>
+  <div class="stat"><div class="stat-label">Alerts 7d</div><div class="stat-value">${d.alerts7d}</div></div>
+  <div class="stat"><div class="stat-label">Incidents</div><div class="stat-value">${incidentBadge}</div></div>
+  <div class="stat"><div class="stat-label">P0/P1/P2</div><div class="stat-value">${d.taskCounts.p0.done}/${d.taskCounts.p0.total} · ${d.taskCounts.p1.done}/${d.taskCounts.p1.total} · ${d.taskCounts.p2.done}/${d.taskCounts.p2.total}</div></div>
+</div>
+
+<div class="map-container">
+<pre class="mermaid">
+mindmap
+  root(("FT + AutoBiz<br/>${d.daysToLaunch}"))
+    Code &amp; Repos
+      ::icon(fa fa-code)
+      tool<br/>CF Workers
+        18 routes
+        5 jobs
+        i18n 5 locales
+      seo<br/>ICT GitHub Pages
+      autobiz<br/>orchestration
+    Infra
+      D1 db
+        users ${d.users}
+        services ${d.services}
+        alerts7d ${d.alerts7d}
+      KV namespace
+      Cron 4
+        smoke 30min
+        bazaar 1h
+        usage 6h
+        digest daily
+      Hooks 3
+        SessionStart
+        UserPromptSubmit
+        Stop ${smokeIcon} 5/9
+    Billing
+      Polar.sh MoR
+        webhook LIVE 5/8
+        PHFREE6MO 50
+      x402 paid API
+        ${d.x402Records} records
+        Bazaar indexed
+      사업자번호<br/>607-20-94796
+    Marketing
+      5 글
+        IH Twitter Reddit
+        ShowHN 5/19
+        Maker comment
+      PH 5/12 16:01 KST
+      비주얼 4
+      F5Bot 5 keywords
+    Autonomous
+      Smoke ${d.smokeOk}/${d.smokeTotal}
+        landing ${stateIcon(d.smokeStates[0])}
+        health ${stateIcon(d.smokeStates[1])}
+        x402 prov ${stateIcon(d.smokeStates[2])}
+        docs api ${stateIcon(d.smokeStates[3])}
+        openapi ${stateIcon(d.smokeStates[4])}
+        paid 402 ${stateIcon(d.smokeStates[5])}
+      Gmail 3-tier
+        Native filters 8
+        GAS 5min
+        Triage daemon 1h
+      Telegram alerts
+      Inbox dashboard
+    Memory
+      22 active
+      7 archive feedback
+      3 archive legacy
+      evidence-first 가드
+    External deps
+      Cloudflare
+      Polar.sh
+      CDP x402
+      Resend
+      Telegram
+      Microsoft Clarity
+      Google Workspace
+</pre>
+</div>
+
+<div class="footnote">
+  Auto-refresh every 60s · Last fetched ${d.timestamp}Z · Live data from D1 + KV + bundled limits.ts
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  mindmap: { padding: 16, maxNodeWidth: 280 },
+  themeVariables: {
+    fontFamily: '-apple-system, system-ui, sans-serif',
+    primaryColor: '#1e293b',
+    primaryTextColor: '#e2e8f0',
+    primaryBorderColor: '#334155',
+    lineColor: '#475569',
+  },
+});
+setTimeout(() => location.reload(), 60000);
+</script>
+
+</body>
+</html>`;
+}
+
+function stateIcon(s: any): string {
+  if (!s) return "❔";
+  if (s.status === "ok") return "✅";
+  if (s.status === "fail") return "🚨";
+  return "❔";
 }
