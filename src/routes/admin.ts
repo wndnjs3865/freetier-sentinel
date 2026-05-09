@@ -1587,9 +1587,17 @@ export async function handleAdmin(req: Request, env: Env): Promise<Response> {
     return new Response(body, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
   }
 
-  // Memory & Logs placeholders (full impl deferred to 5/13+)
-  if ((path === "/admin/memory" || path === "/admin/logs") && method === "GET") {
-    const body = renderPlaceholderChapter(path);
+  // Memory chapter (hardcoded inventory + summary)
+  if (path === "/admin/memory" && method === "GET") {
+    const c = renderMemoryChapter();
+    const body = chapterLayout("memory", c.title, c.subtitle, c.body, { memoryCount: 22 });
+    return new Response(body, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+  }
+
+  // Logs chapter (live D1 alert_log)
+  if (path === "/admin/logs" && method === "GET") {
+    const c = await renderLogsChapter(env);
+    const body = chapterLayout("logs", c.title, c.subtitle, c.body, { logsCount: c.logsCount });
     return new Response(body, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
   }
 
@@ -1757,10 +1765,133 @@ async function getArchitectureData(env: Env): Promise<any> {
 }
 
 function renderArchitecturePage(d: any): string {
-  // Live values plugged into mindmap nodes
   const smokeIcon = d.smokeOk === d.smokeTotal ? "✅" : "⚠️";
   const incidentBadge = d.incidents === 0 ? "0 open" : `🚨 ${d.incidents} open`;
 
+  const stat = (label: string, value: string) => `
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div class="text-[10px] uppercase tracking-wider font-semibold text-slate-500">${label}</div>
+      <div class="mt-1.5 text-lg font-semibold font-mono text-slate-100">${value}</div>
+    </div>`;
+
+  const body = `
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+  ${stat("Users", String(d.users))}
+  ${stat("Services", String(d.services))}
+  ${stat("x402 records", String(d.x402Records))}
+  ${stat("Smoke", `${smokeIcon} ${d.smokeOk}/${d.smokeTotal}`)}
+  ${stat("Alerts 7d", String(d.alerts7d))}
+  ${stat("Incidents", incidentBadge)}
+  ${stat("P0·P1·P2", `${d.taskCounts.p0.done}/${d.taskCounts.p0.total} · ${d.taskCounts.p1.done}/${d.taskCounts.p1.total} · ${d.taskCounts.p2.done}/${d.taskCounts.p2.total}`)}
+</div>
+
+<section class="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-6">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-base font-semibold text-slate-100">Live Structure Mindmap</h2>
+    <span class="text-[11px] text-slate-500 font-mono">D1 + KV + bundled limits.ts · refresh 60s</span>
+  </div>
+  <div class="overflow-x-auto flex justify-center py-3">
+<pre class="mermaid text-sm">
+mindmap
+  root(("FT + AutoBiz<br/>${d.daysToLaunch}"))
+    Code &amp; Repos
+      tool<br/>CF Workers
+        18 routes
+        5 jobs
+        i18n 5 locales
+      seo<br/>ICT GitHub Pages
+      autobiz<br/>orchestration
+    Infra
+      D1 db
+        users ${d.users}
+        services ${d.services}
+        alerts7d ${d.alerts7d}
+      KV namespace
+      Cron 4
+        smoke 30min
+        bazaar 1h
+        usage 6h
+        digest daily
+      Hooks 3
+        SessionStart
+        UserPromptSubmit
+        Stop ${smokeIcon} 5/9
+    Billing
+      Polar.sh MoR
+        webhook LIVE 5/8
+        PHFREE6MO 50
+      x402 paid API
+        ${d.x402Records} records
+        Bazaar indexed
+      사업자번호<br/>607-20-94796
+    Marketing
+      5 글
+        IH Twitter Reddit
+        ShowHN 5/19
+        Maker comment
+      PH 5/12 16:01 KST
+      비주얼 4
+      F5Bot 5 keywords
+    Autonomous
+      Smoke ${d.smokeOk}/${d.smokeTotal}
+        landing ${stateIcon(d.smokeStates[0])}
+        health ${stateIcon(d.smokeStates[1])}
+        x402 prov ${stateIcon(d.smokeStates[2])}
+        docs api ${stateIcon(d.smokeStates[3])}
+        openapi ${stateIcon(d.smokeStates[4])}
+        paid 402 ${stateIcon(d.smokeStates[5])}
+      Gmail 3-tier
+        Native filters 8
+        GAS 5min
+        Triage daemon 1h
+      Telegram alerts
+      Inbox dashboard
+    Memory
+      22 active
+      7 archive feedback
+      3 archive legacy
+      evidence-first 가드
+    External deps
+      Cloudflare
+      Polar.sh
+      CDP x402
+      Resend
+      Telegram
+      Microsoft Clarity
+      Google Workspace
+</pre>
+  </div>
+</section>
+
+<div class="text-center text-[11px] text-slate-500 mt-4 pb-2">
+  Last fetched ${d.timestamp}Z · auto-refresh 60s · ${d.daysToLaunch}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  mindmap: { padding: 16, maxNodeWidth: 280 },
+  themeVariables: {
+    fontFamily: '-apple-system, system-ui, sans-serif',
+    primaryColor: '#1e293b',
+    primaryTextColor: '#e2e8f0',
+    primaryBorderColor: '#334155',
+    lineColor: '#475569',
+  },
+});
+setTimeout(() => location.reload(), 60000);
+</script>
+`;
+
+  return chapterLayout("architecture", "🗺️ Architecture", `Live structural map · auto-refresh 60s · ${d.daysToLaunch}`, body, { smokeOk: d.smokeOk, smokeTotal: d.smokeTotal, memoryCount: 22 });
+}
+
+function _renderArchitecturePage_OLD(d: any): string {
+  // (deprecated, kept for diff context — not called)
+  const smokeIcon = d.smokeOk === d.smokeTotal ? "✅" : "⚠️";
+  const incidentBadge = d.incidents === 0 ? "0 open" : `🚨 ${d.incidents} open`;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1946,83 +2077,59 @@ function stateIcon(s: any): string {
 }
 
 // ──────────────────────────────────────────────────────────────────────────
-// Shared chapter layout (used by Smoke + placeholders)
+// Shared chapter layout — Tailwind-based, matches Mission Control design
 // ──────────────────────────────────────────────────────────────────────────
 
-function chapterLayout(activeId: string, title: string, subtitle: string, body: string, smokeOk?: number, smokeTotal?: number): string {
-  const tabs = [
-    { id: "mission", href: "/admin", label: "📋 Mission Control" },
-    { id: "architecture", href: "/admin/architecture", label: "🗺️ Architecture" },
-    { id: "smoke", href: "/admin/smoke", label: `🧪 Smoke${smokeOk !== undefined ? ` <span class="badge">${smokeOk}/${smokeTotal}</span>` : ""}` },
-    { id: "memory", href: "/admin/memory", label: '🧠 Memory <span class="badge">22</span>' },
-    { id: "logs", href: "/admin/logs", label: "📜 Logs" },
-    { id: "inbox", href: "/inbox", label: "📬 Inbox" },
-  ];
-  const navHtml = tabs.map((t) => `<a href="${t.href}" class="chapter-tab${t.id === activeId ? " active" : ""}">${t.label}</a>`).join("");
+function chapterLayout(activeId: string, title: string, subtitle: string, body: string, opts: { extraHead?: string; smokeOk?: number; smokeTotal?: number; memoryCount?: number; logsCount?: number } = {}): string {
+  const smokeBadge = opts.smokeOk !== undefined ? `<span class="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300">${opts.smokeOk}/${opts.smokeTotal}</span>` : "";
+  const memoryBadge = opts.memoryCount !== undefined ? `<span class="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300">${opts.memoryCount}</span>` : "";
+  const logsBadge = opts.logsCount !== undefined ? `<span class="ml-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-slate-800 text-slate-300">${opts.logsCount}</span>` : "";
 
-  return `<!DOCTYPE html>
-<html lang="en">
+  const tabs = [
+    { id: "mission", href: "/admin", label: "📋 Mission Control", badge: "" },
+    { id: "architecture", href: "/admin/architecture", label: "🗺️ Architecture", badge: "" },
+    { id: "smoke", href: "/admin/smoke", label: "🧪 Smoke", badge: smokeBadge },
+    { id: "memory", href: "/admin/memory", label: "🧠 Memory", badge: memoryBadge },
+    { id: "logs", href: "/admin/logs", label: "📜 Logs", badge: logsBadge },
+    { id: "inbox", href: "/inbox", label: "📬 Inbox", badge: "" },
+  ];
+  const tabBase = "inline-flex items-center gap-1 px-3.5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap";
+  const tabIdle = "text-slate-400 border-transparent hover:text-slate-200 hover:bg-white/5";
+  const tabActive = "text-slate-50 border-blue-500";
+  const navHtml = tabs.map((t) => `<a href="${t.href}" class="${tabBase} ${t.id === activeId ? tabActive : tabIdle}">${t.label}${t.badge}</a>`).join("");
+
+  return `<!doctype html>
+<html lang="ko" class="dark">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>${title} · FreeTier Sentinel</title>
+<script src="https://cdn.tailwindcss.com"></script>
 <style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: #020617; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Pretendard', system-ui, sans-serif; }
-  .chapter-nav { position: sticky; top: 0; z-index: 50; background: rgba(2,6,23,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #1e293b; }
-  .chapter-nav-inner { max-width: 80rem; margin: 0 auto; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; }
-  .chapter-tab { display: inline-flex; align-items: center; gap: 6px; padding: 14px 14px 12px; font-size: 13px; font-weight: 500; color: #94a3b8; border-bottom: 2px solid transparent; text-decoration: none; white-space: nowrap; transition: color .15s, border-color .15s, background-color .15s; }
-  .chapter-tab:hover { color: #e2e8f0; background: rgba(255,255,255,.03); }
-  .chapter-tab.active { color: #f8fafc; border-bottom-color: #3b82f6; }
-  .chapter-tab .badge { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; background: #1e293b; color: #94a3b8; }
-  .page-wrap { max-width: 80rem; margin: 0 auto; padding: 16px; }
-  .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin: 8px 0 16px; gap: 16px; flex-wrap: wrap; }
-  .page-title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
-  .page-title p { margin: 4px 0 0; font-size: 13px; color: #94a3b8; }
-  .page-actions { display: flex; gap: 8px; font-size: 12px; color: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 12px 0 24px; }
-  .stat { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px 14px; }
-  .stat-label { color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
-  .stat-value { font-size: 18px; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; color: #f1f5f9; }
-  .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .card-title { font-size: 14px; font-weight: 600; color: #e2e8f0; }
-  .card-meta { font-size: 11px; color: #64748b; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e293b; font-size: 13px; }
-  .row:last-child { border-bottom: 0; }
-  .row .name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #cbd5e1; }
-  .row .meta { color: #64748b; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; }
-  .pill-ok { background: rgba(16,185,129,0.15); color: #34d399; }
-  .pill-fail { background: rgba(239,68,68,0.15); color: #f87171; }
-  .pill-unknown { background: rgba(100,116,139,0.15); color: #94a3b8; }
-  .empty { padding: 40px 16px; text-align: center; color: #64748b; }
-  .empty h2 { margin: 8px 0 6px; font-size: 16px; color: #cbd5e1; font-weight: 600; }
-  .empty p { margin: 4px 0; font-size: 13px; }
-  .footnote { font-size: 11px; color: #64748b; text-align: center; padding: 16px 0; border-top: 1px solid #1e293b; margin-top: 16px; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Pretendard", system-ui, sans-serif; }
 </style>
+${opts.extraHead || ""}
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
 
-<nav class="chapter-nav">
-  <div class="chapter-nav-inner">${navHtml}</div>
+<nav class="sticky top-0 z-50 bg-slate-950/85 backdrop-blur-md border-b border-slate-800">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 flex gap-1 overflow-x-auto">
+    ${navHtml}
+  </div>
 </nav>
 
-<div class="page-wrap">
+<div class="max-w-7xl mx-auto p-4 md:p-6">
 
-<header class="page-header">
-  <div class="page-title">
-    <h1>${title}</h1>
-    <p>${subtitle}</p>
-  </div>
-  <div class="page-actions">
-    <span>${new Date().toISOString().slice(0, 19)}Z</span>
-  </div>
-</header>
+  <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
+    <div>
+      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">${title}</h1>
+      <p class="text-sm text-slate-400 mt-1">${subtitle}</p>
+    </div>
+    <div class="text-xs text-slate-400 font-mono">${new Date().toISOString().slice(0, 19)}Z</div>
+  </header>
 
-${body}
+  ${body}
 
 </div>
 
@@ -2031,7 +2138,6 @@ ${body}
 }
 
 async function renderSmokePage(env: Env): Promise<string> {
-  // Reuse architecture data fetcher (subset)
   const smokeKeys = ["landing", "health", "x402-providers", "docs-api", "openapi", "x402-paid-402"];
   const smokeStates = await Promise.all(
     smokeKeys.map(async (k) => {
@@ -2043,7 +2149,6 @@ async function renderSmokePage(env: Env): Promise<string> {
   const ok = smokeStates.filter((s) => s.status === "ok").length;
   const total = smokeStates.length;
 
-  // Recent alerts from alert_log filtered to smoke source
   const alertRows = await env.DB.prepare(
     `SELECT * FROM alert_log WHERE source LIKE '%smoke%' OR message LIKE '%SMOKE%' OR message LIKE '%Recovery%' ORDER BY id DESC LIMIT 30`,
   ).all<any>().catch(() => ({ results: [] }));
@@ -2051,92 +2156,216 @@ async function renderSmokePage(env: Env): Promise<string> {
   const cronLast = await env.KV.get("cron:last:smoke").catch(() => null);
   const lastRun = cronLast ? new Date(parseInt(cronLast) * 1000).toISOString().slice(0, 16) : "—";
 
+  const stat = (label: string, value: string) => `
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div class="text-[10px] uppercase tracking-wider font-semibold text-slate-500">${label}</div>
+      <div class="mt-1.5 text-lg font-semibold font-mono text-slate-100">${value}</div>
+    </div>`;
+
+  const pillCls = (status: string) =>
+    status === "ok" ? "bg-emerald-500/15 text-emerald-400" :
+    status === "fail" ? "bg-red-500/15 text-red-400" :
+    "bg-slate-700/30 text-slate-400";
+
   const targetRows = smokeStates.map((s) => {
-    const cls = s.status === "ok" ? "pill-ok" : s.status === "fail" ? "pill-fail" : "pill-unknown";
     const lastAlertStr = s.lastAlert ? new Date(s.lastAlert * 1000).toISOString().slice(5, 16) : "—";
-    return `<div class="row">
-      <span class="name">${s.name}</span>
-      <span class="meta">last alert ${lastAlertStr}</span>
-      <span class="pill ${cls}">${s.status}</span>
+    return `<div class="flex items-center justify-between py-2.5 border-b border-slate-800 last:border-0 text-sm">
+      <span class="font-mono text-slate-200">${s.name}</span>
+      <span class="text-[11px] text-slate-500 font-mono">last alert ${lastAlertStr}</span>
+      <span class="inline-block text-[11px] px-2.5 py-0.5 rounded-full font-medium ${pillCls(s.status)}">${s.status}</span>
     </div>`;
   }).join("");
 
   const alertList = (alertRows.results || []).slice(0, 30).map((a: any) => {
     const ts = a.created_at ? new Date(a.created_at * 1000).toISOString().slice(5, 16) : "—";
-    return `<div class="row">
-      <span class="meta">${ts}</span>
-      <span class="name" style="flex:1; padding-left:12px; white-space: nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(a.message || "")}</span>
+    return `<div class="flex items-center gap-3 py-2 border-b border-slate-800 last:border-0 text-sm">
+      <span class="text-[11px] text-slate-500 font-mono shrink-0 w-24">${ts}</span>
+      <span class="text-slate-300 truncate">${escapeHtml(a.message || "")}</span>
     </div>`;
-  }).join("") || `<div class="empty"><p>No smoke-related alerts recorded.</p></div>`;
+  }).join("") || `<div class="text-center text-slate-500 text-sm py-8">No smoke-related alerts recorded.</div>`;
 
   const body = `
-<div class="stat-grid">
-  <div class="stat"><div class="stat-label">Endpoints OK</div><div class="stat-value">${ok}/${total}</div></div>
-  <div class="stat"><div class="stat-label">Last cron run</div><div class="stat-value">${lastRun}</div></div>
-  <div class="stat"><div class="stat-label">Alert cooldown</div><div class="stat-value">6h</div></div>
-  <div class="stat"><div class="stat-label">Probe mode</div><div class="stat-value">direct handler</div></div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+  ${stat("Endpoints OK", `${ok}/${total}`)}
+  ${stat("Last cron run", lastRun)}
+  ${stat("Alert cooldown", "6h")}
+  ${stat("Probe mode", "direct handler")}
 </div>
 
-<div class="card">
-  <div class="card-header">
-    <div class="card-title">6 Endpoint States</div>
-    <div class="card-meta">KV smoke:* · refreshed every 30 min</div>
+<section class="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-4">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-base font-semibold text-slate-100">6 Endpoint States</h2>
+    <span class="text-[11px] text-slate-500 font-mono">KV smoke:* · refresh 30 min</span>
   </div>
   ${targetRows}
-</div>
+</section>
 
-<div class="card">
-  <div class="card-header">
-    <div class="card-title">Recent smoke-related alerts (30)</div>
-    <div class="card-meta">D1 alert_log · descending</div>
+<section class="bg-slate-900 border border-slate-800 rounded-lg p-5">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-base font-semibold text-slate-100">Recent smoke alerts (30)</h2>
+    <span class="text-[11px] text-slate-500 font-mono">D1 alert_log · descending</span>
   </div>
   ${alertList}
-</div>
+</section>
 `;
-  return chapterLayout("smoke", "🧪 Smoke", "Self-monitoring · 6 endpoint health · 5/9 direct-handler fix", body, ok, total);
+  return chapterLayout("smoke", "🧪 Smoke", "Self-monitoring · 6 endpoint health · 5/9 direct-handler fix", body, { smokeOk: ok, smokeTotal: total, memoryCount: 22 });
 }
 
-function renderPlaceholderChapter(path: string): string {
-  const config: Record<string, { title: string; subtitle: string; body: string; activeId: string }> = {
-    "/admin/memory": {
-      activeId: "memory",
-      title: "🧠 Memory",
-      subtitle: "Memory file explorer — full implementation deferred to 5/13+",
-      body: `
-<div class="card">
-  <div class="card-header">
-    <div class="card-title">Why placeholder</div>
-    <div class="card-meta">5/13+ backlog</div>
+// Hardcoded memory inventory (CF Workers cannot read PRoot paths).
+// Sync this manually when memory layout changes.
+const MEMORY_INVENTORY = {
+  master: [
+    { name: "MEMORY.md", note: "Index — 22 entries" },
+    { name: "resume_queue_2026_05_09.md", note: "5/9 priority queue (D-3)" },
+  ],
+  guards: [
+    { name: "feedback_evidence_first.md", note: "통합 가드 (5/9, 7→1)" },
+  ],
+  state: [
+    { name: "freetier_sentinel_full_state.md", note: "stack + W0~W1" },
+    { name: "business_registration_decision.md", note: "사업자번호 607-20-94796" },
+    { name: "plan_c_x402_decision.md", note: "x402 paid API 1순위" },
+    { name: "affiliate_applications_status.md", note: "Amazon ✅ Kit ✅" },
+    { name: "ls_rejection_2026_05_07.md", note: "LS 거부 → Polar" },
+    { name: "polar_webhook_signing_spec.md", note: "raw bytes prefix" },
+    { name: "design_audit_2026_05_08.md", note: "18 sites + 16 HN" },
+    { name: "auth_system_audit_2026_05_08.md", note: "6 fix + 99bb875a" },
+    { name: "ph_launch_5_12_assets.md", note: "5편 글 + 비주얼" },
+    { name: "gmail_automation_live.md", note: "3-tier filters/GAS/daemon" },
+    { name: "autonomous_layer_2026_05_06.md", note: "cron 4 + Skills" },
+    { name: "inbox_dashboard_system.md", note: "1h triage + /inbox" },
+    { name: "mission_control_dashboard.md", note: "/admin priority" },
+    { name: "marketing_automation_postlaunch.md", note: "30+ 항목 5/13+ 재평가" },
+    { name: "process_memory_curation_routine.md", note: "dream now trigger" },
+    { name: "claude_mem_13_upgrade_2026_05_09.md", note: "12.7.5→13.0.0" },
+  ],
+  archive: {
+    feedback: 7,
+    legacy_queues: 3,
+  },
+};
+
+function renderMemoryChapter(): { title: string; subtitle: string; body: string } {
+  const totalActive = MEMORY_INVENTORY.master.length + MEMORY_INVENTORY.guards.length + MEMORY_INVENTORY.state.length;
+  const archiveTotal = MEMORY_INVENTORY.archive.feedback + MEMORY_INVENTORY.archive.legacy_queues;
+
+  const stat = (label: string, value: string) => `
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div class="text-[10px] uppercase tracking-wider font-semibold text-slate-500">${label}</div>
+      <div class="mt-1.5 text-lg font-semibold font-mono text-slate-100">${value}</div>
+    </div>`;
+
+  const fileRow = (f: { name: string; note: string }) => `
+    <div class="flex items-center justify-between py-2.5 border-b border-slate-800 last:border-0 text-sm">
+      <span class="font-mono text-slate-200">${f.name}</span>
+      <span class="text-slate-500 text-[12px]">${f.note}</span>
+    </div>`;
+
+  const section = (title: string, files: any[]) => `
+    <section class="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-4">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base font-semibold text-slate-100">${title}</h2>
+        <span class="text-[11px] text-slate-500 font-mono">${files.length} file${files.length === 1 ? "" : "s"}</span>
+      </div>
+      ${files.map(fileRow).join("")}
+    </section>`;
+
+  const body = `
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+  ${stat("Active files", String(totalActive))}
+  ${stat("Master / Index", String(MEMORY_INVENTORY.master.length))}
+  ${stat("Guards (통합)", String(MEMORY_INVENTORY.guards.length))}
+  ${stat("Archive total", String(archiveTotal))}
+</div>
+
+${section("📌 Master & Resume Queue", MEMORY_INVENTORY.master)}
+${section("🛡️ Evidence-first 가드", MEMORY_INVENTORY.guards)}
+${section("📚 Project state & decisions", MEMORY_INVENTORY.state)}
+
+<section class="bg-slate-900 border border-slate-800 rounded-lg p-5">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-base font-semibold text-slate-100">📦 Archive</h2>
+    <span class="text-[11px] text-slate-500 font-mono">/root/.claude/projects/-root/memory/archive/</span>
   </div>
-  <p style="color:#cbd5e1; font-size:13px; line-height:1.6;">
-    Memory files live in <code style="background:#1e293b; padding:2px 6px; border-radius:4px;">/root/.claude/projects/-root/memory/</code>
-    on the local PRoot environment. CF Workers cannot read those paths — a future API will sync the index to D1.
-  </p>
-  <p style="color:#94a3b8; font-size:12px; margin-top:12px;">
-    Until then, see Mission Control's "Memory links" panel or open files locally with claude-mem MCP search.
-  </p>
-</div>`,
-    },
-    "/admin/logs": {
-      activeId: "logs",
-      title: "📜 Logs",
-      subtitle: "Full alert log + activity feed — full implementation deferred to 5/13+",
-      body: `
-<div class="card">
-  <div class="card-header">
-    <div class="card-title">Why placeholder</div>
-    <div class="card-meta">5/13+ backlog</div>
+  <div class="text-sm text-slate-300 space-y-1">
+    <div><span class="font-mono text-slate-400">feedback/</span> · ${MEMORY_INVENTORY.archive.feedback} files (7개 분산 가드, 통합 후 보관)</div>
+    <div><span class="font-mono text-slate-400">legacy_queues/</span> · ${MEMORY_INVENTORY.archive.legacy_queues} files (5/4 ~ 5/6 옛 resume queues)</div>
   </div>
-  <p style="color:#cbd5e1; font-size:13px; line-height:1.6;">
-    The Mission Control feed shows the latest 20 alerts. A full searchable log
-    (1000+ rows, filtering by source/severity, export) belongs here.
+  <p class="mt-4 text-[12px] text-slate-500">
+    Inventory is hardcoded. CF Workers cannot read PRoot paths; sync this list when files move.
   </p>
-  <p style="color:#94a3b8; font-size:12px; margin-top:12px;">
-    Smoke alerts: see <a href="/admin/smoke" style="color:#60a5fa;">🧪 Smoke</a>. All alerts: D1 <code style="background:#1e293b; padding:2px 6px; border-radius:4px;">alert_log</code> table.
-  </p>
-</div>`,
-    },
+</section>
+`;
+  return {
+    title: "🧠 Memory",
+    subtitle: `${totalActive} active · ${archiveTotal} archived · evidence-first 통합 가드 (5/9 LIVE)`,
+    body,
   };
-  const c = config[path] || config["/admin/logs"];
-  return chapterLayout(c.activeId, c.title, c.subtitle, c.body);
+}
+
+async function renderLogsChapter(env: Env): Promise<{ title: string; subtitle: string; body: string; logsCount: number }> {
+  const rows = await env.DB.prepare(
+    "SELECT * FROM alert_log ORDER BY id DESC LIMIT 100",
+  ).all<any>().catch(() => ({ results: [] }));
+
+  const totalRow = await env.DB.prepare("SELECT COUNT(*) AS c FROM alert_log").first<any>().catch(() => ({ c: 0 }));
+  const logsCount = totalRow?.c || 0;
+
+  const last24h = await env.DB.prepare(
+    "SELECT COUNT(*) AS c FROM alert_log WHERE created_at > ?",
+  ).bind(Math.floor(Date.now() / 1000) - 86400).first<any>().catch(() => ({ c: 0 }));
+
+  const sevCounts = await env.DB.prepare(
+    "SELECT severity, COUNT(*) AS c FROM alert_log WHERE created_at > ? GROUP BY severity",
+  ).bind(Math.floor(Date.now() / 1000) - 7 * 86400).all<any>().catch(() => ({ results: [] }));
+  const sevMap: Record<string, number> = {};
+  for (const r of sevCounts.results || []) sevMap[r.severity || "info"] = r.c;
+
+  const stat = (label: string, value: string) => `
+    <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
+      <div class="text-[10px] uppercase tracking-wider font-semibold text-slate-500">${label}</div>
+      <div class="mt-1.5 text-lg font-semibold font-mono text-slate-100">${value}</div>
+    </div>`;
+
+  const sevPill = (sev: string) => {
+    const cls = sev === "error" || sev === "critical" ? "bg-red-500/15 text-red-400" :
+                sev === "warning" || sev === "warn" ? "bg-amber-500/15 text-amber-400" :
+                sev === "info" ? "bg-blue-500/15 text-blue-400" :
+                "bg-slate-700/30 text-slate-400";
+    return `<span class="inline-block text-[10px] px-2 py-0.5 rounded-full font-medium ${cls}">${sev || "info"}</span>`;
+  };
+
+  const logRows = (rows.results || []).map((a: any) => {
+    const ts = a.created_at ? new Date(a.created_at * 1000).toISOString().slice(5, 16) : "—";
+    return `<div class="flex items-start gap-3 py-2 border-b border-slate-800 last:border-0 text-sm">
+      <span class="text-[11px] text-slate-500 font-mono shrink-0 w-24 pt-0.5">${ts}</span>
+      <span class="shrink-0 pt-0.5">${sevPill(a.severity || "info")}</span>
+      <span class="text-[11px] text-slate-500 font-mono shrink-0">${escapeHtml(a.source || "—")}</span>
+      <span class="text-slate-300 truncate flex-1">${escapeHtml(a.message || "")}</span>
+    </div>`;
+  }).join("") || `<div class="text-center text-slate-500 text-sm py-8">alert_log table is empty.</div>`;
+
+  const body = `
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+  ${stat("Total rows", String(logsCount))}
+  ${stat("Last 24h", String(last24h?.c || 0))}
+  ${stat("error 7d", String(sevMap.error || 0))}
+  ${stat("warning 7d", String(sevMap.warning || sevMap.warn || 0))}
+  ${stat("info 7d", String(sevMap.info || 0))}
+</div>
+
+<section class="bg-slate-900 border border-slate-800 rounded-lg p-5">
+  <div class="flex items-center justify-between mb-3">
+    <h2 class="text-base font-semibold text-slate-100">Recent alerts (latest 100)</h2>
+    <span class="text-[11px] text-slate-500 font-mono">D1 alert_log · descending</span>
+  </div>
+  ${logRows}
+</section>
+`;
+  return {
+    title: "📜 Logs",
+    subtitle: `Alert log feed · ${logsCount} total rows · ${last24h?.c || 0} in last 24h`,
+    body,
+    logsCount,
+  };
 }
