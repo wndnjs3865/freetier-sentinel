@@ -1790,102 +1790,83 @@ function renderArchitecturePage(d: any): string {
 <section class="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-6">
   <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
     <div>
-      <h2 class="text-base font-semibold text-slate-100">🗺️ AI Roadmap-style Architecture</h2>
-      <p class="text-[11px] text-slate-500 mt-1">Inspired by <a href="https://roadmap.sh/ai-engineer" class="text-blue-400 hover:underline">roadmap.sh/ai-engineer</a> + <a href="https://github.com/PrinceSinghhub/Ultimate-AI-Engineer-Roadmap-2026" class="text-blue-400 hover:underline">PrinceSinghhub/Ultimate-AI-Engineer-Roadmap-2026</a> · ${phaseDefs.length} phases · ~100 components</p>
+      <h2 class="text-base font-semibold text-slate-100">🗺️ 시스템 아키텍처 — 12-phase 로드맵</h2>
+      <p class="text-[11px] text-slate-500 mt-1">참고: <a href="https://roadmap.sh/ai-engineer" class="text-blue-400 hover:underline">roadmap.sh/ai-engineer</a> · <a href="https://github.com/PrinceSinghhub/Ultimate-AI-Engineer-Roadmap-2026" class="text-blue-400 hover:underline">Ultimate-AI-Engineer-Roadmap-2026</a> · 총 ${phaseDefs.length}개 phase · 약 95개 컴포넌트</p>
     </div>
-    <div class="flex gap-2 text-[11px]">
-      <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">✅ LIVE</span>
-      <span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400">🚧 D-3</span>
-      <span class="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400">📅 5/13+</span>
-      <span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400">🔒 secret</span>
-      <span class="px-2 py-0.5 rounded-full bg-slate-700/30 text-slate-400">📦 archived</span>
+    <div class="flex gap-2 text-[11px] flex-wrap">
+      <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">✅ 운영 중</span>
+      <span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400">🚧 D-3 진행</span>
+      <span class="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400">📅 5/13+ 예정</span>
+      <span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400">🔒 시크릿</span>
+      <span class="px-2 py-0.5 rounded-full bg-slate-700/30 text-slate-400">📦 아카이브</span>
     </div>
   </div>
-  <div class="overflow-x-auto flex justify-center py-3">
+  <p class="text-[11px] text-slate-500 mb-3">사용자/AI 에이전트 요청이 어떤 경로로 처리되고 외부 시스템과 어떻게 연결되는지 보여주는 시스템 흐름도.</p>
+  <div class="overflow-x-auto py-3">
 <pre class="mermaid text-sm">
-mindmap
-  root(("FreeTier Sentinel<br/>+ AutoBiz<br/>${d.daysToLaunch}"))
-    1 Foundation 🏗️
-      CF Workers TS ~3.8k LOC
-      D1 12 tables ${d.users}u ${d.services}s
-      KV namespace
-      Cron 4 schedules
-    2 Identity 🔐
-      Magic link Resend
-      AES-256-GCM tokens
-      ADMIN_EMAIL gate
-      Auth 6 fix 5/8
-    3 Routes 🛣️ 19
-      Marketing i18n 5
-      Auth 5
-      Dashboard
-      x402 paid 5
-      Admin + 5 chapters
-      Inbox dashboard
-      Utility 10
-    4 Cron Jobs ⏰
-      Smoke 30min ${d.smokeOk}/${d.smokeTotal}
-      Bazaar Poll 1h
-      Hourly Metrics 1h
-      Usage Check 6h
-      Daily Digest 09 KST
-    5 Billing 💳
-      Polar MoR LIVE 5/8
-      Stripe Connect KYC ✅
-      PHFREE6MO 50 redemptions
-      607-20-94796 일반과세자
-      세금계산서 Hometax
-    6 x402 Agent Economy 🪙
-      ${d.x402Records} records Bazaar
-      CDP facilitator Ed25519
-      USDC Base mainnet
-      $0.005 per call
-      0x5337...088
-    7 Marketing 📣
-      PH 5/12 16:01 KST
-      5 글 IH Twitter Reddit
-      ShowHN 5/19 별도
-      Maker comment v3
-      Bazaar listing
-      비주얼 4 + demo.mp4
-      F5Bot 5 keywords
-      ICT 30 posts
-    8 Autonomous 🤖
-      Smoke alert Telegram
-      Gmail 3-tier
-        Native filters 8
-        GAS 5min
-        Daemon 1h
-      Inbox flag → Claude
-      Telegram chat 8749437676
-    9 AI Tooling 🧠
-      claude-mem 13.0.0
-      SessionStart hook
-      UserPromptSubmit hook
-      Stop hook 5/9 신규
-      Evidence-first 통합
-      Memory 19 active
-      Memory 10 archive
-    10 Observability 📊
-      Mission Control + 5
-      Microsoft Clarity
-      CF Web Analytics
-      D1 metric_snapshots
-      KV metrics:hourly
-      Incidents ${d.incidents} open
-    11 Security 🛡️
-      14 secrets cloud
-      AES-256-GCM
-      HSTS preload
-      Frame/MIME headers
-      feedback_no_guessing
-    12 External 🌐
-      Cloudflare
-      Polar Stripe
-      Coinbase CDP
-      Resend Telegram
-      Clarity Google F5Bot
-      3 GitHub repos
+flowchart LR
+  classDef user fill:#1e293b,stroke:#64748b,color:#e2e8f0
+  classDef edge fill:#0c4a6e,stroke:#0284c7,color:#e0f2fe
+  classDef core fill:#1e3a8a,stroke:#3b82f6,color:#dbeafe,font-weight:bold
+  classDef data fill:#064e3b,stroke:#10b981,color:#d1fae5
+  classDef ext fill:#451a03,stroke:#f59e0b,color:#fef3c7
+  classDef ai fill:#3b0764,stroke:#a855f7,color:#f3e8ff
+
+  USER([👤 사용자<br/>브라우저])
+  AGENT([🤖 AI 에이전트<br/>x402 클라이언트])
+  CLAUDE([💻 Claude Code<br/>로컬 PRoot])
+  CRON([⏰ Cron 4종<br/>30분·1시간·6시간·매일])
+
+  EDGE[CF Edge<br/>HSTS · 캐시 · DDoS]
+  WORKER[Worker isolate<br/>TypeScript 약 3,800줄<br/>routes 19 · jobs 5]
+
+  D1[(D1 SQLite<br/>12 tables<br/>${d.users}u · ${d.services}s)]
+  KV[(KV namespace<br/>세션·smoke·메트릭)]
+
+  POLAR[💳 Polar.sh<br/>결제 MoR<br/>+ Stripe Connect]
+  CDP[🪙 Coinbase CDP<br/>x402 facilitator<br/>USDC Base]
+  RESEND[✉️ Resend<br/>매직링크 메일]
+  TG[📨 Telegram<br/>알림 봇]
+  CLARITY[📊 Microsoft Clarity<br/>히트맵·세션 리플레이]
+  CFA[📈 CF Web Analytics]
+  GMAIL[📬 Gmail GAS<br/>3-tier 자동 분류]
+  F5BOT[🔍 F5Bot<br/>5개 키워드 멘션]
+  GITHUB[(🐙 GitHub<br/>3 repos<br/>tool·autobiz·seo)]
+
+  HOOKS[🪝 Claude Code Hooks<br/>SessionStart·UserPromptSubmit·Stop]
+  MEM[🧠 claude-mem 13.0.0<br/>19 active + 10 archive]
+
+  USER --> EDGE
+  AGENT --> EDGE
+  EDGE --> WORKER
+  CRON -.->|scheduled| WORKER
+
+  WORKER --> D1
+  WORKER --> KV
+
+  WORKER -->|webhook| POLAR
+  WORKER -->|verify·settle| CDP
+  WORKER -->|매직링크| RESEND
+  WORKER -->|smoke·alerts| TG
+
+  USER -.->|JS beacon| CLARITY
+  USER -.->|JS beacon| CFA
+
+  GMAIL -->|critical flag| CLAUDE
+  CLAUDE --> HOOKS
+  HOOKS --> MEM
+  CLAUDE -->|wrangler deploy| WORKER
+  CLAUDE -->|git push| GITHUB
+
+  F5BOT -.->|email| GMAIL
+
+  class USER,AGENT,CLAUDE user
+  class CRON edge
+  class EDGE edge
+  class WORKER core
+  class D1,KV data
+  class POLAR,CDP,RESEND,TG,CLARITY,CFA,GMAIL,F5BOT,GITHUB ext
+  class HOOKS,MEM ai
 </pre>
   </div>
 </section>
@@ -1928,134 +1909,134 @@ interface Phase { num: number; icon: string; title: string; subtitle: string; it
 
 function buildPhaseDefs(d: any): Phase[] {
   return [
-    { num: 1, icon: "🏗️", title: "Foundation", subtitle: "Compute · Storage · Runtime", items: [
-      { name: "Cloudflare Workers", note: "TypeScript ~3,800 LOC · isolate runtime", status: "live" },
-      { name: "Compatibility flags", note: "nodejs_compat · 2026-04-01 · workers_dev=true", status: "live" },
-      { name: "D1 SQLite", note: `12 tables · ${d.users}u · ${d.services}s · ${d.alerts7d}a7d · 0 incidents`, status: "live" },
-      { name: "KV namespace", note: "session/smoke/metrics/cron timestamps · expirationTtl 86400 for smoke", status: "live" },
-      { name: "Cron Triggers (4)", note: "*/30 smoke · 0 * * * * bazaar+metrics · 0 */6 usage · 0 0 digest", status: "live" },
-      { name: "wrangler.toml bindings", note: "DB + KV + 4 crons + APP_URL/RESEND_FROM vars", status: "live" },
+    { num: 1, icon: "🏗️", title: "기반 인프라", subtitle: "컴퓨팅 · 저장소 · 런타임", items: [
+      { name: "Cloudflare Workers", note: "메인 워커 · TypeScript 약 3,800줄 · isolate 런타임", status: "live" },
+      { name: "Compatibility flags", note: "nodejs_compat 활성 · 2026-04-01 기준 · workers_dev=true", status: "live" },
+      { name: "D1 SQLite", note: `12개 테이블 · 사용자 ${d.users}명 · 서비스 ${d.services}개 · 7일 알림 ${d.alerts7d}건`, status: "live" },
+      { name: "KV namespace", note: "세션 · smoke 상태 · 메트릭 · cron 타임스탬프 (smoke TTL 24h)", status: "live" },
+      { name: "Cron 4종 (스케줄)", note: "smoke 30분 · bazaar+metrics 1시간 · usage 6시간 · digest 매일 09:00 KST", status: "live" },
+      { name: "wrangler.toml 바인딩", note: "DB + KV + cron 4 + APP_URL/RESEND_FROM 환경변수", status: "live" },
     ]},
-    { num: 2, icon: "🔐", title: "Identity & Auth", subtitle: "Magic link · Session · Admin gate", items: [
-      { name: "Magic link sign-in", note: "Resend transactional · 6-digit code · no password", status: "live" },
-      { name: "Token preview/consume split", note: "GET → preview · POST → consume (scanner-safe)", status: "live" },
-      { name: "Session cookie", note: "AES-256-GCM in D1 · master key in Workers Secrets", status: "live" },
-      { name: "ADMIN_EMAIL gate", note: "/admin only on email match · requireAdmin() guard", status: "live" },
-      { name: "Auth 6 fix (5/8)", note: "single-fire guard · IP+email rate · inline resend · 5 split errors · deploy 99bb875a", status: "live" },
+    { num: 2, icon: "🔐", title: "인증 & 신원", subtitle: "매직링크 · 세션 · 관리자 게이트", items: [
+      { name: "매직링크 로그인", note: "Resend 트랜잭셔널 메일 · 6자리 코드 · 비밀번호 없음", status: "live" },
+      { name: "토큰 preview/consume 분리", note: "GET → 미리보기 (스캐너 안전) · POST → 실제 사용", status: "live" },
+      { name: "세션 쿠키", note: "AES-256-GCM 암호화 D1 저장 · 마스터 키는 Workers Secrets에 분리", status: "live" },
+      { name: "ADMIN_EMAIL 관리자 게이트", note: "/admin 접근 제어 · requireAdmin() 가드 · 본인 메일만 통과", status: "live" },
+      { name: "인증 6 fix (5/8 배포)", note: "single-fire 가드 · IP+이메일 rate limit · 인라인 재발송 · 에러 5종 분리 · deploy 99bb875a", status: "live" },
     ]},
-    { num: 3, icon: "🛣️", title: "Routes (19 active)", subtitle: "User-facing + API + agent + admin + utility", items: [
-      { name: "Marketing landing × 5 i18n", note: "/, /ko, /ja, /es, /de · 11/11/8/8/8 FAQ entries", status: "live" },
-      { name: "Auth surface", note: "/signup · /verify GET+POST · /auth/:token GET+POST · /api/auth/{logout,resend}", status: "live" },
-      { name: "User dashboard", note: "/dash · /account · /api/account/* · /api/billing/portal", status: "live" },
-      { name: "API operations", note: "/api/services/* · /api/alerts · /api/check-now · /api/test-alert", status: "live" },
-      { name: "Webhooks", note: "/webhooks/polar (LS+Paddle removed 5/9 · 235 dead lines)", status: "live" },
-      { name: "x402 paid (5 endpoints)", note: "/v1/providers · /v1/cloud/:p · /v1/ai/:p · /v1/limits/:p · /v1/compare", status: "live" },
-      { name: "x402 docs", note: "/v1/openapi.json · /docs/api", status: "live" },
-      { name: "Marketing assets", note: "/launch/{hero,dashboard,alerts,thumbnail}.png · demo.mp4 · /vs/datadog · /security", status: "live" },
-      { name: "Mission Control + 5 chapters", note: "/admin · /admin/{architecture,smoke,memory,logs} · /admin/api/*", status: "live" },
-      { name: "Inbox dashboard", note: "/inbox · /api/inbox/{sync,list,:id/done}", status: "live" },
-      { name: "Utility (10)", note: "/privacy · /terms · /sitemap.xml · /robots.txt · /favicon · /og.png · /llms.txt · /llms-full.txt · /status · /changelog", status: "live" },
-      { name: "External notify", note: "/notify · NOTIFY_API_KEY shared secret", status: "live" },
+    { num: 3, icon: "🛣️", title: "라우트 19개", subtitle: "사용자/API/에이전트/관리자/유틸리티", items: [
+      { name: "마케팅 랜딩 5개 i18n", note: "/, /ko, /ja, /es, /de · FAQ 11/11/8/8/8 entries", status: "live" },
+      { name: "인증 surface", note: "/signup · /verify (GET+POST) · /auth/:token (GET+POST) · /api/auth/{logout,resend}", status: "live" },
+      { name: "사용자 대시보드", note: "/dash · /account · /api/account/* · /api/billing/portal", status: "live" },
+      { name: "API 운영", note: "/api/services/* · /api/alerts · /api/check-now · /api/test-alert", status: "live" },
+      { name: "Webhooks", note: "/webhooks/polar (LS+Paddle 코드 5/9 제거 · 235줄 dead code 정리)", status: "live" },
+      { name: "x402 유료 API 5개", note: "/v1/providers · /v1/cloud/:p · /v1/ai/:p · /v1/limits/:p · /v1/compare", status: "live" },
+      { name: "x402 문서", note: "/v1/openapi.json (OpenAPI spec) · /docs/api (HTML 문서)", status: "live" },
+      { name: "런치 자료", note: "/launch/{hero,dashboard,alerts,thumbnail}.png · demo.mp4 · /vs/datadog · /security", status: "live" },
+      { name: "Mission Control + 5 chapter", note: "/admin · /admin/{architecture,smoke,memory,logs} · /admin/api/* (이 대시보드)", status: "live" },
+      { name: "Inbox 대시보드", note: "/inbox · /api/inbox/{sync,list,:id/done}", status: "live" },
+      { name: "유틸리티 10개", note: "/privacy · /terms · /sitemap.xml · /robots.txt · /favicon · /og.png · /llms.txt · /llms-full.txt · /status · /changelog", status: "live" },
+      { name: "외부 알림", note: "/notify · NOTIFY_API_KEY 공유 시크릿 (외부 ping 수신용)", status: "live" },
     ]},
-    { num: 4, icon: "⏰", title: "Cron Jobs (5)", subtitle: "Autonomous monitoring + maintenance", items: [
-      { name: "Smoke (30min)", note: `${d.smokeOk}/${d.smokeTotal} OK · 6 endpoints · direct-handler 5/9 fix · last ${d.lastSmokeRun}`, status: "live" },
-      { name: "Bazaar Poll (1h)", note: "indexing detector · paired with metrics · ⏸ until first paid call", status: "wip" },
-      { name: "Hourly Metrics (1h)", note: "KV metrics:hourly:* snapshot · CF/Polar/x402 counts", status: "live" },
-      { name: "Services Usage Check (6h)", note: "runScheduledCheck · alerts at 80% threshold (default)", status: "live" },
-      { name: "Daily Digest (00:00 UTC = 09 KST)", note: "summary email to admin · Resend transactional", status: "live" },
+    { num: 4, icon: "⏰", title: "Cron 작업 5개", subtitle: "자율 모니터링 · 유지보수", items: [
+      { name: "Smoke 점검 (30분)", note: `현재 ${d.smokeOk}/${d.smokeTotal} 정상 · 6 endpoint · 5/9 직접-핸들러 fix · 마지막 ${d.lastSmokeRun}`, status: "live" },
+      { name: "Bazaar 폴링 (1시간)", note: "x402 인덱싱 감지 · metrics와 같이 실행 · ⏸ 첫 결제 후 활성화", status: "wip" },
+      { name: "메트릭 수집 (1시간)", note: "KV metrics:hourly:* 스냅샷 · CF/Polar/x402 카운트", status: "live" },
+      { name: "사용량 점검 (6시간)", note: "runScheduledCheck · 80% 임계값 초과 시 알림 (기본값)", status: "live" },
+      { name: "일일 요약 (00:00 UTC = 09 KST)", note: "관리자 메일 요약 · Resend 트랜잭셔널 발송", status: "live" },
     ]},
-    { num: 5, icon: "💳", title: "Billing & Compliance", subtitle: "Polar MoR · 한국 사업자 · 세금계산서", items: [
-      { name: "Polar.sh (Merchant of Record)", note: "5/8 webhook LIVE · standardwebhooks raw bytes signing", status: "live" },
-      { name: "Stripe Connect Express", note: "KYC ✅ verified 5/9 · all 3 stages confirmed · ready", status: "live" },
-      { name: "PHFREE6MO discount", note: "50 redemptions · 6mo Pro free · $5→$0 · 5/9 incognito verified", status: "live" },
-      { name: "사업자등록번호", note: "607-20-94796 · 일반과세자 · 영세율 + 매입공제", status: "live" },
-      { name: "한국 세금계산서", note: "Hometax 1일 이내 발급 · ko/en/ja/es/de FAQ 명시 (5/9)", status: "live" },
-      { name: "부가세 신고", note: "반기 신고 · 7/25 첫 신고 · 1/25 두번째", status: "planned" },
-      { name: "i18n FAQ full parity", note: "ja/es/de 8 → 11 entries (en/ko 매칭)", status: "planned" },
+    { num: 5, icon: "💳", title: "결제 & 사업자 컴플라이언스", subtitle: "Polar MoR · 한국 사업자 · 세금계산서", items: [
+      { name: "Polar.sh (Merchant of Record)", note: "5/8 webhook LIVE · standardwebhooks raw bytes 서명 · MoR이 VAT 자동 처리", status: "live" },
+      { name: "Stripe Connect Express", note: "5/9 KYC 모든 단계 ✅ · 결제 정산 가능 ($10 도달 후 수동 인출)", status: "live" },
+      { name: "PHFREE6MO 할인 코드", note: "PH 50명 한정 · Pro 6개월 무료 · $5→$0 · 5/9 incognito 검증 완료", status: "live" },
+      { name: "사업자등록번호", note: "607-20-94796 · 일반과세자 · 영세율 매출 + 매입세액 환급", status: "live" },
+      { name: "한국 세금계산서", note: "Hometax 발급 · 영업일 1일 이내 · ko/en/ja/es/de FAQ 모두 명시 (5/9)", status: "live" },
+      { name: "부가세 신고", note: "반기 신고 · 7/25 첫 신고 · 1/25 두번째 신고", status: "planned" },
+      { name: "i18n FAQ 완전 동등화", note: "ja/es/de FAQ 8 → 11 entries (en/ko 매칭) — 5/13+ 작업", status: "planned" },
     ]},
-    { num: 6, icon: "🪙", title: "Agent Economy (x402)", subtitle: "Paid API · USDC settlement · Bazaar indexed", items: [
-      { name: "5 paid endpoints", note: "/v1/cloud/:p · /v1/ai/:p · /v1/limits/:p · /v1/providers · /v1/compare", status: "live" },
-      { name: "CDP facilitator", note: "api.cdp.coinbase.com/platform/v2/x402 · Ed25519 JWT · race-condition-free", status: "live" },
-      { name: "Coinbase Bazaar", note: `${d.x402Records} records · 20 providers · indexed within hours of deploy`, status: "live" },
-      { name: "USDC settlement", note: "Base mainnet · ~1-2s e2e · no API keys, no signups", status: "live" },
-      { name: "Pricing $0.005/call", note: "research-stage · Bazaar discoverability test", status: "wip" },
+    { num: 6, icon: "🪙", title: "에이전트 경제 (x402)", subtitle: "유료 API · USDC 정산 · Bazaar 인덱싱", items: [
+      { name: "유료 endpoint 5개", note: "AI 에이전트가 USDC로 결제 · /v1/cloud · /v1/ai · /v1/limits · /v1/providers · /v1/compare", status: "live" },
+      { name: "CDP facilitator", note: "Coinbase api.cdp.coinbase.com/platform/v2/x402 · Ed25519 JWT 인증 · race condition 회피", status: "live" },
+      { name: "Coinbase Bazaar 인덱싱", note: `${d.x402Records} records · 20 providers · 배포 후 24시간 내 인덱싱 완료`, status: "live" },
+      { name: "USDC 정산", note: "Base 메인넷 · 약 1-2초 e2e · API 키 불필요 · 회원가입 불필요", status: "live" },
+      { name: "$0.005/call 가격", note: "research 단계 · Bazaar 발견 가능성 테스트", status: "wip" },
       { name: "Base USDC 지갑", note: "0x5337f4b5bed8e379412Abb6498EdC2ebC95bb088 (X402_RECEIVING_ADDRESS)", status: "live" },
-      { name: "First USDC settle", note: "Bazaar trigger 24-48h after first agent purchase", status: "planned" },
+      { name: "첫 USDC 정산", note: "AI 에이전트 첫 결제 후 24-48시간 내 Bazaar trigger 예상", status: "planned" },
     ]},
-    { num: 7, icon: "📣", title: "Marketing & Distribution", subtitle: "PH 5/12 · 5+1 글 · ICT 30 posts", items: [
-      { name: "PH self-hunt 5/12", note: `16:01 KST · 07:01 UTC · 00:01 PDT · ${d.daysToLaunch} from now`, status: "wip" },
-      { name: "01 IndieHackers", note: "title + body · D-1 클립보드 prepare", status: "live" },
-      { name: "02 Twitter thread", note: "8-tweet build-in-public · 7pm KST publish (T+3h)", status: "live" },
-      { name: "03 Reddit r/indiehackers", note: "personal pain story · PH+4h publish (T+4h)", status: "live" },
-      { name: "04 Show HN (5/19 별도)", note: "x402-first narrative · Tue 14:00 UTC peak window", status: "planned" },
-      { name: "05 PH Maker comment v3", note: "Korean indie dev tone · b2b/세금계산서 ask 추가 (5/9)", status: "live" },
-      { name: "06 Bazaar listing", note: "Coinbase Bazaar submission copy", status: "live" },
-      { name: "비주얼 4 + demo.mp4", note: "/launch/{hero,dashboard,alerts,thumbnail}.png + demo.mp4 · KV serve", status: "live" },
-      { name: "F5Bot mention monitoring", note: "5 keywords · freetier sentinel · wndnjs3865 · x402 paid api", status: "live" },
-      { name: "ICT (indie-creator-toolkit)", note: "30 posts visual-rich · 5/7 founder override · standalone affiliate", status: "live" },
-      { name: "Hometax 세금계산서 sandbox", note: "D-1 22:30 KST 모의 발급 연습 (사용자)", status: "wip" },
+    { num: 7, icon: "📣", title: "마케팅 & 배포", subtitle: "PH 5/12 런치 · 5+1편 글 · ICT 30 posts", items: [
+      { name: "Product Hunt 셀프 헌트", note: `5/12 16:01 KST (07:01 UTC, 00:01 PDT) · 현재 ${d.daysToLaunch}`, status: "wip" },
+      { name: "01 IndieHackers 글", note: "title + body 작성 완료 · 런치 D-1 클립보드 준비", status: "live" },
+      { name: "02 Twitter 스레드", note: "8개 트윗 build-in-public 스레드 · 7pm KST 발행 (T+3시간)", status: "live" },
+      { name: "03 Reddit r/indiehackers", note: "개인 경험담 톤 · PH 후 4시간 발행 (T+4시간)", status: "live" },
+      { name: "04 Show HN (5/19 별도)", note: "x402-first 내러티브 · 화 14:00 UTC peak window", status: "planned" },
+      { name: "05 PH Maker comment v3", note: "한국 인디 개발자 톤 · b2b/세금계산서 안내 추가 (5/9)", status: "live" },
+      { name: "06 Bazaar 등록 카피", note: "Coinbase Bazaar listing 제출 카피", status: "live" },
+      { name: "비주얼 4종 + demo.mp4", note: "/launch/{hero,dashboard,alerts,thumbnail}.png + demo.mp4 · KV에서 직접 serve", status: "live" },
+      { name: "F5Bot 멘션 모니터링", note: "5개 키워드 · freetier sentinel · wndnjs3865 · x402 paid api 등 · LIVE 5/9", status: "live" },
+      { name: "ICT (indie-creator-toolkit)", note: "30 포스트 visual-rich · 5/7 founder override · 독립 어필리에이트 사이트", status: "live" },
+      { name: "Hometax 세금계산서 모의 발급", note: "D-1 22:30 KST 사용자 본인 연습 (실제 발행 X)", status: "wip" },
     ]},
-    { num: 8, icon: "🤖", title: "Autonomous Operations", subtitle: "Smoke · Gmail 3-tier · Telegram · Inbox", items: [
-      { name: "Smoke fail alert", note: "Telegram · 6h cooldown · recovery alert on transition", status: "live" },
-      { name: "Gmail Tier 1 — Native filters", note: "8 filters · auto label/archive/star", status: "live" },
-      { name: "Gmail Tier 2 — GAS triggers", note: "processInbox 5min · dailySummary 09 KST · weeklyCleanup Sun 03 KST", status: "live" },
-      { name: "Gmail Tier 3 — PRoot daemon", note: "1h triage · /tmp/claude_inbox_pending.json flag", status: "live" },
-      { name: "Inbox flag → Claude hook", note: "UserPromptSubmit surfaces critical mail next turn", status: "live" },
-      { name: "Telegram bot alerts", note: "chat ID 8749437676 · MarkdownV2 formatting", status: "live" },
-      { name: "/inbox dashboard", note: "1h synced view · mark-done · sync-now actions", status: "live" },
+    { num: 8, icon: "🤖", title: "자율 운영", subtitle: "Smoke · Gmail 3-tier · Telegram · Inbox", items: [
+      { name: "Smoke 실패 알림", note: "Telegram 자동 알림 · 6시간 쿨다운 · 복구 시 recovery alert 자동", status: "live" },
+      { name: "Gmail Tier 1 — Native filters", note: "Gmail 기본 필터 8개 · 자동 라벨/아카이브/별표", status: "live" },
+      { name: "Gmail Tier 2 — GAS triggers", note: "processInbox 5분 · dailySummary 09 KST · weeklyCleanup 일 03 KST", status: "live" },
+      { name: "Gmail Tier 3 — PRoot daemon", note: "1시간 주기 triage · /tmp/claude_inbox_pending.json 플래그 작성", status: "live" },
+      { name: "Inbox flag → Claude hook", note: "UserPromptSubmit hook이 다음 turn에 critical 메일 surface", status: "live" },
+      { name: "Telegram bot 알림", note: "chat ID 8749437676 · MarkdownV2 포맷", status: "live" },
+      { name: "/inbox 대시보드", note: "1시간 동기화 view · 처리 완료 · 즉시 동기화 액션", status: "live" },
     ]},
-    { num: 9, icon: "🧠", title: "AI Tooling — Memory & Hooks", subtitle: "claude-mem · 3 hooks · evidence-first guard", items: [
-      { name: "claude-mem 13.0.0", note: "Apache-2.0 (5/9 relicense) · Server Beta · MCP search/observations/timeline/smart_search", status: "live" },
-      { name: "SessionStart hook", note: "5/6 · D-N + identifiers + memory index + live x402 health", status: "live" },
-      { name: "UserPromptSubmit hook", note: "5/8 inbox flag + 5/9 강화 · trigger keyword → memory grep auto-inject", status: "live" },
-      { name: "Stop hook (5/9 신규)", note: "evidence-first self-verify · dual matching · stop_hook_active 가드 · 0 token cost · ~10-50ms latency", status: "live" },
-      { name: "Evidence-first 통합 가드", note: "5/9 7→1 통합 · 메모리:/확인:/출처:/추측: 라벨 강제 · ROADMAP_INSPIRED", status: "live" },
-      { name: "Memory inventory", note: "19 active (1 master + 1 guard + 17 state) + 10 archive (7 feedback + 3 legacy queues)", status: "live" },
-      { name: "Anthropic Dreams API", note: "Managed Agents waitlist · 5/13+ integration backlog", status: "planned" },
+    { num: 9, icon: "🧠", title: "AI 도구 — 메모리 & 훅", subtitle: "claude-mem · 훅 3개 · evidence-first 가드", items: [
+      { name: "claude-mem 13.0.0", note: "Apache-2.0 (5/9 라이선스 변경) · Server Beta · MCP search/observations/timeline", status: "live" },
+      { name: "SessionStart 훅", note: "5/6 LIVE · 세션 시작 시 D-N + 식별자 + 메모리 인덱스 + x402 health 자동 로드", status: "live" },
+      { name: "UserPromptSubmit 훅", note: "5/8 inbox flag + 5/9 강화 · 트리거 키워드 매칭 시 메모리 grep 자동 주입", status: "live" },
+      { name: "Stop 훅 (5/9 신규)", note: "evidence-first 자체 검증 · 이중 매칭 · stop_hook_active 가드 · 토큰 비용 0 · 지연 10-50ms", status: "live" },
+      { name: "Evidence-first 통합 가드", note: "5/9 7→1 통합 · 모든 단정에 메모리:/확인:/출처:/추측: 라벨 강제 · roadmap.sh inspired", status: "live" },
+      { name: "메모리 인벤토리", note: "활성 19개 (master 1 + guard 1 + state 17) + 아카이브 10개 (feedback 7 + legacy queues 3)", status: "live" },
+      { name: "Anthropic Dreams API", note: "Managed Agents waitlist 대기 · 5/13+ 통합 backlog", status: "planned" },
     ]},
-    { num: 10, icon: "📊", title: "Observability & Admin", subtitle: "Mission Control · Clarity · Web Analytics", items: [
-      { name: "Mission Control + 6 chapters", note: "/admin · architecture (이 페이지) · smoke · memory · logs · inbox", status: "live" },
-      { name: "Microsoft Clarity", note: "5/9 LIVE · heatmaps · session replay · 30-day TTL", status: "live" },
-      { name: "Cloudflare Web Analytics", note: "CF_BEACON_TOKEN · privacy-first · no cookies", status: "live" },
-      { name: "D1 metric_snapshots", note: "manual + automated metric recording", status: "live" },
-      { name: "KV metrics:hourly:*", note: "rolling hourly counters · cron metrics job", status: "live" },
+    { num: 10, icon: "📊", title: "관측 & 어드민", subtitle: "Mission Control · Clarity · Web Analytics", items: [
+      { name: "Mission Control + 6 chapter", note: "/admin · architecture (이 페이지) · smoke · memory · logs · inbox", status: "live" },
+      { name: "Microsoft Clarity", note: "5/9 LIVE · 히트맵 · 세션 리플레이 · 30일 TTL 보존", status: "live" },
+      { name: "Cloudflare Web Analytics", note: "CF_BEACON_TOKEN · privacy-first · 쿠키 사용 안 함", status: "live" },
+      { name: "D1 metric_snapshots", note: "수동 + 자동 메트릭 기록", status: "live" },
+      { name: "KV metrics:hourly:*", note: "rolling 시간별 카운터 · cron metrics 작업이 갱신", status: "live" },
       { name: "Tasks (D1)", note: `P0 ${d.taskCounts.p0.done}/${d.taskCounts.p0.total} · P1 ${d.taskCounts.p1.done}/${d.taskCounts.p1.total} · P2 ${d.taskCounts.p2.done}/${d.taskCounts.p2.total}`, status: "live" },
-      { name: "Incidents (D1)", note: `${d.incidents} open · /admin Mission Control feed`, status: "live" },
-      { name: "Alert log (D1)", note: `${d.alerts7d} in last 7d · /admin/logs full feed (latest 100)`, status: "live" },
+      { name: "Incidents (D1)", note: `${d.incidents}건 open · /admin Mission Control feed에 표시`, status: "live" },
+      { name: "Alert log (D1)", note: `최근 7일 ${d.alerts7d}건 · /admin/logs에서 최근 100건 전체 보기`, status: "live" },
     ]},
-    { num: 11, icon: "🛡️", title: "Security & Secrets", subtitle: "14 secrets · AES-GCM · CSP headers", items: [
-      { name: "14 wrangler secrets (cloud)", note: "POLAR×5 · CDP×2 · RESEND · TELEGRAM×2 · CLARITY · MASTER_KEY · NOTIFY · ADMIN_EMAIL · X402_RECEIVING_ADDRESS", status: "secret" },
-      { name: "AES-256-GCM (D1 tokens)", note: "MASTER_KEY in Workers Secrets · separate from D1", status: "live" },
-      { name: "Read-only API tokens", note: "service tokens must be usage-scope · never write/admin", status: "live" },
+    { num: 11, icon: "🛡️", title: "보안 & 시크릿", subtitle: "시크릿 14개 · AES-GCM · CSP 헤더", items: [
+      { name: "wrangler 시크릿 14개 (cloud)", note: "POLAR×5 · CDP×2 · RESEND · TELEGRAM×2 · CLARITY · MASTER_KEY · NOTIFY · ADMIN_EMAIL · X402_RECEIVING_ADDRESS", status: "secret" },
+      { name: "AES-256-GCM (D1 토큰)", note: "MASTER_KEY는 Workers Secrets에 분리 저장 (D1과 격리)", status: "live" },
+      { name: "Read-only API 토큰", note: "사용자가 등록하는 서비스 토큰은 읽기 전용 권한만 · 쓰기/관리 절대 X", status: "live" },
       { name: "HSTS preload", note: "Strict-Transport-Security: max-age=63072000 includeSubDomains preload", status: "live" },
-      { name: "Frame/MIME headers", note: "X-Frame-Options DENY · X-Content-Type-Options nosniff · Referrer-Policy strict-origin-when-cross-origin", status: "live" },
-      { name: "Privacy & Terms pages", note: "/privacy · /terms (public)", status: "live" },
-      { name: "Permissions-Policy", note: "geolocation=() camera=() microphone=()", status: "live" },
-      { name: "feedback_no_guessing_user_identity", note: "사용자 정보 추측 금지 (archive — 5/9 통합)", status: "archived" },
+      { name: "Frame/MIME 헤더", note: "X-Frame-Options DENY · X-Content-Type-Options nosniff · Referrer-Policy strict-origin-when-cross-origin", status: "live" },
+      { name: "Privacy & Terms 페이지", note: "/privacy · /terms (공개)", status: "live" },
+      { name: "Permissions-Policy", note: "geolocation=() camera=() microphone=() (모든 센서 차단)", status: "live" },
+      { name: "feedback_no_guessing_user_identity", note: "사용자 정보 추측 금지 가드 (5/9 통합 후 archive)", status: "archived" },
     ]},
-    { num: 12, icon: "🌐", title: "External & Repos", subtitle: "8 integrations · 3 GitHub repos", items: [
-      { name: "Cloudflare", note: "Workers + D1 + KV + DNS + Web Analytics", status: "live" },
-      { name: "Polar.sh", note: "MoR + Stripe Connect + checkout + webhook + invoice PDF", status: "live" },
-      { name: "Coinbase CDP", note: "x402 facilitator · Ed25519 secret 등록 · Key ID 106c1e04...", status: "live" },
-      { name: "Resend", note: "transactional email · domain verified · DKIM/SPF/DMARC", status: "live" },
-      { name: "Telegram Bot API", note: "BotFather token · chat ID 8749437676", status: "live" },
-      { name: "Microsoft Clarity", note: "free analytics · 30-day session replay TTL", status: "live" },
-      { name: "Google Workspace", note: "Gmail GAS triggers · Drive · 3-tier filters", status: "live" },
-      { name: "F5Bot", note: "free mention monitoring · 5 keywords", status: "live" },
-      { name: "GitHub freetier-sentinel (public)", note: "tool main · 3 workflows (deploy/setup-cf/sync-secrets)", status: "live" },
-      { name: "GitHub autobiz (private)", note: "marketing/gmail/brief · RESTORE.md disaster recovery", status: "live" },
-      { name: "GitHub indie-creator-toolkit (public)", note: "ICT companion site · GitHub Pages", status: "live" },
+    { num: 12, icon: "🌐", title: "외부 연동 & 저장소", subtitle: "8개 통합 · GitHub repo 3개", items: [
+      { name: "Cloudflare", note: "Workers + D1 + KV + DNS + Web Analytics — 메인 인프라", status: "live" },
+      { name: "Polar.sh", note: "MoR + Stripe Connect + checkout + webhook + invoice PDF 자동 발행", status: "live" },
+      { name: "Coinbase CDP", note: "x402 facilitator · Ed25519 시크릿 등록 · Key ID 106c1e04...", status: "live" },
+      { name: "Resend", note: "트랜잭셔널 메일 · 도메인 검증 완료 · DKIM/SPF/DMARC", status: "live" },
+      { name: "Telegram Bot API", note: "BotFather 토큰 · chat ID 8749437676", status: "live" },
+      { name: "Microsoft Clarity", note: "무료 분석 도구 · 30일 세션 리플레이 보존", status: "live" },
+      { name: "Google Workspace", note: "Gmail GAS triggers · Drive · 3-tier 필터링", status: "live" },
+      { name: "F5Bot", note: "무료 멘션 모니터링 · 키워드 5개", status: "live" },
+      { name: "GitHub freetier-sentinel (public)", note: "메인 코드 · 워크플로 3개 (deploy/setup-cf/sync-secrets)", status: "live" },
+      { name: "GitHub autobiz (private)", note: "marketing/gmail/brief · RESTORE.md 재해 복구 가이드", status: "live" },
+      { name: "GitHub indie-creator-toolkit (public)", note: "ICT 동반 사이트 · GitHub Pages 호스팅", status: "live" },
     ]},
   ];
 }
 
 function statusPill(status: PhaseStatus): string {
   const map: Record<PhaseStatus, { bg: string; text: string; label: string }> = {
-    live:     { bg: "bg-emerald-500/15", text: "text-emerald-400", label: "✅ LIVE" },
-    wip:      { bg: "bg-amber-500/15",   text: "text-amber-400",   label: "🚧 D-3" },
+    live:     { bg: "bg-emerald-500/15", text: "text-emerald-400", label: "✅ 운영중" },
+    wip:      { bg: "bg-amber-500/15",   text: "text-amber-400",   label: "🚧 진행중" },
     planned:  { bg: "bg-blue-500/15",    text: "text-blue-400",    label: "📅 5/13+" },
-    archived: { bg: "bg-slate-700/30",   text: "text-slate-400",   label: "📦 archive" },
-    secret:   { bg: "bg-rose-500/15",    text: "text-rose-400",    label: "🔒 secret" },
+    archived: { bg: "bg-slate-700/30",   text: "text-slate-400",   label: "📦 아카이브" },
+    secret:   { bg: "bg-rose-500/15",    text: "text-rose-400",    label: "🔒 시크릿" },
   };
   const s = map[status];
   return `<span class="shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full ${s.bg} ${s.text}">${s.label}</span>`;
@@ -2077,7 +2058,7 @@ function renderPhaseCards(phases: Phase[]): string {
         <header class="flex items-start justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
           <div>
             <div class="flex items-center gap-2">
-              <span class="text-[10px] font-mono text-slate-500">PHASE ${String(p.num).padStart(2, "0")}</span>
+              <span class="text-[10px] font-mono text-slate-500">단계 ${String(p.num).padStart(2, "0")}</span>
               <span class="text-base">${p.icon}</span>
             </div>
             <h3 class="text-base font-semibold text-slate-100 mt-1">${p.title}</h3>
@@ -2085,7 +2066,7 @@ function renderPhaseCards(phases: Phase[]): string {
           </div>
           <div class="text-right shrink-0">
             <div class="text-lg font-mono font-semibold text-emerald-400">${liveCount}</div>
-            <div class="text-[10px] text-slate-500 uppercase tracking-wider">live</div>
+            <div class="text-[10px] text-slate-500 uppercase tracking-wider">운영중</div>
           </div>
         </header>
         <ul class="flex-1">${itemRows}</ul>
@@ -2093,7 +2074,7 @@ function renderPhaseCards(phases: Phase[]): string {
   };
 
   return `<section class="mb-6">
-  <h2 class="text-base font-semibold text-slate-100 mb-3">📚 Phase Detail (every component, no gaps)</h2>
+  <h2 class="text-base font-semibold text-slate-100 mb-3">📚 단계별 상세 (모든 컴포넌트, 빠짐없이)</h2>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     ${phases.map(card).join("")}
   </div>
