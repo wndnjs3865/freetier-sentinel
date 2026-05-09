@@ -1,19 +1,26 @@
 import type { Env } from "../index";
-import { analyticsBeacon } from "../lib/analytics";
+import { analyticsHeads } from "../lib/analytics";
 
 const CSS = String.raw`
 * { box-sizing: border-box; }
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   font-feature-settings: 'cv02','cv03','cv11','ss01';
-  background: #fff;
+  background: #f4f7fc;
   color: #0a0e1a;
   margin: 0;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
-.container { max-width: 720px; margin: 0 auto; padding: 64px 24px 96px; }
-@media (max-width: 600px) { .container { padding: 40px 18px 64px; } }
+.container {
+  max-width: 760px; margin: 32px auto;
+  padding: 56px 48px 72px;
+  background: #fff;
+  border: 1px solid #dde3ee;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(30,64,175,.05);
+}
+@media (max-width: 600px) { .container { padding: 40px 22px 56px; margin: 16px 12px; } }
 .brand {
   display: inline-flex; align-items: center; gap: 8px;
   font-weight: 700; font-size: 15px; color: #0a0e1a;
@@ -23,7 +30,7 @@ body {
   width: 22px; height: 22px;
   display: inline-flex; align-items: center; justify-content: center;
   border-radius: 6px;
-  background: linear-gradient(135deg, #1e40af, #3b82f6);
+  background: linear-gradient(135deg, #14b8a6, #22d3ee);
   color: #fff; font-size: 12px; font-weight: 800;
 }
 h1 {
@@ -47,11 +54,11 @@ p, li {
 ul { padding-left: 20px; margin: 0 0 16px; }
 li { margin-bottom: 6px; }
 strong { color: #0a0e1a; font-weight: 600; }
-a { color: #1e40af; text-decoration: none; }
-a:hover { color: #2563eb; text-decoration: underline; }
+a { color: #14b8a6; text-decoration: none; }
+a:hover { color: #0d9488; text-decoration: underline; }
 code {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 13.5px; background: #f8fafc; padding: 1px 6px;
+  font-size: 13.5px; background: #eef3fa; padding: 1px 6px;
   border-radius: 4px; color: #1e293b;
 }
 .back {
@@ -70,7 +77,17 @@ const privacyHtml = (beacon: string) => `<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy Policy — FreeTier Sentinel</title>
+<meta name="description" content="Privacy policy for FreeTier Sentinel — what we collect, how we encrypt your API tokens, who our subprocessors are, GDPR/CCPA-aligned. Last updated 2026-05-08.">
 <meta name="robots" content="index,follow">
+<meta name="theme-color" content="#14b8a6">
+<meta property="og:title" content="Privacy Policy — FreeTier Sentinel">
+<meta property="og:description" content="What we collect, how we encrypt your API tokens, who our subprocessors are. Last updated 2026-05-08.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://freetier-sentinel.dev/privacy">
+<meta property="og:image" content="https://freetier-sentinel.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://freetier-sentinel.dev/privacy">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -154,7 +171,17 @@ const termsHtml = (beacon: string) => `<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Terms of Service — FreeTier Sentinel</title>
+<meta name="description" content="Terms of service for FreeTier Sentinel — your rights and ours, how Polar handles billing, refund policy (7-day full refund), service level. Last updated 2026-05-08.">
 <meta name="robots" content="index,follow">
+<meta name="theme-color" content="#14b8a6">
+<meta property="og:title" content="Terms of Service — FreeTier Sentinel">
+<meta property="og:description" content="Plain-English terms — 7-day refund, no auto-renew traps, cancel anytime. Last updated 2026-05-08.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://freetier-sentinel.dev/terms">
+<meta property="og:image" content="https://freetier-sentinel.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://freetier-sentinel.dev/terms">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -231,13 +258,19 @@ ${FOOTER_NAV}
 </html>`;
 
 export async function handlePrivacy(_req: Request, env: Env): Promise<Response> {
-  return new Response(privacyHtml(analyticsBeacon(env.CF_BEACON_TOKEN)), {
-    headers: { "content-type": "text/html; charset=utf-8" },
+  return new Response(privacyHtml(analyticsHeads(env)), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=3600, s-maxage=86400",
+    },
   });
 }
 
 export async function handleTerms(_req: Request, env: Env): Promise<Response> {
-  return new Response(termsHtml(analyticsBeacon(env.CF_BEACON_TOKEN)), {
-    headers: { "content-type": "text/html; charset=utf-8" },
+  return new Response(termsHtml(analyticsHeads(env)), {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=3600, s-maxage=86400",
+    },
   });
 }

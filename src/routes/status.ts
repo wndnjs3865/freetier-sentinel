@@ -1,5 +1,5 @@
 import type { Env } from "../index";
-import { analyticsBeacon } from "../lib/analytics";
+import { analyticsHeads } from "../lib/analytics";
 
 /**
  * Public status dashboard for FreeTier Sentinel itself.
@@ -121,31 +121,31 @@ const CSS = String.raw`
 * { box-sizing: border-box; }
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  background: #fafafa; color: #0a0e1a;
+  background: #f4f7fc; color: #0a0e1a;
   margin: 0; line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
 .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
 @media (max-width: 600px) { .wrap { padding: 40px 18px 60px; } }
 .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; color: #0a0e1a; text-decoration: none; margin-bottom: 24px; }
-.brand-logo { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: linear-gradient(135deg,#1e40af,#3b82f6); color: #fff; font-size: 12px; font-weight: 800; }
+.brand-logo { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: linear-gradient(135deg,#0d9488,#14b8a6,#22d3ee); color: #fff; font-size: 12px; font-weight: 800; }
 h1 { font-size: clamp(24px, 4vw, 36px); letter-spacing: -.03em; font-weight: 800; margin: 0 0 8px; }
-.lede { color: #475569; font-size: 16px; margin: 0 0 32px; line-height: 1.6; }
-.lede a { color: #1e40af; }
+.lede { color: #455167; font-size: 16px; margin: 0 0 32px; line-height: 1.6; }
+.lede a { color: #14b8a6; }
 .card-grid { display: grid; gap: 14px; grid-template-columns: 1fr; margin-bottom: 32px; }
-.card { background: #fff; border: 1px solid #e6e8ee; border-radius: 12px; padding: 18px 20px; }
+.card { background: #fff; border: 1px solid #dde3ee; border-radius: 12px; padding: 18px 20px; }
 .card-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
-.card-label { font-size: 14px; color: #475569; font-weight: 500; }
+.card-label { font-size: 14px; color: #455167; font-weight: 500; }
 .card-value { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; color: #0a0e1a; }
-.bar { height: 6px; background: #e6e8ee; border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
+.bar { height: 6px; background: #dde3ee; border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
 .bar > span { display: block; height: 100%; border-radius: 999px; }
 .predict { font-size: 12.5px; color: #64748b; }
 .predict.warn { color: #d97706; font-weight: 500; }
 .predict.crit { color: #dc2626; font-weight: 600; }
 .meta { font-size: 13px; color: #94a3b8; margin-top: 24px; }
 .meta a { color: #64748b; }
-.eyebrow { display: inline-block; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #1e40af; font-weight: 700; margin-bottom: 8px; }
-.banner { background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; font-size: 13.5px; color: #1e40af; }
+.eyebrow { display: inline-block; font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: #14b8a6; font-weight: 700; margin-bottom: 8px; }
+.banner { background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px; font-size: 13.5px; color: #14b8a6; }
 .banner strong { color: #1e3a8a; }
 `;
 
@@ -192,12 +192,20 @@ export async function handleStatus(_req: Request, env: Env): Promise<Response> {
 <title>Public Status — FreeTier Sentinel</title>
 <meta name="description" content="Live free-tier usage of FreeTier Sentinel itself. We dogfood our own product — the dashboard you'd see for any service you connect.">
 <meta name="robots" content="index,follow">
+<meta name="theme-color" content="#14b8a6">
+<meta property="og:title" content="Public Status — FreeTier Sentinel">
+<meta property="og:description" content="Live free-tier usage of FreeTier Sentinel itself. The only monitoring tool that publicly shows its own quota burn.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://freetier-sentinel.dev/status">
+<meta property="og:image" content="https://freetier-sentinel.dev/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://freetier-sentinel.dev/status">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
-${analyticsBeacon(env.CF_BEACON_TOKEN)}
+${analyticsHeads(env)}
 </head>
 <body>
 <div class="wrap">

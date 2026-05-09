@@ -56,6 +56,7 @@ export interface Translations {
   pricing_eyebrow: string;
   pricing_h2: string;
   pricing_sub: string;
+  pricing_guarantee: string;
   tier_per: string;
   tier_free_label: string;
   tier_free_sub: string;
@@ -80,6 +81,10 @@ export interface Translations {
   footer_tagline: string;
   footer_product: string;
   footer_oss: string;
+  footer_resources: string;
+  footer_status: string;
+  footer_security: string;
+  footer_compare_datadog: string;
   footer_built: string;
   footer_signin: string;
   team_callout_badge: string;
@@ -87,6 +92,21 @@ export interface Translations {
   team_callout_desc: string;
   team_callout_price: string;
   team_callout_cta: string;
+  // ── Emotional "Why this exists" narrative section ─────────────
+  why_eyebrow: string;
+  why_h2: string;
+  why_p1_html: string;       // raw HTML — uses <em> + <strong> for editorial emphasis
+  why_p2_html: string;
+  why_p3_html: string;
+  why_signature: string;
+  // ── "What an alert looks like" preview section ────────────────
+  alerts_eyebrow: string;
+  alerts_h2: string;
+  alerts_sub: string;
+  alerts_email_subject: string;
+  alerts_email_body_html: string;
+  alerts_slack_text_html: string;
+  alerts_discord_text_html: string;
 }
 
 const en: Translations = {
@@ -132,6 +152,7 @@ const en: Translations = {
   pricing_eyebrow: "Pricing",
   pricing_h2: "Free tier you'll actually use.",
   pricing_sub: "Pro is a fair $5/month for 1-hour polling and multi-channel alerts.",
+  pricing_guarantee: "Try Pro risk-free — full refund within 7 days, no questions asked.",
   tier_per: "/ month",
   tier_free_label: "Free",
   tier_free_sub: "For solo devs validating side projects.",
@@ -166,10 +187,14 @@ const en: Translations = {
     { q: "How are my API tokens stored?", a: "AES-256-GCM encrypted in Cloudflare D1. The master key lives in Workers Secrets, separately from the database. We require read-only/usage-scope tokens — never tokens with provisioning or write permissions. If you're paranoid, the source is open — read the code yourself." },
     { q: "Will FreeTier Sentinel monitor its own free tier?", a: "Yes. The Worker monitors its own usage. If it ever wakes me up because <em>it</em> hit a Cloudflare limit, that means it's working AND people are using it." },
     { q: "Why $5/month instead of free forever?", a: "Polling every hour for unlimited services + Discord/Telegram alerts costs real Worker compute and Resend email volume at scale. $5/month is the lowest sustainable price. The free tier is genuinely useful, not a trial." },
-    { q: "Can I cancel anytime?", a: "One click via the Stripe customer portal. No \"contact us to cancel\" nonsense. Refunds within 7 days, no questions asked." },
+    { q: "Can I cancel anytime?", a: "Yes — one click via the customer portal link Polar emails you at purchase, or by replying to any invoice. No \"contact us to cancel\" nonsense. Full refund within 7 days, no questions asked." },
     { q: "What happens at 100%? Do you stop the request for me?", a: "No. We don't have permission to control your services — that's by design. We notify you at 80% (default, configurable) so you can act: upgrade the service, optimize traffic, or accept the cliff." },
     { q: "Which SaaS are coming next?", a: "Currently shipped: Cloudflare Workers, GitHub Actions, Vercel. Coming in next 2 weeks: Supabase, Render, Resend, Neon, Cloudflare R2. Want one we don't have? <a href=\"https://github.com/wndnjs3865/freetier-sentinel/issues\">Open an issue</a>." },
     { q: "Is there an API or webhooks?", a: "Not yet — the Pro plan focus is hourly polling. If you'd find a webhook for usage events useful, tell us in an issue. We'll add it if there's demand." },
+    { q: "What payment methods do you accept and how secure are payments?", a: "Visa, Mastercard, American Express, and major debit cards. Payments are processed by <strong>Polar</strong> via <strong>Stripe Connect</strong> (PCI DSS Level 1). FreeTier Sentinel never sees, stores, or transmits your card details — only Polar/Stripe ever touch them." },
+    { q: "Will I receive invoices? Do you handle VAT?", a: "Yes — Polar generates a PDF invoice each billing cycle and emails it to your account email. Polar is the Merchant of Record, so VAT/sales tax is calculated and collected automatically based on your billing country. Add company name + Tax/VAT ID at checkout if you need them on the invoice. <strong>Korean companies:</strong> FreeTier Sentinel is operated by a registered Korean business (사업자등록번호 607-20-94796). If you need a 세금계산서 issued via Hometax, email <a href=\"mailto:wndnjs3865@gmail.com\">wndnjs3865@gmail.com</a> with your 사업자등록번호 after checkout — typically issued within 1 business day." },
+    { q: "I upgraded the wrong account. What should I do?", a: "Email <a href=\"mailto:wndnjs3865@gmail.com\">wndnjs3865@gmail.com</a> within 7 days and we'll refund the wrong account so you don't get charged twice. Don't worry — full refund within 7 days, no questions asked." },
+    { q: "Do you offer free Pro for open-source maintainers?", a: "Yes. If you maintain an OSS project with 100+ GitHub stars and you'd benefit from monitoring its free-tier usage, email me — I'll comp Pro indefinitely. The free tier is already useful; this is just a thank-you to the OSS community that makes solo SaaS possible." },
   ],
   cta_h2: "One dashboard. Zero late-night cliffs.",
   cta_p: "Solo devs lose hours to overages every month. You don't have to.",
@@ -177,6 +202,10 @@ const en: Translations = {
   footer_tagline: "<strong>FreeTier Sentinel</strong> — One dashboard for every free-tier SaaS limit you care about. Built solo on Cloudflare Workers, fully open source.",
   footer_product: "Product",
   footer_oss: "Open source",
+  footer_resources: "Resources",
+  footer_status: "Status",
+  footer_security: "Security",
+  footer_compare_datadog: "vs Datadog",
   footer_built: "Built with Cloudflare Workers · D1 · KV",
   footer_signin: "Sign in",
   team_callout_badge: "Coming late May",
@@ -184,6 +213,21 @@ const en: Translations = {
   team_callout_desc: "Slack alerts, webhook API, multi-user workspaces, 15-min polling. Pre-register to be notified when it ships.",
   team_callout_price: "$25 / month",
   team_callout_cta: "Email me when it's ready →",
+  // ── Why ─────────────
+  why_eyebrow: "Why this exists",
+  why_h2: "It's 11:47pm. Your phone buzzes.",
+  why_p1_html: "It's an email from AWS. <em>Your account has been capped — you exceeded the Lambda free tier three hours ago.</em>",
+  why_p2_html: "You check Vercel. Bandwidth: <strong>100%</strong>. Cloudflare Workers: rate-limited since dinner. Resend stopped delivering at 9pm. The marketing site is down. Customer tickets are piling up. Every cloud's free-tier dashboard says different numbers, and not one of them emailed you before the cliff.",
+  why_p3_html: "By the time you've put out the fire, it's <strong>4am</strong> and your AWS bill is <strong>$4,237.16</strong> in surprise overages.",
+  why_signature: "— That happened to me. Twice. Then I built this.",
+  // ── Alerts ─────────────
+  alerts_eyebrow: "What you'll actually see",
+  alerts_h2: "Alerts that <em>get noticed</em>.",
+  alerts_sub: "Email by default. Discord, Telegram, and Slack on Pro. Three channels means the one you actually check pings you first.",
+  alerts_email_subject: "⚠ Vercel bandwidth at 82% — 18% headroom",
+  alerts_email_body_html: "Hey, your <strong>Vercel</strong> account just crossed 80% of the free-tier monthly bandwidth limit (82.4 GB / 100 GB).<br><br>At your current pace, you'll hit the cliff in <strong>~38 hours</strong>. Reply if you'd like FreeTier Sentinel to throttle the project for you.",
+  alerts_slack_text_html: "<strong>Cloudflare Workers</strong> requests at <strong>10,000,000 / 10,000,000</strong> — degraded. Account is rate-capped. <em>Triggered 14 min ago.</em>",
+  alerts_discord_text_html: "<strong>@everyone</strong> Resend free tier hit 100 sent / 100. Email delivery is paused until midnight UTC. Upgrade your Resend plan, or pause your campaign.",
 };
 
 const ko: Translations = {
@@ -229,6 +273,7 @@ const ko: Translations = {
   pricing_eyebrow: "요금제",
   pricing_h2: "정말로 쓸 수 있는 무료 플랜",
   pricing_sub: "Pro는 월 $5의 합리적인 가격으로 1시간 단위 폴링과 멀티 채널 알림을 제공합니다.",
+  pricing_guarantee: "Pro를 부담 없이 시도해보세요 — 7일 이내 묻지도 따지지도 않는 전액 환불.",
   tier_per: "/ 월",
   tier_free_label: "Free",
   tier_free_sub: "사이드 프로젝트를 검증하는 솔로 개발자를 위한 플랜.",
@@ -263,15 +308,23 @@ const ko: Translations = {
     { q: "API 토큰은 어떻게 저장됩니까?", a: "Cloudflare D1에 AES-256-GCM으로 암호화되어 저장됩니다. 마스터 키는 데이터베이스와 분리되어 Workers Secrets에 보관됩니다. 읽기 전용/사용량 스코프 토큰만 요구하며, 프로비저닝 권한이나 쓰기 권한이 있는 토큰은 절대 요구하지 않습니다. 의심스러우시다면 직접 코드를 확인하실 수 있도록 소스를 공개해 두었습니다." },
     { q: "FreeTier Sentinel은 자기 자신의 무료 티어도 모니터링합니까?", a: "예. Worker가 자기 자신의 사용량을 모니터링합니다. <em>이 서비스 자체</em>가 Cloudflare 한도에 도달하여 저를 깨운다면, 그것은 서비스가 정상 동작 중이며 사용자가 많다는 뜻이 됩니다." },
     { q: "왜 평생 무료가 아니라 월 $5입니까?", a: "무제한 서비스 시간 단위 폴링과 Discord·Telegram 알림에는 실제 Worker 컴퓨트와 Resend 이메일 비용이 듭니다. 월 $5는 서비스를 지속 가능하게 운영할 수 있는 최저가이며, 무료 플랜은 체험판이 아니라 그 자체로 충분히 유용한 플랜입니다." },
-    { q: "언제든지 해지할 수 있습니까?", a: "Stripe 고객 포털에서 클릭 한 번으로 해지하실 수 있습니다. '해지하려면 문의 주세요' 같은 번거로움이 없습니다. 7일 이내 환불 가능하며, 사유는 묻지 않습니다." },
+    { q: "언제든지 해지할 수 있습니까?", a: "예 — 결제 시 Polar이 보내드린 고객 포털 링크 또는 영수증 메일에 답장하시면 한 번에 해지 가능합니다. '해지하려면 문의 주세요' 같은 번거로움이 없습니다. 7일 이내 전액 환불 가능하며, 사유는 묻지 않습니다." },
     { q: "100%에 도달하면 어떻게 됩니까? 요청을 대신 차단해 줍니까?", a: "아닙니다. 저희에게는 고객님의 서비스를 제어할 권한이 없으며, 이는 의도된 설계입니다. 80% 시점(기본값, 변경 가능)에 알림을 보내 드리므로, 플랜을 업그레이드하시거나 트래픽을 최적화하시거나 서비스 중단을 감수하시는 등 직접 판단하여 대응하실 수 있습니다." },
     { q: "다음에 추가될 SaaS는 무엇입니까?", a: "현재 출시: Cloudflare Workers, GitHub Actions, Vercel. 향후 2주 내 추가 예정: Supabase, Render, Resend, Neon, Cloudflare R2. 원하시는 서비스가 목록에 없습니까? <a href=\"https://github.com/wndnjs3865/freetier-sentinel/issues\">이슈를 등록해 주십시오</a>." },
     { q: "API나 웹훅을 제공합니까?", a: "아직 제공하지 않습니다. Pro 플랜은 시간 단위 폴링에 집중하고 있습니다. 사용량 이벤트 웹훅이 필요하시다면 이슈로 알려 주십시오. 수요가 있다면 추가하겠습니다." },
+    { q: "어떤 결제 수단을 받으며, 결제는 안전합니까?", a: "Visa, Mastercard, American Express, 주요 체크카드를 받습니다. 결제는 <strong>Polar</strong>가 <strong>Stripe Connect</strong>(PCI DSS Level 1)를 통해 처리하며, FreeTier Sentinel은 카드 정보를 보거나 저장하거나 전송하지 않습니다 — 오직 Polar/Stripe만 카드 정보를 다룹니다." },
+    { q: "인보이스(영수증)를 발행해 주시나요? 한국 사업자에게 세금계산서 발급이 가능한가요?", a: "예 — Polar이 매 결제 주기마다 PDF 인보이스를 생성해 계정 이메일로 발송합니다. Polar이 Merchant of Record(MoR)이므로 청구지 국가에 따라 VAT/판매세가 자동 계산·징수됩니다. 인보이스에 회사명·사업자번호(VAT/Tax ID)가 필요하시면 결제 시 입력해 주십시오. <strong>한국 사업자 안내:</strong> FreeTier Sentinel은 한국 사업자등록을 마친 사업체(사업자등록번호 607-20-94796)에서 운영합니다. 한국 매출세금계산서(국세청 홈택스 발급)가 필요하시면 결제 후 사업자등록번호와 함께 <a href=\"mailto:wndnjs3865@gmail.com\">wndnjs3865@gmail.com</a>으로 메일 주십시오 — 영업일 1일 이내 발급해 드립니다." },
+    { q: "잘못된 계정으로 결제했는데 어떻게 해야 하나요?", a: "결제일로부터 7일 이내에 <a href=\"mailto:wndnjs3865@gmail.com\">wndnjs3865@gmail.com</a>으로 메일 보내주시면 잘못 결제된 계정의 환불을 처리해 드려, 중복 결제가 발생하지 않도록 도와드립니다. 7일 이내 전액 환불, 사유는 묻지 않습니다." },
+    { q: "오픈소스 메인테이너에게 무료 Pro를 제공하나요?", a: "예. GitHub 별 100개 이상의 OSS 프로젝트를 운영하시고, 그 프로젝트에 무료 티어 모니터링이 도움이 되신다면 메일 보내주세요. Pro를 무기한 무료로 제공해 드립니다. 무료 플랜만으로도 충분하지만, 1인 SaaS를 가능하게 한 OSS 커뮤니티에 드리는 작은 감사의 표시입니다." },
   ],
   cta_h2: "한 화면에서 모두 확인하고, 새벽 한도 초과와 작별하세요",
   cta_p: "솔로 개발자는 매달 사용량 초과로 적지 않은 시간을 잃습니다. 더는 그러지 않으셔도 됩니다.",
   cta_button: "매직 링크 받기 →",
   footer_tagline: "<strong>FreeTier Sentinel</strong> — 신경 쓰시는 모든 무료 티어 SaaS 한도를 하나의 대시보드에 모았습니다. Cloudflare Workers 기반으로 1인 개발한 완전한 오픈소스 프로젝트입니다.",
+  footer_resources: "리소스",
+  footer_status: "상태",
+  footer_security: "보안",
+  footer_compare_datadog: "Datadog 비교",
   footer_product: "제품",
   footer_oss: "오픈소스",
   footer_built: "Cloudflare Workers · D1 · KV로 구축",
@@ -281,6 +334,21 @@ const ko: Translations = {
   team_callout_desc: "Slack 알림, 웹훅 API, 멀티 유저 워크스페이스, 15분 폴링. 출시 시 알림받으려면 사전 등록.",
   team_callout_price: "월 $25",
   team_callout_cta: "출시 시 알림 받기 →",
+  // ── Why ─────────────
+  why_eyebrow: "이 도구를 만든 이유",
+  why_h2: "밤 11시 47분. 휴대폰이 울립니다.",
+  why_p1_html: "AWS에서 온 메일입니다. <em>요금이 청구되었습니다 — 3시간 전에 Lambda 무료 한도를 초과했습니다.</em>",
+  why_p2_html: "Vercel을 확인하니 대역폭 <strong>100%</strong>. Cloudflare Workers는 저녁부터 rate-limit 상태. Resend는 9시 이후 발송 중단. 마케팅 사이트는 다운됐고, 고객 문의가 쌓이고 있습니다. 클라우드마다 무료 티어 대시보드 숫자가 모두 다른데, 그 어느 곳도 임계점 전에 메일을 보내주지 않았습니다.",
+  why_p3_html: "불을 다 끈 시각은 <strong>새벽 4시</strong>. AWS 청구서는 예상치 못한 초과로 <strong>$4,237.16</strong>이 찍혀 있습니다.",
+  why_signature: "— 저한테 두 번 일어난 일입니다. 그래서 만들었습니다.",
+  // ── Alerts ─────────────
+  alerts_eyebrow: "실제로 받게 될 알림",
+  alerts_h2: "<em>제대로 인지되는</em> 알림.",
+  alerts_sub: "기본은 이메일. Pro에서는 Discord·Telegram·Slack까지. 3개 채널 중 본인이 실제로 보는 채널이 가장 먼저 울립니다.",
+  alerts_email_subject: "⚠ Vercel 대역폭 82% — 18% 여유",
+  alerts_email_body_html: "<strong>Vercel</strong> 계정이 무료 티어 월간 대역폭 80%를 방금 넘었습니다 (82.4 GB / 100 GB).<br><br>현재 추세로는 <strong>약 38시간</strong> 후 한도에 도달합니다. 자동 throttle 처리가 필요하면 회신 부탁드립니다.",
+  alerts_slack_text_html: "<strong>Cloudflare Workers</strong> 요청 <strong>10,000,000 / 10,000,000</strong> — degraded. 계정이 rate-cap 상태. <em>14분 전 트리거됨.</em>",
+  alerts_discord_text_html: "<strong>@everyone</strong> Resend 무료 티어 100/100 도달. UTC 자정까지 이메일 발송 일시 중지. Resend 플랜 업그레이드, 또는 캠페인 일시정지 권장.",
 };
 
 const ja: Translations = {
@@ -326,6 +394,7 @@ const ja: Translations = {
   pricing_eyebrow: "料金",
   pricing_h2: "本当に使える無料プラン",
   pricing_sub: "Pro プランは月額 $5 の手頃な価格で、1 時間ごとのポーリングとマルチチャネル通知に対応します。",
+  pricing_guarantee: "Pro をリスクなしでお試しください — 7 日以内なら理由を問わず全額返金。",
   tier_per: "/ 月",
   tier_free_label: "Free",
   tier_free_sub: "サイドプロジェクトを検証する個人開発者向け。",
@@ -369,6 +438,10 @@ const ja: Translations = {
   cta_p: "個人開発者は毎月、超過料金のために多くの時間を失っています。もう、その必要はありません。",
   cta_button: "マジックリンクを受け取る →",
   footer_tagline: "<strong>FreeTier Sentinel</strong> — 気になる無料枠 SaaS の上限を、すべてひとつのダッシュボードに集約。Cloudflare Workers 上で個人開発した、完全オープンソースのプロダクトです。",
+  footer_resources: "リソース",
+  footer_status: "ステータス",
+  footer_security: "セキュリティ",
+  footer_compare_datadog: "Datadog 比較",
   footer_product: "プロダクト",
   footer_oss: "オープンソース",
   footer_built: "Cloudflare Workers · D1 · KV で構築",
@@ -378,6 +451,21 @@ const ja: Translations = {
   team_callout_desc: "Slack 通知、Webhook API、マルチユーザーワークスペース、15 分ごとのポーリング。リリース時に通知を受け取るには事前登録を。",
   team_callout_price: "月額 $25",
   team_callout_cta: "リリース時に通知を受け取る →",
+  // ── Why ─────────────
+  why_eyebrow: "なぜ作ったか",
+  why_h2: "23:47。スマートフォンが鳴ります。",
+  why_p1_html: "AWS からのメールです。<em>請求が発生しました — 3 時間前に Lambda の無料枠を超過しました。</em>",
+  why_p2_html: "Vercel を確認すると帯域幅 <strong>100%</strong>。Cloudflare Workers は夕方から rate-limit 状態。Resend は 21 時で配信停止。マーケティングサイトはダウン、サポート問い合わせが積み上がっています。各クラウドの無料枠ダッシュボードはそれぞれ異なる数字を表示しているのに、誰も崖の手前で知らせてくれませんでした。",
+  why_p3_html: "火を消し終えた頃には <strong>午前 4 時</strong>。AWS の請求書には予期せぬ超過分として <strong>$4,237.16</strong> が記載されています。",
+  why_signature: "— 私自身に二度起きました。だから作りました。",
+  // ── Alerts ─────────────
+  alerts_eyebrow: "実際に届く通知",
+  alerts_h2: "<em>ちゃんと気づく</em> アラート。",
+  alerts_sub: "デフォルトはメール。Pro では Discord・Telegram・Slack も。3 チャネルのうち、あなたが実際に見ているチャネルが最初に鳴ります。",
+  alerts_email_subject: "⚠ Vercel 帯域幅 82% — 残り 18%",
+  alerts_email_body_html: "<strong>Vercel</strong> アカウントが無料枠の月間帯域幅 80% を超えました (82.4 GB / 100 GB)。<br><br>現在のペースだと、<strong>約 38 時間後</strong> に上限到達。自動 throttle が必要であれば返信ください。",
+  alerts_slack_text_html: "<strong>Cloudflare Workers</strong> リクエスト <strong>10,000,000 / 10,000,000</strong> — degraded。アカウントが rate-cap 状態。<em>14 分前にトリガー。</em>",
+  alerts_discord_text_html: "<strong>@everyone</strong> Resend 無料枠 100 / 100 に到達。UTC 午前 0 時まで配信停止中。Resend プラン変更またはキャンペーン一時停止を。",
 };
 
 const es: Translations = {
@@ -423,6 +511,7 @@ const es: Translations = {
   pricing_eyebrow: "Precios",
   pricing_h2: "Un plan gratuito que sí vas a usar.",
   pricing_sub: "Pro cuesta solo 5 USD al mes e incluye sondeo cada hora y alertas en varios canales.",
+  pricing_guarantee: "Prueba Pro sin riesgo — reembolso completo en 7 días, sin preguntas.",
   tier_per: "/ mes",
   tier_free_label: "Free",
   tier_free_sub: "Para desarrolladores en solitario que validan proyectos paralelos.",
@@ -466,6 +555,10 @@ const es: Translations = {
   cta_p: "Los desarrolladores en solitario pierden horas cada mes por consumos imprevistos. No tiene por qué ser así.",
   cta_button: "Recibir enlace mágico →",
   footer_tagline: "<strong>FreeTier Sentinel</strong> — Un único panel para cada límite de SaaS gratuito que te importe. Construido en solitario sobre Cloudflare Workers, totalmente de código abierto.",
+  footer_resources: "Recursos",
+  footer_status: "Estado",
+  footer_security: "Seguridad",
+  footer_compare_datadog: "vs Datadog",
   footer_product: "Producto",
   footer_oss: "Código abierto",
   footer_built: "Construido con Cloudflare Workers · D1 · KV",
@@ -475,6 +568,21 @@ const es: Translations = {
   team_callout_desc: "Alertas en Slack, webhook API, espacios multiusuario, sondeo cada 15 min. Pre-regístrate para recibir aviso cuando salga.",
   team_callout_price: "25 USD / mes",
   team_callout_cta: "Avísame cuando esté listo →",
+  // ── Why ─────────────
+  why_eyebrow: "Por qué existe",
+  why_h2: "Son las 23:47. Tu móvil vibra.",
+  why_p1_html: "Es un correo de AWS. <em>Tu cuenta se ha facturado — superaste la cuota gratuita de Lambda hace tres horas.</em>",
+  why_p2_html: "Revisas Vercel. Ancho de banda: <strong>100%</strong>. Cloudflare Workers: con rate-limit desde la cena. Resend dejó de enviar a las 21:00. La web de marketing está caída. Los tickets de soporte se acumulan. Cada nube tiene su panel del plan gratuito con números distintos, y ninguno te avisó antes del precipicio.",
+  why_p3_html: "Cuando apagas el incendio son las <strong>4 de la madrugada</strong> y la factura de AWS suma <strong>$4 237,16</strong> en sobrecostes inesperados.",
+  why_signature: "— Me pasó dos veces. Por eso lo construí.",
+  // ── Alerts ─────────────
+  alerts_eyebrow: "Lo que realmente verás",
+  alerts_h2: "Alertas que <em>se notan</em>.",
+  alerts_sub: "Por defecto correo. En Pro, Discord, Telegram y Slack. Tres canales: el que de verdad miras te avisa primero.",
+  alerts_email_subject: "⚠ Ancho de banda de Vercel al 82% — 18% de margen",
+  alerts_email_body_html: "Tu cuenta de <strong>Vercel</strong> acaba de superar el 80% del límite mensual gratuito de ancho de banda (82,4 GB / 100 GB).<br><br>Al ritmo actual llegarás al precipicio en <strong>~38 horas</strong>. Responde si quieres que FreeTier Sentinel haga throttle por ti.",
+  alerts_slack_text_html: "<strong>Cloudflare Workers</strong> peticiones en <strong>10.000.000 / 10.000.000</strong> — degradado. Cuenta con rate-cap. <em>Activado hace 14 min.</em>",
+  alerts_discord_text_html: "<strong>@everyone</strong> Resend hito 100/100 enviados del plan gratuito. Entrega en pausa hasta las 00:00 UTC. Sube el plan de Resend o pausa la campaña.",
 };
 
 const de: Translations = {
@@ -520,6 +628,7 @@ const de: Translations = {
   pricing_eyebrow: "Preise",
   pricing_h2: "Ein kostenloser Tarif, den Sie wirklich nutzen werden.",
   pricing_sub: "Pro ist mit fairen 5 $ pro Monat erhältlich und umfasst stündliches Polling sowie Mehrkanal-Benachrichtigungen.",
+  pricing_guarantee: "Pro risikofrei testen — volle Rückerstattung innerhalb von 7 Tagen, ohne Fragen.",
   tier_per: "/ Monat",
   tier_free_label: "Free",
   tier_free_sub: "Für Einzelentwickler/innen, die Nebenprojekte validieren.",
@@ -563,6 +672,10 @@ const de: Translations = {
   cta_p: "Einzelentwickler/innen verlieren jeden Monat Stunden durch überschrittene Limits. Das muss nicht sein.",
   cta_button: "Magic Link anfordern →",
   footer_tagline: "<strong>FreeTier Sentinel</strong> — Ein Dashboard für alle Limits kostenloser SaaS-Dienste, die Ihnen wichtig sind. Im Alleingang auf Cloudflare Workers entwickelt, vollständig quelloffen.",
+  footer_resources: "Ressourcen",
+  footer_status: "Status",
+  footer_security: "Sicherheit",
+  footer_compare_datadog: "vs Datadog",
   footer_product: "Produkt",
   footer_oss: "Open Source",
   footer_built: "Aufgebaut auf Cloudflare Workers · D1 · KV",
@@ -572,6 +685,21 @@ const de: Translations = {
   team_callout_desc: "Slack-Alerts, Webhook-API, Multi-User-Workspaces, Polling alle 15 Minuten. Vorregistrieren und benachrichtigt werden, sobald verfügbar.",
   team_callout_price: "25 $ / Monat",
   team_callout_cta: "Bei Verfügbarkeit benachrichtigen →",
+  // ── Why ─────────────
+  why_eyebrow: "Warum es existiert",
+  why_h2: "23:47 Uhr. Dein Handy vibriert.",
+  why_p1_html: "Eine E-Mail von AWS. <em>Dein Konto wurde abgerechnet — du hast die Lambda-Free-Tier-Grenze vor drei Stunden überschritten.</em>",
+  why_p2_html: "Du checkst Vercel. Bandbreite: <strong>100 %</strong>. Cloudflare Workers: seit dem Abendessen rate-limit. Resend hat um 21:00 die Zustellung eingestellt. Die Marketing-Site ist down. Support-Tickets stapeln sich. Jede Cloud hat ihr eigenes Free-Tier-Dashboard mit unterschiedlichen Zahlen — und niemand hat dich vor dem Abgrund benachrichtigt.",
+  why_p3_html: "Bis du das Feuer gelöscht hast, ist es <strong>4 Uhr morgens</strong> und deine AWS-Rechnung steht bei <strong>4.237,16 $</strong> an unerwarteten Überschreitungen.",
+  why_signature: "— Ist mir zweimal passiert. Deshalb habe ich das gebaut.",
+  // ── Alerts ─────────────
+  alerts_eyebrow: "Was du tatsächlich siehst",
+  alerts_h2: "Alerts, die <em>auffallen</em>.",
+  alerts_sub: "Standardmäßig E-Mail. In Pro: Discord, Telegram und Slack. Drei Kanäle — der, den du tatsächlich liest, klingelt zuerst.",
+  alerts_email_subject: "⚠ Vercel-Bandbreite bei 82 % — 18 % Reserve",
+  alerts_email_body_html: "Dein <strong>Vercel</strong>-Konto hat gerade 80 % des monatlichen Free-Tier-Bandbreitenlimits überschritten (82,4 GB / 100 GB).<br><br>Im aktuellen Tempo erreichst du in <strong>~38 Stunden</strong> die Grenze. Antworte, wenn FreeTier Sentinel automatisch drosseln soll.",
+  alerts_slack_text_html: "<strong>Cloudflare Workers</strong> Requests bei <strong>10.000.000 / 10.000.000</strong> — degraded. Konto ist rate-cap. <em>Vor 14 Min. ausgelöst.</em>",
+  alerts_discord_text_html: "<strong>@everyone</strong> Resend-Free-Tier 100/100 erreicht. Zustellung pausiert bis 00:00 UTC. Resend-Plan upgraden oder Kampagne pausieren.",
 };
 
 export const T: Record<Locale, Translations> = { en, ko, ja, es, de };

@@ -1,4 +1,5 @@
 import type { Env } from "../index";
+import { recordMetric, ensureMetricTables } from "../lib/metrics";
 
 /**
  * LemonSqueezy webhook signature.
@@ -46,6 +47,28 @@ export async function handleLsWebhook(req: Request, env: Env): Promise<Response>
 
   if (!email || !subId) return new Response("ok", { status: 200 });
 
+  await ensureMetricTables(env);
+
+  // ── Metric tracking (separate from plan-state mutations)
+  if (eventName === "subscription_created") {
+    await recordMetric(env, "subscription_created", 1, "ls", { email, subId });
+  } else if (eventName === "subscription_cancelled") {
+    await recordMetric(env, "subscription_cancelled", 1, "ls", { email, subId });
+  } else if (eventName === "subscription_expired") {
+    await recordMetric(env, "subscription_expired", 1, "ls", { email, subId });
+  } else if (eventName === "subscription_payment_success") {
+    const totalUsd = (Number(attrs.total) || 0) / 100; // LS sends cents
+    await recordMetric(env, "revenue_usd", totalUsd, "ls", { email, subId });
+    await recordMetric(env, "payment_success", 1, "ls");
+  } else if (eventName === "subscription_payment_refunded") {
+    const totalUsd = (Number(attrs.total) || 0) / 100;
+    await recordMetric(env, "refund_usd", totalUsd, "ls", { email, subId });
+    await recordMetric(env, "refund_count", 1, "ls");
+  } else if (eventName === "subscription_payment_failed") {
+    await recordMetric(env, "payment_failed", 1, "ls", { email, subId });
+  }
+
+  // ── Plan state mutations
   // Subscriptions only — we don't sell one-time products.
   if (eventName === "subscription_created") {
     await env.DB.prepare(

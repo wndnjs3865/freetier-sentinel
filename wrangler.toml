@@ -16,7 +16,12 @@ binding = "KV"
 id = "dd8a3f635fe24c5eb1d3cf8285f425a9"
 
 [triggers]
-crons = ["0 */6 * * *"]   # every 6 hours
+crons = [
+  "*/30 * * * *",    # smoke test (every 30 min)
+  "0 * * * *",       # bazaar indexing poll (every hour at :00)
+  "0 */6 * * *",     # FT services usage check (every 6 hours)
+  "0 0 * * *",       # daily digest (00 UTC = 09 KST)
+]
 
 [vars]
 APP_URL = "https://freetier-sentinel.dev"
@@ -29,3 +34,17 @@ RESEND_FROM = "FreeTier Sentinel <noreply@freetier-sentinel.dev>"
 # - LS_API_KEY            (LS API key, for future programmatic ops)
 # - LS_WEBHOOK_SECRET     (signing secret from LS webhook config)
 # - CF_BEACON_TOKEN       (optional — Cloudflare Web Analytics)
+#
+# x402 (agent-economy paid API):
+# - X402_RECEIVING_ADDRESS  (operator's Base wallet, e.g. 0x...)
+# - X402_NETWORK            (default: base; alt: base-sepolia for testnet)
+# - X402_USDC_ADDRESS       (default: USDC mainnet 0x8335...02913)
+#
+# Facilitator routing:
+# - If CDP_API_KEY_ID + CDP_API_KEY_SECRET set → CDP (production, Bazaar)
+# - Else → X402_FACILITATOR_URL (default: https://x402.org/facilitator)
+#
+# CDP Facilitator (recommended, set via wrangler secret put):
+# - CDP_API_KEY_ID          (UUID from portal.cdp.coinbase.com)
+# - CDP_API_KEY_SECRET      (base64 Ed25519 secret, 64 bytes encoded)
+# - CDP_FACILITATOR_URL     (default: https://api.cdp.coinbase.com/platform/v2/x402)
