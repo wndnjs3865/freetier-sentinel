@@ -1590,7 +1590,7 @@ export async function handleAdmin(req: Request, env: Env): Promise<Response> {
   // Memory chapter (hardcoded inventory + summary)
   if (path === "/admin/memory" && method === "GET") {
     const c = renderMemoryChapter();
-    const body = chapterLayout("memory", c.title, c.subtitle, c.body, { memoryCount: 22 });
+    const body = chapterLayout("memory", c.title, c.subtitle, c.body, { memoryCount: 19 });
     return new Response(body, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
   }
 
@@ -1767,6 +1767,8 @@ async function getArchitectureData(env: Env): Promise<any> {
 function renderArchitecturePage(d: any): string {
   const smokeIcon = d.smokeOk === d.smokeTotal ? "✅" : "⚠️";
   const incidentBadge = d.incidents === 0 ? "0 open" : `🚨 ${d.incidents} open`;
+  const phaseDefs = buildPhaseDefs(d);
+  const phaseCardsHtml = renderPhaseCards(phaseDefs);
 
   const stat = (label: string, value: string) => `
     <div class="bg-slate-900 border border-slate-800 rounded-lg p-4">
@@ -1786,82 +1788,109 @@ function renderArchitecturePage(d: any): string {
 </div>
 
 <section class="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-6">
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-base font-semibold text-slate-100">Live Structure Mindmap</h2>
-    <span class="text-[11px] text-slate-500 font-mono">D1 + KV + bundled limits.ts · refresh 60s</span>
+  <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+    <div>
+      <h2 class="text-base font-semibold text-slate-100">🗺️ AI Roadmap-style Architecture</h2>
+      <p class="text-[11px] text-slate-500 mt-1">Inspired by <a href="https://roadmap.sh/ai-engineer" class="text-blue-400 hover:underline">roadmap.sh/ai-engineer</a> + <a href="https://github.com/PrinceSinghhub/Ultimate-AI-Engineer-Roadmap-2026" class="text-blue-400 hover:underline">PrinceSinghhub/Ultimate-AI-Engineer-Roadmap-2026</a> · ${phaseDefs.length} phases · ~100 components</p>
+    </div>
+    <div class="flex gap-2 text-[11px]">
+      <span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400">✅ LIVE</span>
+      <span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400">🚧 D-3</span>
+      <span class="px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400">📅 5/13+</span>
+      <span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400">🔒 secret</span>
+      <span class="px-2 py-0.5 rounded-full bg-slate-700/30 text-slate-400">📦 archived</span>
+    </div>
   </div>
   <div class="overflow-x-auto flex justify-center py-3">
 <pre class="mermaid text-sm">
 mindmap
-  root(("FT + AutoBiz<br/>${d.daysToLaunch}"))
-    Code &amp; Repos
-      tool<br/>CF Workers
-        18 routes
-        5 jobs
-        i18n 5 locales
-      seo<br/>ICT GitHub Pages
-      autobiz<br/>orchestration
-    Infra
-      D1 db
-        users ${d.users}
-        services ${d.services}
-        alerts7d ${d.alerts7d}
+  root(("FreeTier Sentinel<br/>+ AutoBiz<br/>${d.daysToLaunch}"))
+    1 Foundation 🏗️
+      CF Workers TS ~3.8k LOC
+      D1 12 tables ${d.users}u ${d.services}s
       KV namespace
-      Cron 4
-        smoke 30min
-        bazaar 1h
-        usage 6h
-        digest daily
-      Hooks 3
-        SessionStart
-        UserPromptSubmit
-        Stop ${smokeIcon} 5/9
-    Billing
-      Polar.sh MoR
-        webhook LIVE 5/8
-        PHFREE6MO 50
-      x402 paid API
-        ${d.x402Records} records
-        Bazaar indexed
-      사업자번호<br/>607-20-94796
-    Marketing
-      5 글
-        IH Twitter Reddit
-        ShowHN 5/19
-        Maker comment
+      Cron 4 schedules
+    2 Identity 🔐
+      Magic link Resend
+      AES-256-GCM tokens
+      ADMIN_EMAIL gate
+      Auth 6 fix 5/8
+    3 Routes 🛣️ 19
+      Marketing i18n 5
+      Auth 5
+      Dashboard
+      x402 paid 5
+      Admin + 5 chapters
+      Inbox dashboard
+      Utility 10
+    4 Cron Jobs ⏰
+      Smoke 30min ${d.smokeOk}/${d.smokeTotal}
+      Bazaar Poll 1h
+      Hourly Metrics 1h
+      Usage Check 6h
+      Daily Digest 09 KST
+    5 Billing 💳
+      Polar MoR LIVE 5/8
+      Stripe Connect KYC ✅
+      PHFREE6MO 50 redemptions
+      607-20-94796 일반과세자
+      세금계산서 Hometax
+    6 x402 Agent Economy 🪙
+      ${d.x402Records} records Bazaar
+      CDP facilitator Ed25519
+      USDC Base mainnet
+      $0.005 per call
+      0x5337...088
+    7 Marketing 📣
       PH 5/12 16:01 KST
-      비주얼 4
+      5 글 IH Twitter Reddit
+      ShowHN 5/19 별도
+      Maker comment v3
+      Bazaar listing
+      비주얼 4 + demo.mp4
       F5Bot 5 keywords
-    Autonomous
-      Smoke ${d.smokeOk}/${d.smokeTotal}
-        landing ${stateIcon(d.smokeStates[0])}
-        health ${stateIcon(d.smokeStates[1])}
-        x402 prov ${stateIcon(d.smokeStates[2])}
-        docs api ${stateIcon(d.smokeStates[3])}
-        openapi ${stateIcon(d.smokeStates[4])}
-        paid 402 ${stateIcon(d.smokeStates[5])}
+      ICT 30 posts
+    8 Autonomous 🤖
+      Smoke alert Telegram
       Gmail 3-tier
         Native filters 8
         GAS 5min
-        Triage daemon 1h
-      Telegram alerts
-      Inbox dashboard
-    Memory
-      22 active
-      7 archive feedback
-      3 archive legacy
-      evidence-first 가드
-    External deps
-      Cloudflare
-      Polar.sh
-      CDP x402
-      Resend
-      Telegram
+        Daemon 1h
+      Inbox flag → Claude
+      Telegram chat 8749437676
+    9 AI Tooling 🧠
+      claude-mem 13.0.0
+      SessionStart hook
+      UserPromptSubmit hook
+      Stop hook 5/9 신규
+      Evidence-first 통합
+      Memory 19 active
+      Memory 10 archive
+    10 Observability 📊
+      Mission Control + 5
       Microsoft Clarity
-      Google Workspace
+      CF Web Analytics
+      D1 metric_snapshots
+      KV metrics:hourly
+      Incidents ${d.incidents} open
+    11 Security 🛡️
+      14 secrets cloud
+      AES-256-GCM
+      HSTS preload
+      Frame/MIME headers
+      feedback_no_guessing
+    12 External 🌐
+      Cloudflare
+      Polar Stripe
+      Coinbase CDP
+      Resend Telegram
+      Clarity Google F5Bot
+      3 GitHub repos
 </pre>
   </div>
 </section>
+
+${phaseCardsHtml}
 
 <div class="text-center text-[11px] text-slate-500 mt-4 pb-2">
   Last fetched ${d.timestamp}Z · auto-refresh 60s · ${d.daysToLaunch}
@@ -1885,189 +1914,192 @@ setTimeout(() => location.reload(), 60000);
 </script>
 `;
 
-  return chapterLayout("architecture", "🗺️ Architecture", `Live structural map · auto-refresh 60s · ${d.daysToLaunch}`, body, { smokeOk: d.smokeOk, smokeTotal: d.smokeTotal, memoryCount: 22 });
+  return chapterLayout("architecture", "🗺️ Architecture", `Live structural map · auto-refresh 60s · ${d.daysToLaunch}`, body, { smokeOk: d.smokeOk, smokeTotal: d.smokeTotal, memoryCount: 19 });
 }
 
-function _renderArchitecturePage_OLD(d: any): string {
-  // (deprecated, kept for diff context — not called)
-  const smokeIcon = d.smokeOk === d.smokeTotal ? "✅" : "⚠️";
-  const incidentBadge = d.incidents === 0 ? "0 open" : `🚨 ${d.incidents} open`;
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex">
-<title>Architecture · FreeTier Sentinel</title>
-<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-<style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: #020617; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Pretendard', system-ui, sans-serif; }
-  .chapter-nav { position: sticky; top: 0; z-index: 50; background: rgba(2,6,23,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #1e293b; }
-  .chapter-nav-inner { max-width: 80rem; margin: 0 auto; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; }
-  .chapter-tab { display: inline-flex; align-items: center; gap: 6px; padding: 14px 14px 12px; font-size: 13px; font-weight: 500; color: #94a3b8; border-bottom: 2px solid transparent; text-decoration: none; white-space: nowrap; transition: color .15s, border-color .15s, background-color .15s; }
-  .chapter-tab:hover { color: #e2e8f0; background: rgba(255,255,255,.03); }
-  .chapter-tab.active { color: #f8fafc; border-bottom-color: #3b82f6; }
-  .chapter-tab .badge { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; background: #1e293b; color: #94a3b8; }
-  .page-wrap { max-width: 80rem; margin: 0 auto; padding: 16px; }
-  .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin: 8px 0 16px; gap: 16px; flex-wrap: wrap; }
-  .page-title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
-  .page-title p { margin: 4px 0 0; font-size: 13px; color: #94a3b8; }
-  .page-actions { display: flex; gap: 8px; font-size: 12px; color: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 12px 0 24px; }
-  .stat { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px 14px; }
-  .stat-label { color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
-  .stat-value { font-size: 18px; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; color: #f1f5f9; }
-  .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .card-title { font-size: 14px; font-weight: 600; color: #e2e8f0; }
-  .card-meta { font-size: 11px; color: #64748b; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .map-container { display: flex; justify-content: center; padding: 12px 0; overflow: auto; }
-  .mermaid { font-size: 14px; max-width: 100%; }
-  .footnote { font-size: 11px; color: #64748b; text-align: center; padding: 16px 0; border-top: 1px solid #1e293b; margin-top: 16px; }
-</style>
-</head>
-<body>
+// ──────────────────────────────────────────────────────────────────────────
+// AI Roadmap-style phase definitions (12 phases, ~100 items)
+// Inspired by roadmap.sh/ai-engineer + PrinceSinghhub/Ultimate-AI-Engineer-Roadmap-2026
+// ──────────────────────────────────────────────────────────────────────────
 
-<nav class="chapter-nav">
-  <div class="chapter-nav-inner">
-    <a href="/admin" class="chapter-tab">📋 Mission Control</a>
-    <a href="/admin/architecture" class="chapter-tab active">🗺️ Architecture</a>
-    <a href="/admin/smoke" class="chapter-tab">🧪 Smoke <span class="badge">${d.smokeOk}/${d.smokeTotal}</span></a>
-    <a href="/admin/memory" class="chapter-tab">🧠 Memory <span class="badge">22</span></a>
-    <a href="/admin/logs" class="chapter-tab">📜 Logs</a>
-    <a href="/inbox" class="chapter-tab">📬 Inbox</a>
-  </div>
-</nav>
+type PhaseStatus = "live" | "wip" | "planned" | "archived" | "secret";
+interface PhaseItem { name: string; note: string; status: PhaseStatus }
+interface Phase { num: number; icon: string; title: string; subtitle: string; items: PhaseItem[] }
 
-<div class="page-wrap">
-
-<header class="page-header">
-  <div class="page-title">
-    <h1>🗺️ Architecture</h1>
-    <p>Live structural map of FreeTier Sentinel + AutoBiz · auto-refresh 60s</p>
-  </div>
-  <div class="page-actions">
-    <span>${d.timestamp}Z</span>
-    <span>${d.daysToLaunch}</span>
-  </div>
-</header>
-
-<div class="stat-grid">
-  <div class="stat"><div class="stat-label">Users</div><div class="stat-value">${d.users}</div></div>
-  <div class="stat"><div class="stat-label">Services tracked</div><div class="stat-value">${d.services}</div></div>
-  <div class="stat"><div class="stat-label">x402 records</div><div class="stat-value">${d.x402Records}</div></div>
-  <div class="stat"><div class="stat-label">Smoke</div><div class="stat-value">${smokeIcon} ${d.smokeOk}/${d.smokeTotal}</div></div>
-  <div class="stat"><div class="stat-label">Alerts 7d</div><div class="stat-value">${d.alerts7d}</div></div>
-  <div class="stat"><div class="stat-label">Incidents</div><div class="stat-value">${incidentBadge}</div></div>
-  <div class="stat"><div class="stat-label">Tasks done · P0/P1/P2</div><div class="stat-value">${d.taskCounts.p0.done}/${d.taskCounts.p0.total} · ${d.taskCounts.p1.done}/${d.taskCounts.p1.total} · ${d.taskCounts.p2.done}/${d.taskCounts.p2.total}</div></div>
-</div>
-
-<div class="card">
-  <div class="card-header">
-    <div class="card-title">Live Structure Mindmap</div>
-    <div class="card-meta">D1 + KV + bundled limits.ts · refresh 60s</div>
-  </div>
-  <div class="map-container">
-<pre class="mermaid">
-mindmap
-  root(("FT + AutoBiz<br/>${d.daysToLaunch}"))
-    Code &amp; Repos
-      ::icon(fa fa-code)
-      tool<br/>CF Workers
-        18 routes
-        5 jobs
-        i18n 5 locales
-      seo<br/>ICT GitHub Pages
-      autobiz<br/>orchestration
-    Infra
-      D1 db
-        users ${d.users}
-        services ${d.services}
-        alerts7d ${d.alerts7d}
-      KV namespace
-      Cron 4
-        smoke 30min
-        bazaar 1h
-        usage 6h
-        digest daily
-      Hooks 3
-        SessionStart
-        UserPromptSubmit
-        Stop ${smokeIcon} 5/9
-    Billing
-      Polar.sh MoR
-        webhook LIVE 5/8
-        PHFREE6MO 50
-      x402 paid API
-        ${d.x402Records} records
-        Bazaar indexed
-      사업자번호<br/>607-20-94796
-    Marketing
-      5 글
-        IH Twitter Reddit
-        ShowHN 5/19
-        Maker comment
-      PH 5/12 16:01 KST
-      비주얼 4
-      F5Bot 5 keywords
-    Autonomous
-      Smoke ${d.smokeOk}/${d.smokeTotal}
-        landing ${stateIcon(d.smokeStates[0])}
-        health ${stateIcon(d.smokeStates[1])}
-        x402 prov ${stateIcon(d.smokeStates[2])}
-        docs api ${stateIcon(d.smokeStates[3])}
-        openapi ${stateIcon(d.smokeStates[4])}
-        paid 402 ${stateIcon(d.smokeStates[5])}
-      Gmail 3-tier
-        Native filters 8
-        GAS 5min
-        Triage daemon 1h
-      Telegram alerts
-      Inbox dashboard
-    Memory
-      22 active
-      7 archive feedback
-      3 archive legacy
-      evidence-first 가드
-    External deps
-      Cloudflare
-      Polar.sh
-      CDP x402
-      Resend
-      Telegram
-      Microsoft Clarity
-      Google Workspace
-</pre>
-  </div>
-</div>
-
-<div class="footnote">
-  Last fetched ${d.timestamp}Z · auto-refresh 60s · ${d.daysToLaunch}
-</div>
-
-</div> <!-- page-wrap -->
-
-<script>
-mermaid.initialize({
-  startOnLoad: true,
-  theme: 'dark',
-  mindmap: { padding: 16, maxNodeWidth: 280 },
-  themeVariables: {
-    fontFamily: '-apple-system, system-ui, sans-serif',
-    primaryColor: '#1e293b',
-    primaryTextColor: '#e2e8f0',
-    primaryBorderColor: '#334155',
-    lineColor: '#475569',
-  },
-});
-setTimeout(() => location.reload(), 60000);
-</script>
-
-</body>
-</html>`;
+function buildPhaseDefs(d: any): Phase[] {
+  return [
+    { num: 1, icon: "🏗️", title: "Foundation", subtitle: "Compute · Storage · Runtime", items: [
+      { name: "Cloudflare Workers", note: "TypeScript ~3,800 LOC · isolate runtime", status: "live" },
+      { name: "Compatibility flags", note: "nodejs_compat · 2026-04-01 · workers_dev=true", status: "live" },
+      { name: "D1 SQLite", note: `12 tables · ${d.users}u · ${d.services}s · ${d.alerts7d}a7d · 0 incidents`, status: "live" },
+      { name: "KV namespace", note: "session/smoke/metrics/cron timestamps · expirationTtl 86400 for smoke", status: "live" },
+      { name: "Cron Triggers (4)", note: "*/30 smoke · 0 * * * * bazaar+metrics · 0 */6 usage · 0 0 digest", status: "live" },
+      { name: "wrangler.toml bindings", note: "DB + KV + 4 crons + APP_URL/RESEND_FROM vars", status: "live" },
+    ]},
+    { num: 2, icon: "🔐", title: "Identity & Auth", subtitle: "Magic link · Session · Admin gate", items: [
+      { name: "Magic link sign-in", note: "Resend transactional · 6-digit code · no password", status: "live" },
+      { name: "Token preview/consume split", note: "GET → preview · POST → consume (scanner-safe)", status: "live" },
+      { name: "Session cookie", note: "AES-256-GCM in D1 · master key in Workers Secrets", status: "live" },
+      { name: "ADMIN_EMAIL gate", note: "/admin only on email match · requireAdmin() guard", status: "live" },
+      { name: "Auth 6 fix (5/8)", note: "single-fire guard · IP+email rate · inline resend · 5 split errors · deploy 99bb875a", status: "live" },
+    ]},
+    { num: 3, icon: "🛣️", title: "Routes (19 active)", subtitle: "User-facing + API + agent + admin + utility", items: [
+      { name: "Marketing landing × 5 i18n", note: "/, /ko, /ja, /es, /de · 11/11/8/8/8 FAQ entries", status: "live" },
+      { name: "Auth surface", note: "/signup · /verify GET+POST · /auth/:token GET+POST · /api/auth/{logout,resend}", status: "live" },
+      { name: "User dashboard", note: "/dash · /account · /api/account/* · /api/billing/portal", status: "live" },
+      { name: "API operations", note: "/api/services/* · /api/alerts · /api/check-now · /api/test-alert", status: "live" },
+      { name: "Webhooks", note: "/webhooks/polar (LS+Paddle removed 5/9 · 235 dead lines)", status: "live" },
+      { name: "x402 paid (5 endpoints)", note: "/v1/providers · /v1/cloud/:p · /v1/ai/:p · /v1/limits/:p · /v1/compare", status: "live" },
+      { name: "x402 docs", note: "/v1/openapi.json · /docs/api", status: "live" },
+      { name: "Marketing assets", note: "/launch/{hero,dashboard,alerts,thumbnail}.png · demo.mp4 · /vs/datadog · /security", status: "live" },
+      { name: "Mission Control + 5 chapters", note: "/admin · /admin/{architecture,smoke,memory,logs} · /admin/api/*", status: "live" },
+      { name: "Inbox dashboard", note: "/inbox · /api/inbox/{sync,list,:id/done}", status: "live" },
+      { name: "Utility (10)", note: "/privacy · /terms · /sitemap.xml · /robots.txt · /favicon · /og.png · /llms.txt · /llms-full.txt · /status · /changelog", status: "live" },
+      { name: "External notify", note: "/notify · NOTIFY_API_KEY shared secret", status: "live" },
+    ]},
+    { num: 4, icon: "⏰", title: "Cron Jobs (5)", subtitle: "Autonomous monitoring + maintenance", items: [
+      { name: "Smoke (30min)", note: `${d.smokeOk}/${d.smokeTotal} OK · 6 endpoints · direct-handler 5/9 fix · last ${d.lastSmokeRun}`, status: "live" },
+      { name: "Bazaar Poll (1h)", note: "indexing detector · paired with metrics · ⏸ until first paid call", status: "wip" },
+      { name: "Hourly Metrics (1h)", note: "KV metrics:hourly:* snapshot · CF/Polar/x402 counts", status: "live" },
+      { name: "Services Usage Check (6h)", note: "runScheduledCheck · alerts at 80% threshold (default)", status: "live" },
+      { name: "Daily Digest (00:00 UTC = 09 KST)", note: "summary email to admin · Resend transactional", status: "live" },
+    ]},
+    { num: 5, icon: "💳", title: "Billing & Compliance", subtitle: "Polar MoR · 한국 사업자 · 세금계산서", items: [
+      { name: "Polar.sh (Merchant of Record)", note: "5/8 webhook LIVE · standardwebhooks raw bytes signing", status: "live" },
+      { name: "Stripe Connect Express", note: "KYC ✅ verified 5/9 · all 3 stages confirmed · ready", status: "live" },
+      { name: "PHFREE6MO discount", note: "50 redemptions · 6mo Pro free · $5→$0 · 5/9 incognito verified", status: "live" },
+      { name: "사업자등록번호", note: "607-20-94796 · 일반과세자 · 영세율 + 매입공제", status: "live" },
+      { name: "한국 세금계산서", note: "Hometax 1일 이내 발급 · ko/en/ja/es/de FAQ 명시 (5/9)", status: "live" },
+      { name: "부가세 신고", note: "반기 신고 · 7/25 첫 신고 · 1/25 두번째", status: "planned" },
+      { name: "i18n FAQ full parity", note: "ja/es/de 8 → 11 entries (en/ko 매칭)", status: "planned" },
+    ]},
+    { num: 6, icon: "🪙", title: "Agent Economy (x402)", subtitle: "Paid API · USDC settlement · Bazaar indexed", items: [
+      { name: "5 paid endpoints", note: "/v1/cloud/:p · /v1/ai/:p · /v1/limits/:p · /v1/providers · /v1/compare", status: "live" },
+      { name: "CDP facilitator", note: "api.cdp.coinbase.com/platform/v2/x402 · Ed25519 JWT · race-condition-free", status: "live" },
+      { name: "Coinbase Bazaar", note: `${d.x402Records} records · 20 providers · indexed within hours of deploy`, status: "live" },
+      { name: "USDC settlement", note: "Base mainnet · ~1-2s e2e · no API keys, no signups", status: "live" },
+      { name: "Pricing $0.005/call", note: "research-stage · Bazaar discoverability test", status: "wip" },
+      { name: "Base USDC 지갑", note: "0x5337f4b5bed8e379412Abb6498EdC2ebC95bb088 (X402_RECEIVING_ADDRESS)", status: "live" },
+      { name: "First USDC settle", note: "Bazaar trigger 24-48h after first agent purchase", status: "planned" },
+    ]},
+    { num: 7, icon: "📣", title: "Marketing & Distribution", subtitle: "PH 5/12 · 5+1 글 · ICT 30 posts", items: [
+      { name: "PH self-hunt 5/12", note: `16:01 KST · 07:01 UTC · 00:01 PDT · ${d.daysToLaunch} from now`, status: "wip" },
+      { name: "01 IndieHackers", note: "title + body · D-1 클립보드 prepare", status: "live" },
+      { name: "02 Twitter thread", note: "8-tweet build-in-public · 7pm KST publish (T+3h)", status: "live" },
+      { name: "03 Reddit r/indiehackers", note: "personal pain story · PH+4h publish (T+4h)", status: "live" },
+      { name: "04 Show HN (5/19 별도)", note: "x402-first narrative · Tue 14:00 UTC peak window", status: "planned" },
+      { name: "05 PH Maker comment v3", note: "Korean indie dev tone · b2b/세금계산서 ask 추가 (5/9)", status: "live" },
+      { name: "06 Bazaar listing", note: "Coinbase Bazaar submission copy", status: "live" },
+      { name: "비주얼 4 + demo.mp4", note: "/launch/{hero,dashboard,alerts,thumbnail}.png + demo.mp4 · KV serve", status: "live" },
+      { name: "F5Bot mention monitoring", note: "5 keywords · freetier sentinel · wndnjs3865 · x402 paid api", status: "live" },
+      { name: "ICT (indie-creator-toolkit)", note: "30 posts visual-rich · 5/7 founder override · standalone affiliate", status: "live" },
+      { name: "Hometax 세금계산서 sandbox", note: "D-1 22:30 KST 모의 발급 연습 (사용자)", status: "wip" },
+    ]},
+    { num: 8, icon: "🤖", title: "Autonomous Operations", subtitle: "Smoke · Gmail 3-tier · Telegram · Inbox", items: [
+      { name: "Smoke fail alert", note: "Telegram · 6h cooldown · recovery alert on transition", status: "live" },
+      { name: "Gmail Tier 1 — Native filters", note: "8 filters · auto label/archive/star", status: "live" },
+      { name: "Gmail Tier 2 — GAS triggers", note: "processInbox 5min · dailySummary 09 KST · weeklyCleanup Sun 03 KST", status: "live" },
+      { name: "Gmail Tier 3 — PRoot daemon", note: "1h triage · /tmp/claude_inbox_pending.json flag", status: "live" },
+      { name: "Inbox flag → Claude hook", note: "UserPromptSubmit surfaces critical mail next turn", status: "live" },
+      { name: "Telegram bot alerts", note: "chat ID 8749437676 · MarkdownV2 formatting", status: "live" },
+      { name: "/inbox dashboard", note: "1h synced view · mark-done · sync-now actions", status: "live" },
+    ]},
+    { num: 9, icon: "🧠", title: "AI Tooling — Memory & Hooks", subtitle: "claude-mem · 3 hooks · evidence-first guard", items: [
+      { name: "claude-mem 13.0.0", note: "Apache-2.0 (5/9 relicense) · Server Beta · MCP search/observations/timeline/smart_search", status: "live" },
+      { name: "SessionStart hook", note: "5/6 · D-N + identifiers + memory index + live x402 health", status: "live" },
+      { name: "UserPromptSubmit hook", note: "5/8 inbox flag + 5/9 강화 · trigger keyword → memory grep auto-inject", status: "live" },
+      { name: "Stop hook (5/9 신규)", note: "evidence-first self-verify · dual matching · stop_hook_active 가드 · 0 token cost · ~10-50ms latency", status: "live" },
+      { name: "Evidence-first 통합 가드", note: "5/9 7→1 통합 · 메모리:/확인:/출처:/추측: 라벨 강제 · ROADMAP_INSPIRED", status: "live" },
+      { name: "Memory inventory", note: "19 active (1 master + 1 guard + 17 state) + 10 archive (7 feedback + 3 legacy queues)", status: "live" },
+      { name: "Anthropic Dreams API", note: "Managed Agents waitlist · 5/13+ integration backlog", status: "planned" },
+    ]},
+    { num: 10, icon: "📊", title: "Observability & Admin", subtitle: "Mission Control · Clarity · Web Analytics", items: [
+      { name: "Mission Control + 6 chapters", note: "/admin · architecture (이 페이지) · smoke · memory · logs · inbox", status: "live" },
+      { name: "Microsoft Clarity", note: "5/9 LIVE · heatmaps · session replay · 30-day TTL", status: "live" },
+      { name: "Cloudflare Web Analytics", note: "CF_BEACON_TOKEN · privacy-first · no cookies", status: "live" },
+      { name: "D1 metric_snapshots", note: "manual + automated metric recording", status: "live" },
+      { name: "KV metrics:hourly:*", note: "rolling hourly counters · cron metrics job", status: "live" },
+      { name: "Tasks (D1)", note: `P0 ${d.taskCounts.p0.done}/${d.taskCounts.p0.total} · P1 ${d.taskCounts.p1.done}/${d.taskCounts.p1.total} · P2 ${d.taskCounts.p2.done}/${d.taskCounts.p2.total}`, status: "live" },
+      { name: "Incidents (D1)", note: `${d.incidents} open · /admin Mission Control feed`, status: "live" },
+      { name: "Alert log (D1)", note: `${d.alerts7d} in last 7d · /admin/logs full feed (latest 100)`, status: "live" },
+    ]},
+    { num: 11, icon: "🛡️", title: "Security & Secrets", subtitle: "14 secrets · AES-GCM · CSP headers", items: [
+      { name: "14 wrangler secrets (cloud)", note: "POLAR×5 · CDP×2 · RESEND · TELEGRAM×2 · CLARITY · MASTER_KEY · NOTIFY · ADMIN_EMAIL · X402_RECEIVING_ADDRESS", status: "secret" },
+      { name: "AES-256-GCM (D1 tokens)", note: "MASTER_KEY in Workers Secrets · separate from D1", status: "live" },
+      { name: "Read-only API tokens", note: "service tokens must be usage-scope · never write/admin", status: "live" },
+      { name: "HSTS preload", note: "Strict-Transport-Security: max-age=63072000 includeSubDomains preload", status: "live" },
+      { name: "Frame/MIME headers", note: "X-Frame-Options DENY · X-Content-Type-Options nosniff · Referrer-Policy strict-origin-when-cross-origin", status: "live" },
+      { name: "Privacy & Terms pages", note: "/privacy · /terms (public)", status: "live" },
+      { name: "Permissions-Policy", note: "geolocation=() camera=() microphone=()", status: "live" },
+      { name: "feedback_no_guessing_user_identity", note: "사용자 정보 추측 금지 (archive — 5/9 통합)", status: "archived" },
+    ]},
+    { num: 12, icon: "🌐", title: "External & Repos", subtitle: "8 integrations · 3 GitHub repos", items: [
+      { name: "Cloudflare", note: "Workers + D1 + KV + DNS + Web Analytics", status: "live" },
+      { name: "Polar.sh", note: "MoR + Stripe Connect + checkout + webhook + invoice PDF", status: "live" },
+      { name: "Coinbase CDP", note: "x402 facilitator · Ed25519 secret 등록 · Key ID 106c1e04...", status: "live" },
+      { name: "Resend", note: "transactional email · domain verified · DKIM/SPF/DMARC", status: "live" },
+      { name: "Telegram Bot API", note: "BotFather token · chat ID 8749437676", status: "live" },
+      { name: "Microsoft Clarity", note: "free analytics · 30-day session replay TTL", status: "live" },
+      { name: "Google Workspace", note: "Gmail GAS triggers · Drive · 3-tier filters", status: "live" },
+      { name: "F5Bot", note: "free mention monitoring · 5 keywords", status: "live" },
+      { name: "GitHub freetier-sentinel (public)", note: "tool main · 3 workflows (deploy/setup-cf/sync-secrets)", status: "live" },
+      { name: "GitHub autobiz (private)", note: "marketing/gmail/brief · RESTORE.md disaster recovery", status: "live" },
+      { name: "GitHub indie-creator-toolkit (public)", note: "ICT companion site · GitHub Pages", status: "live" },
+    ]},
+  ];
 }
+
+function statusPill(status: PhaseStatus): string {
+  const map: Record<PhaseStatus, { bg: string; text: string; label: string }> = {
+    live:     { bg: "bg-emerald-500/15", text: "text-emerald-400", label: "✅ LIVE" },
+    wip:      { bg: "bg-amber-500/15",   text: "text-amber-400",   label: "🚧 D-3" },
+    planned:  { bg: "bg-blue-500/15",    text: "text-blue-400",    label: "📅 5/13+" },
+    archived: { bg: "bg-slate-700/30",   text: "text-slate-400",   label: "📦 archive" },
+    secret:   { bg: "bg-rose-500/15",    text: "text-rose-400",    label: "🔒 secret" },
+  };
+  const s = map[status];
+  return `<span class="shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full ${s.bg} ${s.text}">${s.label}</span>`;
+}
+
+function renderPhaseCards(phases: Phase[]): string {
+  const card = (p: Phase) => {
+    const liveCount = p.items.filter((i) => i.status === "live").length;
+    const itemRows = p.items.map((it) => `
+      <li class="flex items-start justify-between gap-3 py-2 border-b border-slate-800 last:border-0">
+        <div class="min-w-0 flex-1">
+          <div class="text-sm text-slate-200 font-medium truncate">${it.name}</div>
+          <div class="text-[11px] text-slate-500 mt-0.5">${it.note}</div>
+        </div>
+        ${statusPill(it.status)}
+      </li>`).join("");
+    return `
+      <section class="bg-slate-900 border border-slate-800 rounded-lg p-5 flex flex-col">
+        <header class="flex items-start justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono text-slate-500">PHASE ${String(p.num).padStart(2, "0")}</span>
+              <span class="text-base">${p.icon}</span>
+            </div>
+            <h3 class="text-base font-semibold text-slate-100 mt-1">${p.title}</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">${p.subtitle}</p>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="text-lg font-mono font-semibold text-emerald-400">${liveCount}</div>
+            <div class="text-[10px] text-slate-500 uppercase tracking-wider">live</div>
+          </div>
+        </header>
+        <ul class="flex-1">${itemRows}</ul>
+      </section>`;
+  };
+
+  return `<section class="mb-6">
+  <h2 class="text-base font-semibold text-slate-100 mb-3">📚 Phase Detail (every component, no gaps)</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    ${phases.map(card).join("")}
+  </div>
+</section>`;
+}
+
 
 function stateIcon(s: any): string {
   if (!s) return "❔";
@@ -2208,40 +2240,54 @@ async function renderSmokePage(env: Env): Promise<string> {
   ${alertList}
 </section>
 `;
-  return chapterLayout("smoke", "🧪 Smoke", "Self-monitoring · 6 endpoint health · 5/9 direct-handler fix", body, { smokeOk: ok, smokeTotal: total, memoryCount: 22 });
+  return chapterLayout("smoke", "🧪 Smoke", "Self-monitoring · 6 endpoint health · 5/9 direct-handler fix", body, { smokeOk: ok, smokeTotal: total, memoryCount: 19 });
 }
 
 // Hardcoded memory inventory (CF Workers cannot read PRoot paths).
-// Sync this manually when memory layout changes.
+// Sync this manually when memory layout changes. Source: ls /root/.claude/projects/-root/memory/
 const MEMORY_INVENTORY = {
   master: [
-    { name: "MEMORY.md", note: "Index — 22 entries" },
+    { name: "MEMORY.md", note: "Index — 19 active entries" },
     { name: "resume_queue_2026_05_09.md", note: "5/9 priority queue (D-3)" },
   ],
   guards: [
-    { name: "feedback_evidence_first.md", note: "통합 가드 (5/9, 7→1)" },
+    { name: "feedback_evidence_first.md", note: "통합 가드 (5/9, 7→1) · 메모리:/확인:/출처:/추측: 라벨 강제" },
   ],
   state: [
-    { name: "freetier_sentinel_full_state.md", note: "stack + W0~W1" },
-    { name: "business_registration_decision.md", note: "사업자번호 607-20-94796" },
-    { name: "plan_c_x402_decision.md", note: "x402 paid API 1순위" },
-    { name: "affiliate_applications_status.md", note: "Amazon ✅ Kit ✅" },
-    { name: "ls_rejection_2026_05_07.md", note: "LS 거부 → Polar" },
-    { name: "polar_webhook_signing_spec.md", note: "raw bytes prefix" },
-    { name: "design_audit_2026_05_08.md", note: "18 sites + 16 HN" },
-    { name: "auth_system_audit_2026_05_08.md", note: "6 fix + 99bb875a" },
-    { name: "ph_launch_5_12_assets.md", note: "5편 글 + 비주얼" },
+    { name: "freetier_sentinel_full_state.md", note: "stack + W0~W1 진행" },
+    { name: "business_registration_decision.md", note: "사업자번호 607-20-94796 · 일반과세자 · 7/25 첫 신고" },
+    { name: "plan_c_x402_decision.md", note: "x402 paid API 1순위 · CDP migrated · SEO 폐기" },
+    { name: "affiliate_applications_status.md", note: "Amazon ✅ · Kit ✅ · Notion/Buttondown 대기" },
+    { name: "ls_rejection_2026_05_07.md", note: "LS 거부 → Stripe → Polar 전환" },
+    { name: "polar_webhook_signing_spec.md", note: "standardwebhooks raw bytes prefix · 5/8 LIVE 검증" },
+    { name: "design_audit_2026_05_08.md", note: "18 sites + 16 HN threads · 라이트테마 통일" },
+    { name: "auth_system_audit_2026_05_08.md", note: "6 fix · single-fire + rate-limit · 99bb875a" },
+    { name: "ph_launch_5_12_assets.md", note: "5편 글 + 비주얼 + Maker comment + runbook 링크" },
     { name: "gmail_automation_live.md", note: "3-tier filters/GAS/daemon" },
-    { name: "autonomous_layer_2026_05_06.md", note: "cron 4 + Skills" },
-    { name: "inbox_dashboard_system.md", note: "1h triage + /inbox" },
-    { name: "mission_control_dashboard.md", note: "/admin priority" },
-    { name: "marketing_automation_postlaunch.md", note: "30+ 항목 5/13+ 재평가" },
-    { name: "process_memory_curation_routine.md", note: "dream now trigger" },
-    { name: "claude_mem_13_upgrade_2026_05_09.md", note: "12.7.5→13.0.0" },
+    { name: "autonomous_layer_2026_05_06.md", note: "CF cron 4 + Skills + SessionStart Hook" },
+    { name: "inbox_dashboard_system.md", note: "1h triage + Telegram + /inbox dashboard" },
+    { name: "mission_control_dashboard.md", note: "/admin priority + 라이브 + Quick actions" },
+    { name: "marketing_automation_postlaunch.md", note: "30+ 항목 5/13+ 재평가 backlog" },
+    { name: "process_memory_curation_routine.md", note: "dream now/세션 종료 트리거 · Anthropic Dreams 아님" },
+    { name: "claude_mem_13_upgrade_2026_05_09.md", note: "12.7.5→13.0.0 · Apache-2.0 · 5/9 활성화" },
   ],
   archive: {
     feedback: 7,
+    feedback_files: [
+      "feedback_no_guessing_user_identity.md",
+      "feedback_proactive_completeness_check.md",
+      "feedback_no_false_completion_and_clear_writing.md",
+      "feedback_rigorous_analysis.md",
+      "feedback_outcomes_first.md",
+      "feedback_perf_multi_angle_measurement.md",
+      "feedback_self_monitoring_pattern.md",
+    ],
     legacy_queues: 3,
+    legacy_queue_files: [
+      "resume_queue_2026_05_06.md",
+      "freetier_sentinel_resume_queue.md",
+      "freetier_sentinel_status.md",
+    ],
   },
 };
 
