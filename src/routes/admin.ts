@@ -358,9 +358,30 @@ function renderDashboard(tasks: any[], status: any, notes: string, alerts: any[]
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Pretendard", system-ui, sans-serif; }
   input[type="checkbox"]:checked { accent-color: #3b82f6; }
+  .chapter-nav { position: sticky; top: 0; z-index: 50; background: rgba(2,6,23,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #1e293b; }
+  .chapter-nav-inner { max-width: 80rem; margin: 0 auto; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; }
+  .chapter-tab { display: inline-flex; align-items: center; gap: 6px; padding: 14px 14px 12px; font-size: 13px; font-weight: 500; color: #94a3b8; border-bottom: 2px solid transparent; text-decoration: none; white-space: nowrap; transition: color .15s, border-color .15s, background-color .15s; }
+  .chapter-tab:hover { color: #e2e8f0; background: rgba(255,255,255,.03); }
+  .chapter-tab.active { color: #f8fafc; border-bottom-color: #3b82f6; }
+  .chapter-tab .badge { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; background: #1e293b; color: #94a3b8; }
+  .chapter-tab.coming { color: #475569; cursor: not-allowed; }
+  .chapter-tab.coming:hover { color: #475569; background: transparent; }
 </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
+
+<!-- Chapter navigation (shared layout) -->
+<nav class="chapter-nav">
+  <div class="chapter-nav-inner">
+    <a href="/admin" class="chapter-tab active">📋 Mission Control</a>
+    <a href="/admin/architecture" class="chapter-tab">🗺️ Architecture</a>
+    <a href="/admin/smoke" class="chapter-tab">🧪 Smoke <span class="badge">6</span></a>
+    <a href="/admin/memory" class="chapter-tab">🧠 Memory <span class="badge">22</span></a>
+    <a href="/admin/logs" class="chapter-tab">📜 Logs</a>
+    <a href="/inbox" class="chapter-tab">📬 Inbox</a>
+  </div>
+</nav>
+
 <div class="max-w-7xl mx-auto p-4 md:p-6">
 
   <!-- Header -->
@@ -377,7 +398,6 @@ function renderDashboard(tasks: any[], status: any, notes: string, alerts: any[]
           <div class="text-xs text-slate-400">PH Launch (5/12)</div>
           <div class="text-2xl font-bold ${daysToLaunch <= 1 ? "text-red-400" : daysToLaunch <= 3 ? "text-amber-400" : "text-emerald-400"}">${dStr}</div>
         </div>
-        <a href="/admin/architecture" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded border border-slate-700 text-sm" title="Architecture mindmap">🗺️ Architecture</a>
         <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded border border-slate-700 text-sm" title="Refresh">↻</button>
       </div>
     </div>
@@ -1561,6 +1581,18 @@ export async function handleAdmin(req: Request, env: Env): Promise<Response> {
     return new Response(body, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
   }
 
+  // Smoke detail (live KV + alert log)
+  if (path === "/admin/smoke" && method === "GET") {
+    const body = await renderSmokePage(env);
+    return new Response(body, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+  }
+
+  // Memory & Logs placeholders (full impl deferred to 5/13+)
+  if ((path === "/admin/memory" || path === "/admin/logs") && method === "GET") {
+    const body = renderPlaceholderChapter(path);
+    return new Response(body, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+  }
+
   // Main dashboard
   if (path === "/admin" && method === "GET") {
     const tasks = await env.DB.prepare("SELECT * FROM tasks ORDER BY priority, ord, created_at").all<any>();
@@ -1740,43 +1772,73 @@ function renderArchitecturePage(d: any): string {
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: #0b0f1a; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif; }
-  .topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: #0f172a; border-bottom: 1px solid #1e293b; position: sticky; top: 0; z-index: 10; }
-  .topbar h1 { margin: 0; font-size: 18px; font-weight: 600; }
-  .topbar .meta { display: flex; gap: 14px; font-size: 12px; color: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .topbar a { color: #60a5fa; text-decoration: none; padding: 6px 12px; border: 1px solid #1e293b; border-radius: 6px; font-size: 13px; }
-  .topbar a:hover { background: #1e293b; }
-  .stat-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; padding: 12px 24px; background: #0f172a; border-bottom: 1px solid #1e293b; font-size: 12px; }
-  .stat { background: #0b1224; border: 1px solid #1e293b; border-radius: 6px; padding: 8px 10px; }
-  .stat-label { color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .stat-value { font-size: 16px; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 2px; }
-  .map-container { padding: 24px; min-height: calc(100vh - 200px); display: flex; align-items: center; justify-content: center; overflow: auto; }
+  html, body { margin: 0; padding: 0; background: #020617; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Pretendard', system-ui, sans-serif; }
+  .chapter-nav { position: sticky; top: 0; z-index: 50; background: rgba(2,6,23,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #1e293b; }
+  .chapter-nav-inner { max-width: 80rem; margin: 0 auto; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; }
+  .chapter-tab { display: inline-flex; align-items: center; gap: 6px; padding: 14px 14px 12px; font-size: 13px; font-weight: 500; color: #94a3b8; border-bottom: 2px solid transparent; text-decoration: none; white-space: nowrap; transition: color .15s, border-color .15s, background-color .15s; }
+  .chapter-tab:hover { color: #e2e8f0; background: rgba(255,255,255,.03); }
+  .chapter-tab.active { color: #f8fafc; border-bottom-color: #3b82f6; }
+  .chapter-tab .badge { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; background: #1e293b; color: #94a3b8; }
+  .page-wrap { max-width: 80rem; margin: 0 auto; padding: 16px; }
+  .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin: 8px 0 16px; gap: 16px; flex-wrap: wrap; }
+  .page-title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .page-title p { margin: 4px 0 0; font-size: 13px; color: #94a3b8; }
+  .page-actions { display: flex; gap: 8px; font-size: 12px; color: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 12px 0 24px; }
+  .stat { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px 14px; }
+  .stat-label { color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
+  .stat-value { font-size: 18px; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; color: #f1f5f9; }
+  .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .card-title { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+  .card-meta { font-size: 11px; color: #64748b; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .map-container { display: flex; justify-content: center; padding: 12px 0; overflow: auto; }
   .mermaid { font-size: 14px; max-width: 100%; }
-  .footnote { padding: 12px 24px; font-size: 11px; color: #64748b; text-align: center; border-top: 1px solid #1e293b; }
+  .footnote { font-size: 11px; color: #64748b; text-align: center; padding: 16px 0; border-top: 1px solid #1e293b; margin-top: 16px; }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <h1>🗺️ Architecture · FreeTier Sentinel + AutoBiz</h1>
-  <div class="meta">
+<nav class="chapter-nav">
+  <div class="chapter-nav-inner">
+    <a href="/admin" class="chapter-tab">📋 Mission Control</a>
+    <a href="/admin/architecture" class="chapter-tab active">🗺️ Architecture</a>
+    <a href="/admin/smoke" class="chapter-tab">🧪 Smoke <span class="badge">${d.smokeOk}/${d.smokeTotal}</span></a>
+    <a href="/admin/memory" class="chapter-tab">🧠 Memory <span class="badge">22</span></a>
+    <a href="/admin/logs" class="chapter-tab">📜 Logs</a>
+    <a href="/inbox" class="chapter-tab">📬 Inbox</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+
+<header class="page-header">
+  <div class="page-title">
+    <h1>🗺️ Architecture</h1>
+    <p>Live structural map of FreeTier Sentinel + AutoBiz · auto-refresh 60s</p>
+  </div>
+  <div class="page-actions">
     <span>${d.timestamp}Z</span>
     <span>${d.daysToLaunch}</span>
-    <a href="/admin">← Mission Control</a>
   </div>
-</div>
+</header>
 
-<div class="stat-bar">
+<div class="stat-grid">
   <div class="stat"><div class="stat-label">Users</div><div class="stat-value">${d.users}</div></div>
   <div class="stat"><div class="stat-label">Services tracked</div><div class="stat-value">${d.services}</div></div>
   <div class="stat"><div class="stat-label">x402 records</div><div class="stat-value">${d.x402Records}</div></div>
-  <div class="stat"><div class="stat-label">Smoke 6/6</div><div class="stat-value">${smokeIcon} ${d.smokeOk}/${d.smokeTotal}</div></div>
+  <div class="stat"><div class="stat-label">Smoke</div><div class="stat-value">${smokeIcon} ${d.smokeOk}/${d.smokeTotal}</div></div>
   <div class="stat"><div class="stat-label">Alerts 7d</div><div class="stat-value">${d.alerts7d}</div></div>
   <div class="stat"><div class="stat-label">Incidents</div><div class="stat-value">${incidentBadge}</div></div>
-  <div class="stat"><div class="stat-label">P0/P1/P2</div><div class="stat-value">${d.taskCounts.p0.done}/${d.taskCounts.p0.total} · ${d.taskCounts.p1.done}/${d.taskCounts.p1.total} · ${d.taskCounts.p2.done}/${d.taskCounts.p2.total}</div></div>
+  <div class="stat"><div class="stat-label">Tasks done · P0/P1/P2</div><div class="stat-value">${d.taskCounts.p0.done}/${d.taskCounts.p0.total} · ${d.taskCounts.p1.done}/${d.taskCounts.p1.total} · ${d.taskCounts.p2.done}/${d.taskCounts.p2.total}</div></div>
 </div>
 
-<div class="map-container">
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Live Structure Mindmap</div>
+    <div class="card-meta">D1 + KV + bundled limits.ts · refresh 60s</div>
+  </div>
+  <div class="map-container">
 <pre class="mermaid">
 mindmap
   root(("FT + AutoBiz<br/>${d.daysToLaunch}"))
@@ -1847,11 +1909,14 @@ mindmap
       Microsoft Clarity
       Google Workspace
 </pre>
+  </div>
 </div>
 
 <div class="footnote">
-  Auto-refresh every 60s · Last fetched ${d.timestamp}Z · Live data from D1 + KV + bundled limits.ts
+  Last fetched ${d.timestamp}Z · auto-refresh 60s · ${d.daysToLaunch}
 </div>
+
+</div> <!-- page-wrap -->
 
 <script>
 mermaid.initialize({
@@ -1878,4 +1943,200 @@ function stateIcon(s: any): string {
   if (s.status === "ok") return "✅";
   if (s.status === "fail") return "🚨";
   return "❔";
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// Shared chapter layout (used by Smoke + placeholders)
+// ──────────────────────────────────────────────────────────────────────────
+
+function chapterLayout(activeId: string, title: string, subtitle: string, body: string, smokeOk?: number, smokeTotal?: number): string {
+  const tabs = [
+    { id: "mission", href: "/admin", label: "📋 Mission Control" },
+    { id: "architecture", href: "/admin/architecture", label: "🗺️ Architecture" },
+    { id: "smoke", href: "/admin/smoke", label: `🧪 Smoke${smokeOk !== undefined ? ` <span class="badge">${smokeOk}/${smokeTotal}</span>` : ""}` },
+    { id: "memory", href: "/admin/memory", label: '🧠 Memory <span class="badge">22</span>' },
+    { id: "logs", href: "/admin/logs", label: "📜 Logs" },
+    { id: "inbox", href: "/inbox", label: "📬 Inbox" },
+  ];
+  const navHtml = tabs.map((t) => `<a href="${t.href}" class="chapter-tab${t.id === activeId ? " active" : ""}">${t.label}</a>`).join("");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>${title} · FreeTier Sentinel</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #020617; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Pretendard', system-ui, sans-serif; }
+  .chapter-nav { position: sticky; top: 0; z-index: 50; background: rgba(2,6,23,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #1e293b; }
+  .chapter-nav-inner { max-width: 80rem; margin: 0 auto; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; }
+  .chapter-tab { display: inline-flex; align-items: center; gap: 6px; padding: 14px 14px 12px; font-size: 13px; font-weight: 500; color: #94a3b8; border-bottom: 2px solid transparent; text-decoration: none; white-space: nowrap; transition: color .15s, border-color .15s, background-color .15s; }
+  .chapter-tab:hover { color: #e2e8f0; background: rgba(255,255,255,.03); }
+  .chapter-tab.active { color: #f8fafc; border-bottom-color: #3b82f6; }
+  .chapter-tab .badge { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; background: #1e293b; color: #94a3b8; }
+  .page-wrap { max-width: 80rem; margin: 0 auto; padding: 16px; }
+  .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin: 8px 0 16px; gap: 16px; flex-wrap: wrap; }
+  .page-title h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .page-title p { margin: 4px 0 0; font-size: 13px; color: #94a3b8; }
+  .page-actions { display: flex; gap: 8px; font-size: 12px; color: #94a3b8; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 12px 0 24px; }
+  .stat { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px 14px; }
+  .stat-label { color: #64748b; font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
+  .stat-value { font-size: 18px; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; margin-top: 4px; color: #f1f5f9; }
+  .card { background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .card-title { font-size: 14px; font-weight: 600; color: #e2e8f0; }
+  .card-meta { font-size: 11px; color: #64748b; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1e293b; font-size: 13px; }
+  .row:last-child { border-bottom: 0; }
+  .row .name { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: #cbd5e1; }
+  .row .meta { color: #64748b; font-size: 11px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .pill { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; }
+  .pill-ok { background: rgba(16,185,129,0.15); color: #34d399; }
+  .pill-fail { background: rgba(239,68,68,0.15); color: #f87171; }
+  .pill-unknown { background: rgba(100,116,139,0.15); color: #94a3b8; }
+  .empty { padding: 40px 16px; text-align: center; color: #64748b; }
+  .empty h2 { margin: 8px 0 6px; font-size: 16px; color: #cbd5e1; font-weight: 600; }
+  .empty p { margin: 4px 0; font-size: 13px; }
+  .footnote { font-size: 11px; color: #64748b; text-align: center; padding: 16px 0; border-top: 1px solid #1e293b; margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<nav class="chapter-nav">
+  <div class="chapter-nav-inner">${navHtml}</div>
+</nav>
+
+<div class="page-wrap">
+
+<header class="page-header">
+  <div class="page-title">
+    <h1>${title}</h1>
+    <p>${subtitle}</p>
+  </div>
+  <div class="page-actions">
+    <span>${new Date().toISOString().slice(0, 19)}Z</span>
+  </div>
+</header>
+
+${body}
+
+</div>
+
+</body>
+</html>`;
+}
+
+async function renderSmokePage(env: Env): Promise<string> {
+  // Reuse architecture data fetcher (subset)
+  const smokeKeys = ["landing", "health", "x402-providers", "docs-api", "openapi", "x402-paid-402"];
+  const smokeStates = await Promise.all(
+    smokeKeys.map(async (k) => {
+      const v = await env.KV.get(`smoke:${k}`).catch(() => null);
+      try { return v ? { name: k, ...JSON.parse(v) } : { name: k, status: "unknown" }; }
+      catch { return { name: k, status: "unknown" }; }
+    }),
+  );
+  const ok = smokeStates.filter((s) => s.status === "ok").length;
+  const total = smokeStates.length;
+
+  // Recent alerts from alert_log filtered to smoke source
+  const alertRows = await env.DB.prepare(
+    `SELECT * FROM alert_log WHERE source LIKE '%smoke%' OR message LIKE '%SMOKE%' OR message LIKE '%Recovery%' ORDER BY id DESC LIMIT 30`,
+  ).all<any>().catch(() => ({ results: [] }));
+
+  const cronLast = await env.KV.get("cron:last:smoke").catch(() => null);
+  const lastRun = cronLast ? new Date(parseInt(cronLast) * 1000).toISOString().slice(0, 16) : "—";
+
+  const targetRows = smokeStates.map((s) => {
+    const cls = s.status === "ok" ? "pill-ok" : s.status === "fail" ? "pill-fail" : "pill-unknown";
+    const lastAlertStr = s.lastAlert ? new Date(s.lastAlert * 1000).toISOString().slice(5, 16) : "—";
+    return `<div class="row">
+      <span class="name">${s.name}</span>
+      <span class="meta">last alert ${lastAlertStr}</span>
+      <span class="pill ${cls}">${s.status}</span>
+    </div>`;
+  }).join("");
+
+  const alertList = (alertRows.results || []).slice(0, 30).map((a: any) => {
+    const ts = a.created_at ? new Date(a.created_at * 1000).toISOString().slice(5, 16) : "—";
+    return `<div class="row">
+      <span class="meta">${ts}</span>
+      <span class="name" style="flex:1; padding-left:12px; white-space: nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(a.message || "")}</span>
+    </div>`;
+  }).join("") || `<div class="empty"><p>No smoke-related alerts recorded.</p></div>`;
+
+  const body = `
+<div class="stat-grid">
+  <div class="stat"><div class="stat-label">Endpoints OK</div><div class="stat-value">${ok}/${total}</div></div>
+  <div class="stat"><div class="stat-label">Last cron run</div><div class="stat-value">${lastRun}</div></div>
+  <div class="stat"><div class="stat-label">Alert cooldown</div><div class="stat-value">6h</div></div>
+  <div class="stat"><div class="stat-label">Probe mode</div><div class="stat-value">direct handler</div></div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">6 Endpoint States</div>
+    <div class="card-meta">KV smoke:* · refreshed every 30 min</div>
+  </div>
+  ${targetRows}
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Recent smoke-related alerts (30)</div>
+    <div class="card-meta">D1 alert_log · descending</div>
+  </div>
+  ${alertList}
+</div>
+`;
+  return chapterLayout("smoke", "🧪 Smoke", "Self-monitoring · 6 endpoint health · 5/9 direct-handler fix", body, ok, total);
+}
+
+function renderPlaceholderChapter(path: string): string {
+  const config: Record<string, { title: string; subtitle: string; body: string; activeId: string }> = {
+    "/admin/memory": {
+      activeId: "memory",
+      title: "🧠 Memory",
+      subtitle: "Memory file explorer — full implementation deferred to 5/13+",
+      body: `
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Why placeholder</div>
+    <div class="card-meta">5/13+ backlog</div>
+  </div>
+  <p style="color:#cbd5e1; font-size:13px; line-height:1.6;">
+    Memory files live in <code style="background:#1e293b; padding:2px 6px; border-radius:4px;">/root/.claude/projects/-root/memory/</code>
+    on the local PRoot environment. CF Workers cannot read those paths — a future API will sync the index to D1.
+  </p>
+  <p style="color:#94a3b8; font-size:12px; margin-top:12px;">
+    Until then, see Mission Control's "Memory links" panel or open files locally with claude-mem MCP search.
+  </p>
+</div>`,
+    },
+    "/admin/logs": {
+      activeId: "logs",
+      title: "📜 Logs",
+      subtitle: "Full alert log + activity feed — full implementation deferred to 5/13+",
+      body: `
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Why placeholder</div>
+    <div class="card-meta">5/13+ backlog</div>
+  </div>
+  <p style="color:#cbd5e1; font-size:13px; line-height:1.6;">
+    The Mission Control feed shows the latest 20 alerts. A full searchable log
+    (1000+ rows, filtering by source/severity, export) belongs here.
+  </p>
+  <p style="color:#94a3b8; font-size:12px; margin-top:12px;">
+    Smoke alerts: see <a href="/admin/smoke" style="color:#60a5fa;">🧪 Smoke</a>. All alerts: D1 <code style="background:#1e293b; padding:2px 6px; border-radius:4px;">alert_log</code> table.
+  </p>
+</div>`,
+    },
+  };
+  const c = config[path] || config["/admin/logs"];
+  return chapterLayout(c.activeId, c.title, c.subtitle, c.body);
 }
