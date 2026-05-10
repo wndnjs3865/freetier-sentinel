@@ -1903,49 +1903,72 @@ ${toolsGrid}
       <span class="px-2 py-0.5 rounded-full bg-slate-700/30 text-slate-400">📦 아카이브</span>
     </div>
   </div>
-  <p class="text-[11px] text-slate-500 mb-3">출처: <a href="https://c4model.com" class="text-blue-400 hover:underline">C4 Model</a> via <a href="https://github.com/mermaid-js/mermaid" class="text-blue-400 hover:underline">mermaid-js/mermaid</a> — Context diagram (Person + System + Boundary + Relationship). 시스템 경계 외부의 사용자·에이전트와 외부 서비스 연결을 표준 형태로.</p>
-  <div class="overflow-x-auto py-3 bg-slate-950 rounded-lg p-4">
+  <p class="text-[11px] text-slate-500 mb-3">출처: <a href="https://c4model.com" class="text-blue-400 hover:underline">C4 Model</a> via <a href="https://github.com/mermaid-js/mermaid" class="text-blue-400 hover:underline">mermaid-js/mermaid</a> — Context diagram. 라운드 노드 + 그라데이션 cluster + transparent 배경 (모던 디자인).</p>
+  <div class="overflow-x-auto py-3">
 <pre class="mermaid text-sm">
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'background': 'transparent',
+    'primaryColor': '#1e293b',
+    'primaryTextColor': '#f1f5f9',
+    'primaryBorderColor': '#475569',
+    'lineColor': '#64748b',
+    'secondaryColor': '#0f172a',
+    'tertiaryColor': '#0b1224',
+    'mainBkg': '#1e293b',
+    'clusterBkg': 'rgba(15, 23, 42, 0.4)',
+    'clusterBorder': '#334155',
+    'fontFamily': 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+    'fontSize': '13px'
+  },
+  'flowchart': {
+    'curve': 'basis',
+    'padding': 20,
+    'nodeSpacing': 50,
+    'rankSpacing': 60
+  }
+}}%%
 graph TB
-    classDef user fill:#1e293b,stroke:#64748b,color:#e2e8f0,stroke-width:2px
-    classDef edge fill:#0c4a6e,stroke:#0ea5e9,color:#e0f2fe,stroke-width:2px
-    classDef core fill:#1e3a8a,stroke:#3b82f6,color:#dbeafe,stroke-width:3px,font-weight:bold
-    classDef data fill:#064e3b,stroke:#10b981,color:#d1fae5,stroke-width:2px
-    classDef ext fill:#451a03,stroke:#f59e0b,color:#fef3c7,stroke-width:2px
-    classDef ai fill:#3b0764,stroke:#a855f7,color:#f3e8ff,stroke-width:2px
+    classDef user fill:#1e293b,stroke:#94a3b8,color:#f1f5f9,stroke-width:2px,rx:24,ry:24
+    classDef edge fill:#0c4a6e,stroke:#38bdf8,color:#e0f2fe,stroke-width:2px,rx:14,ry:14
+    classDef core fill:#1e40af,stroke:#60a5fa,color:#dbeafe,stroke-width:3px,rx:14,ry:14
+    classDef data fill:#065f46,stroke:#34d399,color:#d1fae5,stroke-width:2px,rx:14,ry:14
+    classDef ext fill:#7c2d12,stroke:#fb923c,color:#fed7aa,stroke-width:2px,rx:14,ry:14
+    classDef ai fill:#581c87,stroke:#c084fc,color:#f3e8ff,stroke-width:2px,rx:14,ry:14
 
-    USER([👤 사용자])
-    AGENT([🤖 AI 에이전트])
-    CRON([⏰ Cron 4종])
-    CLAUDE([💻 Claude Code])
+    USER(("👤<br/>사용자"))
+    AGENT(("🤖<br/>AI 에이전트"))
+    CRON(("⏰<br/>Cron 4종"))
+    CLAUDE(("💻<br/>Claude Code"))
 
-    subgraph CF [☁️ Cloudflare 인프라]
+    subgraph CF ["☁️ Cloudflare 인프라"]
       direction TB
-      EDGE[CF Edge<br/>HSTS · DDoS · Cache]
-      WORKER[Worker isolate<br/>TS 3,800줄 · 19 routes]
-      D1[(D1 SQLite<br/>12 tables)]
-      KV[(KV namespace<br/>session · smoke)]
+      EDGE("CF Edge<br/><span style='font-size:10px'>HSTS · DDoS · Cache</span>")
+      WORKER("⚡ Worker isolate<br/><span style='font-size:10px'>TS 3,800줄 · 19 routes</span>")
+      D1[("D1 SQLite<br/>12 tables")]
+      KV[("KV namespace<br/>session · smoke")]
       EDGE --> WORKER
       WORKER --> D1
       WORKER --> KV
     end
 
-    subgraph EXT [🌐 외부 서비스 8종]
+    subgraph EXT ["🌐 외부 서비스 8종"]
       direction TB
-      POLAR[💳 Polar MoR<br/>+ Stripe Connect]
-      CDP[🪙 Coinbase CDP<br/>x402 facilitator]
-      RESEND[✉️ Resend<br/>매직링크]
-      TG[📨 Telegram Bot]
-      CLARITY[📊 MS Clarity]
-      GMAIL[📬 Gmail GAS]
-      F5[🔍 F5Bot]
-      GITHUB[(🐙 GitHub<br/>3 repos)]
+      POLAR("💳 Polar MoR<br/><span style='font-size:10px'>+ Stripe Connect</span>")
+      CDP("🪙 Coinbase CDP<br/><span style='font-size:10px'>x402 facilitator</span>")
+      RESEND("✉️ Resend<br/><span style='font-size:10px'>매직링크</span>")
+      TG("📨 Telegram Bot")
+      CLARITY("📊 MS Clarity")
+      GMAIL("📬 Gmail GAS")
+      F5("🔍 F5Bot")
+      GITHUB[("🐙 GitHub<br/>3 repos")]
     end
 
-    subgraph AI [🧠 AI 도구·로컬]
+    subgraph AI ["🧠 AI 도구·로컬"]
       direction TB
-      HOOKS[🪝 3 Hooks]
-      MEM[(claude-mem 13.0.0<br/>19 active + 10 archive)]
+      HOOKS("🪝 3 Hooks")
+      MEM[("claude-mem 13.0.0<br/>19 + 10 archive")]
     end
 
     USER ==>|HTTPS| EDGE
@@ -1972,8 +1995,27 @@ graph TB
     class HOOKS,MEM ai
 </pre>
   </div>
-  <p class="text-[10px] text-slate-500 mt-3 text-center">📐 좌상단(사용자) → 우(외부 서비스) · 점선=비동기 · 굵은 화살표(==>)=핵심 경로 · 색상별 group</p>
+  <p class="text-[10px] text-slate-500 mt-3 text-center">📐 둥근 모서리 + 그라데이션 cluster · 점선 = 비동기 · 굵은 화살표 ==> = 핵심 경로 · 색상별 group</p>
 </section>
+
+<style>
+  /* Mermaid SVG modern polish — transparent bg + drop shadow on nodes */
+  .mermaid svg { background: transparent !important; }
+  .mermaid .cluster rect {
+    fill: rgba(15, 23, 42, 0.5) !important;
+    stroke: rgba(51, 65, 85, 0.6) !important;
+    stroke-width: 1px !important;
+    rx: 16px;
+    ry: 16px;
+    filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.4));
+  }
+  .mermaid .cluster text { font-weight: 600 !important; font-size: 12px !important; }
+  .mermaid .node rect, .mermaid .node circle, .mermaid .node ellipse, .mermaid .node polygon, .mermaid .node path {
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  }
+  .mermaid .edgeLabel { background-color: #0f172a !important; color: #94a3b8 !important; padding: 2px 6px !important; border-radius: 4px !important; font-size: 10px !important; }
+  .mermaid .flowchart-link { stroke-width: 1.5px !important; }
+</style>
 
 ${phaseCardsHtml}
 
