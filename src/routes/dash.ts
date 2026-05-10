@@ -1087,16 +1087,28 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
         customer_email: user.email,
         "metadata[user_id]": String(user.id),
       });
+      // shouldShowUpgradePrompt logic (billing/service.ts) — 한도 임박 강조
+      const svcCount = (services.results || []).length;
+      const quotaUrgent = svcCount >= 2;
+      const headerCopy = quotaUrgent
+        ? `You're on Free <span class="pro-pill">${svcCount}/3 services — 1 left</span>`
+        : `You're on Free <span class="pro-pill">3 services · 12h polling</span>`;
+      const subCopy = quotaUrgent
+        ? `${svcCount}/3 services 사용 중 — 한 개 더 추가하면 한도 도달. 무제한 + hourly polling + Discord/Telegram alerts for $5/month.`
+        : `Unlock unlimited services, hourly polling, and Discord + Telegram alerts for $5/month — less than one cup of coffee.`;
       return `<div class="upgrade">
         <div class="upgrade-text">
-          <h3>You're on Free <span class="pro-pill">3 services · 12h polling</span></h3>
-          <p>Unlock unlimited services, hourly polling, and Discord + Telegram alerts for $5/month — less than one cup of coffee.</p>
+          <h3>${headerCopy}</h3>
+          <p>${subCopy}</p>
           <ul class="upgrade-feats">
             <li>${checkSvg} Unlimited services</li>
             <li>${checkSvg} Hourly checks</li>
             <li>${checkSvg} 30-day history</li>
             <li>${checkSvg} Cancel anytime · 7-day refund</li>
           </ul>
+          <div style="margin-top: 12px; padding: 8px 12px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; font-size: 12px; color: #fbbf24;">
+            🎟️ <strong>PH launch promo</strong>: code <code style="background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 3px; font-family: ui-monospace, Menlo, monospace;">PHFREE6MO</code> — first 50 sign-ups get Pro free for 6 months.
+          </div>
         </div>
         <div class="upgrade-actions">
           <a href="/account" class="btn-up-ghost">Compare plans</a>

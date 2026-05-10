@@ -1404,6 +1404,18 @@ ${beacon}
   </div>
 </nav>
 
+<!-- PHFREE6MO promo banner — first 50 PH hunters (D-009) -->
+<div style="background: linear-gradient(90deg, rgba(245,158,11,0.12), rgba(168,85,247,0.12)); border-bottom: 1px solid rgba(245,158,11,0.25); padding: 10px 16px; text-align: center; font-size: 13px; line-height: 1.5;">
+  <span style="font-weight: 600;">🎟️ Product Hunt launch promo</span>
+  <span style="color: #94a3b8; margin: 0 8px;">·</span>
+  <span>First 50 sign-ups: <strong style="color: #fbbf24;">Pro free for 6 months</strong></span>
+  <span style="color: #94a3b8; margin: 0 8px;">·</span>
+  <span>Code <code style="background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, Menlo, monospace; color: #fbbf24;">PHFREE6MO</code></span>
+  <span style="color: #94a3b8; margin: 0 8px; display: inline-block;">·</span>
+  <a href="https://buy.polar.sh/polar_cl_NZo8xnzthAKCBJcUMLXonHnSBzRdEN7pkGuWe2p34mV" style="color: #a855f7; font-weight: 600; text-decoration: none;">Claim now →</a>
+  ${locale === "ko" ? '<br/><span style="color: #94a3b8; font-size: 12px;">🇰🇷 한국 사업자 — 영문 PDF invoice 자동 + 매출세금계산서 발급 가능 (사업자번호 607-20-94796)</span>' : ""}
+</div>
+
 <header class="hero">
   <div class="hero-grid"></div>
   <div class="container">
@@ -1420,6 +1432,12 @@ ${beacon}
       <span>${t.hero_micro_2}</span>
       <span class="sep">·</span>
       <span>${t.hero_micro_3}</span>
+    </div>
+    <!-- x402 paid API ribbon (agent economy, D-007) -->
+    <div style="margin-top: 18px; display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.25); border-radius: 999px; font-size: 12px; color: #c4b5fd;">
+      <span>🪙</span>
+      <span>Also: paid API for AI agents on Coinbase Bazaar</span>
+      <a href="/docs/api" style="color: #a855f7; text-decoration: none; font-weight: 600;">→ docs</a>
     </div>
   </div>
 
@@ -1607,7 +1625,10 @@ ${freeFeaturesHTML}
         <ul>
 ${proFeaturesHTML}
         </ul>
-        <a href="#" onclick="document.querySelector('.hero-form input').focus(); window.scrollTo({top:0,behavior:'smooth'}); return false;" class="cta">${t.tier_pro_cta}</a>
+        <a href="https://buy.polar.sh/polar_cl_NZo8xnzthAKCBJcUMLXonHnSBzRdEN7pkGuWe2p34mV" class="cta">${t.tier_pro_cta} →</a>
+        <div style="margin-top: 10px; font-size: 11px; color: #fbbf24; text-align: center;">
+          🎟️ Use code <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, Menlo, monospace;">PHFREE6MO</code> · first 50 PH hunters · 6 months free
+        </div>
       </div>
     </div>
 
