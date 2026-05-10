@@ -7,78 +7,73 @@ const ORIGIN = "https://freetier-sentinel.dev";
 
 const CSS = String.raw`
 :root {
-  /* Top-1% palette — indigo-leaning primary (Linear/Vercel range), brand-aligned
-     bg with subtle blue cast, status colors with soft glow tokens. */
-  --bg: #f6f8fc;
-  --bg-soft: #eef2fa;
-  --bg-mesh: #e9eef8;
+  /* Premium SaaS palette — 6-color discipline (Maker Evan 영상 원칙).
+     Brand: teal (logo tone preserved). Status: ok/warn/crit functional only. */
+  --bg: #fbfcfe;
+  --bg-soft: #f3f5f9;
   --surface: #ffffff;
-  --surface-2: #eef2fa;
-  --text: #0a0e1a;
-  --text-2: #424b62;
-  --muted: #64748b;
-  --border: #dde3ee;
-  --border-strong: #c4cdde;
-  --primary: #14b8a6;          /* Teal-500 — user spec exact value */
-  --primary-2: #0d9488;          /* Teal-600 hover */
-  --primary-3: #2dd4bf;           /* Teal-400 */
-  --primary-soft: #ccfbf1;        /* Teal-100 — focus ring tint */
-  --primary-deep: #115e59;        /* Teal-800 */
-  --accent: #22d3ee;              /* Cyan-400 — complementary trailing accent */
-  /* Status — base + 10% softs */
-  --ok: #10b981;     --ok-soft: rgba(16,185,129,.10);   --ok-glow: 0 0 0 6px rgba(16,185,129,.10);
-  --warn: #f59e0b;   --warn-soft: rgba(245,158,11,.10); --warn-glow: 0 0 0 6px rgba(245,158,11,.12);
-  --crit: #f43f5e;   --crit-soft: rgba(244,63,94,.10);  --crit-glow: 0 0 0 6px rgba(244,63,94,.12);
-  /* Brand gradient: deep teal → mid teal → cyan — coherent teal-family ramp. */
-  --grad-1: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #22d3ee 100%);
-  /* Text gradient: stays in teal range for WCAG AA contrast on white bg.
-     Cyan trails at the very end as a flourish only. */
-  --grad-text: linear-gradient(120deg, #0d9488 0%, #14b8a6 60%, #2dd4bf 90%, #22d3ee 100%);
-  /* Shadows tinted with teal — keeps elements feeling lifted from primary surface. */
-  --shadow-xs: 0 1px 2px rgba(20,184,166,.06);
-  --shadow-sm: 0 1px 2px rgba(20,184,166,.06), 0 4px 12px rgba(20,184,166,.04);
-  --shadow-md: 0 6px 24px -8px rgba(20,184,166,.14), 0 1px 0 rgba(20,184,166,.04);
-  --shadow-lg: 0 24px 48px -16px rgba(20,184,166,.20), 0 1px 0 rgba(20,184,166,.06);
-  --shadow-glow: 0 0 0 1px rgba(20,184,166,.12), 0 8px 32px rgba(20,184,166,.18);
-  --shadow-inset: inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 0 rgba(15,23,42,.06);
+  --surface-2: #f7f8fb;
+  --text: #0b1020;
+  --text-2: #475068;
+  --muted: #6e7790;
+  --border: #e6e9f0;
+  --border-strong: #cbd1de;
+  /* Primary — teal logo tone (confirmed user spec) */
+  --primary: #14b8a6;
+  --primary-2: #0d9488;
+  --primary-3: #2dd4bf;
+  --primary-soft: rgba(20,184,166,.10);
+  /* Status — functional only, never decorative */
+  --ok: #10b981;
+  --warn: #f59e0b;
+  --crit: #f43f5e;
+  /* Brand gradient — single teal-family ramp (logo tone) */
+  --grad-1: linear-gradient(135deg, #0d9488 0%, #14b8a6 55%, #2dd4bf 100%);
+  --grad-text: linear-gradient(120deg, #0d9488 0%, #14b8a6 60%, #2dd4bf 100%);
+  /* Shadows — neutral, not teal-tinted (less AI slop, more Linear/Vercel) */
+  --shadow-xs: 0 1px 2px rgba(11,16,32,.04);
+  --shadow-sm: 0 1px 2px rgba(11,16,32,.04), 0 2px 8px rgba(11,16,32,.03);
+  --shadow-md: 0 8px 24px -10px rgba(11,16,32,.10), 0 1px 0 rgba(11,16,32,.02);
+  --shadow-lg: 0 24px 48px -20px rgba(11,16,32,.16), 0 2px 0 rgba(11,16,32,.04);
+  --shadow-glow: 0 0 0 1px rgba(20,184,166,.14), 0 8px 24px rgba(20,184,166,.10);
+  --shadow-inset: inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(11,16,32,.04);
+  /* Radius — 3 levels only (영상 원칙: SML 메뉴판처럼 단순) */
   --r-sm: 8px;
   --r-md: 12px;
-  --r-lg: 16px;
+  --r-lg: 18px;
   --r-xl: 24px;
-  --r-2xl: 28px;
+  /* Motion */
   --t-fast: 140ms cubic-bezier(.4,0,.2,1);
-  --t-med: 220ms cubic-bezier(.4,0,.2,1);
-  --t-slow: 480ms cubic-bezier(.4,0,.2,1);
-  --font-display: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --t-med: 240ms cubic-bezier(.4,0,.2,1);
+  --t-slow: 480ms cubic-bezier(.16,1,.3,1);
+  /* Fonts — Pretendard first (영상 원칙). Fallback chain handles all locales. */
+  --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+  --font-display: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
-/* Auto dark mode — invert palette when the OS prefers dark.
-   Manual toggle is post-launch (localStorage + sync across pages). */
+/* Auto dark mode — same teal logo tone, inverted neutrals. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0a0e1a;
-    --bg-soft: #0f1424;
-    --bg-mesh: #131a2c;
-    --surface: #11172a;
-    --surface-2: #161e34;
-    --text: #ecf0f9;
-    --text-2: #a3aec5;
-    --muted: #6c7891;
-    --border: #1f2940;
-    --border-strong: #2c3853;
-    --primary: #2dd4bf;                /* Teal-400 — brighter on dark bg */
-    --primary-2: #5eead4;                /* Teal-300 hover */
-    --primary-3: #99f6e4;                /* Teal-200 */
-    --primary-soft: rgba(20,184,166,.16); /* teal-tinted soft */
-    --primary-deep: #14b8a6;
-    --shadow-xs: 0 1px 2px rgba(0,0,0,.30);
-    --shadow-sm: 0 1px 2px rgba(0,0,0,.30), 0 4px 12px rgba(0,0,0,.20);
-    --shadow-md: 0 6px 24px -8px rgba(0,0,0,.40), 0 1px 0 rgba(255,255,255,.04);
-    --shadow-lg: 0 24px 48px -16px rgba(0,0,0,.50), 0 1px 0 rgba(255,255,255,.06);
-    --shadow-glow: 0 0 0 1px rgba(45,212,191,.22), 0 8px 32px rgba(20,184,166,.24);
-    --shadow-inset: inset 0 1px 0 rgba(255,255,255,.06), inset 0 -1px 0 rgba(0,0,0,.20);
+    --bg: #07090f;
+    --bg-soft: #0c0f18;
+    --surface: #0f1320;
+    --surface-2: #141828;
+    --text: #f4f6fb;
+    --text-2: #a8b1c6;
+    --muted: #6e7892;
+    --border: #1a1f30;
+    --border-strong: #2a3248;
+    --primary: #2dd4bf;
+    --primary-2: #5eead4;
+    --primary-3: #99f6e4;
+    --primary-soft: rgba(45,212,191,.12);
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.32);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.32), 0 2px 8px rgba(0,0,0,.20);
+    --shadow-md: 0 8px 24px -10px rgba(0,0,0,.50), 0 1px 0 rgba(255,255,255,.03);
+    --shadow-lg: 0 24px 48px -20px rgba(0,0,0,.60), 0 2px 0 rgba(255,255,255,.04);
+    --shadow-glow: 0 0 0 1px rgba(45,212,191,.18), 0 8px 24px rgba(20,184,166,.16);
+    --shadow-inset: inset 0 1px 0 rgba(255,255,255,.04), inset 0 -1px 0 rgba(0,0,0,.20);
   }
 }
 
@@ -86,23 +81,38 @@ const CSS = String.raw`
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 body {
   font-family: var(--font-body);
-  font-feature-settings: 'cv02','cv03','cv04','cv11','ss01','ss03';
+  /* Pretendard Variable: ss01/ss02 옵션은 없음 — 기본 feature 유지 */
+  font-feature-settings: 'kern', 'liga', 'calt';
   background: var(--bg);
   color: var(--text);
   margin: 0;
-  line-height: 1.7;                     /* user-spec body line-height 1.75 (1.7 best for paragraphs+UI mix) */
+  /* 영상 원칙 (자간 -0.02em / 행간 1.6) — 한국어 baseline 보정. */
+  line-height: 1.6;
+  letter-spacing: -0.02em;
   font-size: 16px;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
-p, li { line-height: 1.7; }
-.lede, .why-body p { line-height: 1.75; }   /* explicit user spec for paragraph text */
-h1, h2, h3, h4, .display { font-family: var(--font-display); }
-::selection { background: var(--primary-soft); color: var(--primary); }
-a { color: var(--primary); text-decoration: none; }
+/* 본문 paragraphs — Korean reading optimum 1.6 */
+p, li { line-height: 1.6; letter-spacing: -0.018em; }
+.lede, .why-body p { line-height: 1.65; letter-spacing: -0.018em; }
+/* Headings — tighter spacing for premium feel */
+h1, h2, h3, h4, .display {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+  font-weight: 600;
+}
+h1 { letter-spacing: -0.045em; }
+::selection { background: var(--primary-soft); color: var(--primary-2); }
+a { color: var(--primary); text-decoration: none; transition: color var(--t-fast); }
 a:hover { color: var(--primary-2); }
-button { font-family: inherit; }
+button { font-family: inherit; letter-spacing: -0.012em; }
+/* Numbers — tabular for stat rows, mono for code */
+.tabular { font-variant-numeric: tabular-nums; }
+code, pre, .mono { font-family: var(--font-mono); letter-spacing: 0; }
 
 .container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
 .container-narrow { max-width: 720px; margin: 0 auto; padding: 0 24px; }
@@ -143,100 +153,75 @@ button { font-family: inherit; }
 }
 .nav-cta {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 18px;
-  background: linear-gradient(180deg, #1f2937 0%, var(--text) 100%);
-  color: white !important;
+  padding: 8px 16px;
+  background: var(--text);
+  color: var(--bg) !important;
   border-radius: 10px; font-size: 13.5px; font-weight: 600;
-  letter-spacing: -.005em;
-  box-shadow: var(--shadow-inset), 0 1px 2px rgba(15,23,42,.06);
-  transition: transform var(--t-fast), box-shadow var(--t-fast), filter var(--t-fast);
+  letter-spacing: -0.012em;
+  box-shadow: var(--shadow-inset);
+  transition: transform var(--t-fast), background var(--t-fast);
 }
-.nav-cta:hover { transform: translateY(-1px) scale(1.02); box-shadow: var(--shadow-inset), 0 8px 16px rgba(15,23,42,.18); filter: brightness(1.08); }
-.nav-cta:active { transform: translateY(0) scale(0.98); filter: brightness(.95); }
+.nav-cta:hover { background: var(--text-2); transform: translateY(-1px); }
+.nav-cta:active { transform: translateY(0); }
 
-/* ───── HERO ───── */
+/* ───── HERO — premium SaaS feel, restrained noise ───── */
 .hero {
   position: relative;
-  padding: 128px 0 104px;
+  padding: 112px 0 96px;
   overflow: hidden;
   text-align: center;
 }
-/* Subtle grid background — only behind hero */
+/* Single subtle radial — no grid pattern, no triple-overlay AI slop */
 .hero-grid {
   position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(20,184,166,.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(20,184,166,.05) 1px, transparent 1px);
-  background-size: 56px 56px;
-  background-position: -1px -1px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
-  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, #000 30%, transparent 80%);
+  background:
+    radial-gradient(ellipse 900px 500px at 50% -80px, rgba(20,184,166,.06), transparent 65%);
   pointer-events: none;
   z-index: -1;
 }
 @media (prefers-color-scheme: dark) {
   .hero-grid {
-    background-image:
-      linear-gradient(rgba(45,212,191,.08) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(45,212,191,.08) 1px, transparent 1px);
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -80px, rgba(45,212,191,.10), transparent 65%);
   }
 }
-.hero::before {
-  content: ''; position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 1200px 600px at 50% -120px, rgba(20,184,166,.09), transparent 60%),
-    radial-gradient(ellipse 500px 350px at 88% 100px, rgba(34,211,238,.06), transparent 65%),
-    radial-gradient(ellipse 600px 450px at 12% 220px, rgba(13,148,136,.05), transparent 70%);
-  pointer-events: none; z-index: -1;
-}
-.hero::after {
-  content: ''; position: absolute; left: 50%; transform: translateX(-50%); bottom: 0;
-  width: min(720px, 86%); height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(30,64,175,.22), transparent);
-  pointer-events: none;
-}
-@media (max-width: 600px) { .hero { padding: 72px 0 56px; } }
+@media (max-width: 600px) { .hero { padding: 64px 0 56px; } }
 
 .eyebrow {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 6px 14px;
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 5px 12px 5px 10px;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 12.5px; font-weight: 500; color: var(--text-2);
-  letter-spacing: .015em;
-  margin-bottom: 28px;
-  text-transform: none;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  letter-spacing: -0.01em;
+  margin-bottom: 32px;
   box-shadow: var(--shadow-xs);
 }
 .eyebrow .pulse {
-  width: 7px; height: 7px; background: var(--ok); border-radius: 50%; flex-shrink: 0;
-  box-shadow: 0 0 0 4px rgba(16,185,129,.18), 0 0 12px rgba(16,185,129,.55);
+  width: 6px; height: 6px; background: var(--ok); border-radius: 50%; flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(16,185,129,.14);
   animation: eyebrow-pulse 2.4s ease-in-out infinite;
 }
 @keyframes eyebrow-pulse {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(16,185,129,.18), 0 0 8px rgba(16,185,129,.45); }
-  50%      { box-shadow: 0 0 0 6px rgba(16,185,129,.10), 0 0 16px rgba(16,185,129,.65); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(16,185,129,.14); }
+  50%      { box-shadow: 0 0 0 5px rgba(16,185,129,.04); }
 }
-.eyebrow .line { width: 24px; height: 1px; background: var(--border-strong); flex-shrink: 0; }
+.eyebrow .line { display: none; }
 
 .hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(40px, 7vw, 88px);
-  line-height: 1.05;                    /* user-spec 1.1 — heroes benefit slightly tighter */
-  letter-spacing: -.04em;               /* ≈ -1.5px @ 38px / -3.5px @ 88px (em scales) */
-  font-weight: 700;
-  margin: 0 0 32px;
-  max-width: 980px; margin-left: auto; margin-right: auto;
+  font-size: clamp(40px, 6.4vw, 80px);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+  margin: 0 auto 28px;
+  max-width: 18ch;
   color: var(--text);
   text-wrap: balance;
-  hyphens: auto;
-  -webkit-hyphens: auto;
 }
 @media (max-width: 480px) {
-  .hero h1 { font-size: clamp(32px, 9vw, 44px); line-height: 1.1; letter-spacing: -.03em; }
+  .hero h1 { font-size: clamp(34px, 9.5vw, 48px); line-height: 1.08; letter-spacing: -0.035em; }
 }
 .hero h1 .gradient {
   background: var(--grad-text);
@@ -244,38 +229,38 @@ button { font-family: inherit; }
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  font-style: italic;
+  font-style: normal;
   font-weight: 600;
 }
 .hero .lede {
-  font-size: clamp(17px, 1.6vw, 22px);
+  font-size: clamp(17px, 1.5vw, 20px);
   color: var(--text-2);
-  max-width: 620px; margin: 0 auto 40px;       /* 8px grid */
-  line-height: 1.7;                             /* user-spec body 1.7+ */
+  max-width: 560px; margin: 0 auto 36px;
+  line-height: 1.55;
   font-weight: 400;
-  letter-spacing: -.005em;
-  text-wrap: balance;                           /* user-spec for subheadline */
-  overflow-wrap: anywhere;
-  word-break: normal;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
 }
-.hero .lede em { font-style: italic; color: var(--text); font-weight: 500; }
+.hero .lede em { font-style: normal; color: var(--text); font-weight: 500; }
+.hero .lede br { display: none; }
 
 .hero-form {
-  display: flex; gap: 8px;
-  max-width: 480px; margin: 0 auto;
+  display: flex; gap: 6px;
+  max-width: 460px; margin: 0 auto;
   background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--r-lg);
-  padding: 6px;
-  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 5px;
+  box-shadow: var(--shadow-sm);
   transition: box-shadow var(--t-med), border-color var(--t-med);
 }
-.hero-form:focus-within { box-shadow: 0 0 0 4px rgba(20,184,166,.12), var(--shadow-md); border-color: var(--primary); }
+.hero-form:focus-within { box-shadow: 0 0 0 4px rgba(20,184,166,.10), var(--shadow-sm); border-color: var(--primary); }
 .hero-form input {
   flex: 1 1 0;
   padding: 12px 14px;
-  font-size: 16px;
+  font-size: 15px;
   font-family: inherit;
+  letter-spacing: -0.018em;
   border: 0; background: transparent;
   color: var(--text); outline: none;
   min-width: 0;
@@ -283,23 +268,22 @@ button { font-family: inherit; }
 }
 .hero-form input::placeholder { color: var(--muted); }
 @media (max-width: 380px) {
-  /* Very narrow viewport: stack input + button vertically */
-  .hero-form { flex-direction: column; gap: 6px; padding: 8px; }
-  .hero-form input { padding: 10px 12px; }
+  .hero-form { flex-direction: column; gap: 6px; padding: 6px; }
+  .hero-form input { padding: 11px 12px; }
   .hero-form button { width: 100%; padding: 12px; }
 }
 .hero-form button {
-  padding: 13px 24px;
+  padding: 12px 22px;
   font-size: 14.5px;
   font-weight: 600;
-  letter-spacing: -.005em;
-  border: 0; border-radius: 12px;
-  background: linear-gradient(180deg, #1f2937 0%, var(--text) 100%);
-  color: white;
+  letter-spacing: -0.012em;
+  border: 0; border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
   cursor: pointer;
-  transition: transform var(--t-fast), box-shadow var(--t-fast), filter var(--t-fast);
+  transition: transform var(--t-fast), background var(--t-fast);
   white-space: nowrap;
-  box-shadow: var(--shadow-inset), 0 1px 2px rgba(15,23,42,.08);
+  box-shadow: var(--shadow-inset);
 }
 .hero-form button:hover { transform: translateY(-1px) scale(1.02); box-shadow: var(--shadow-inset), 0 12px 24px rgba(15,23,42,.20); filter: brightness(1.08); }
 .hero-form button:active { transform: translateY(0) scale(0.98); filter: brightness(.95); }
@@ -325,24 +309,21 @@ button { font-family: inherit; }
   position: relative;
 }
 .preview::before {
-  content: ''; position: absolute; inset: 16px 12px -32px;
-  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(20,184,166,.18), transparent 70%);
-  filter: blur(40px); pointer-events: none; z-index: 0;
+  content: ''; position: absolute; inset: 16px 12px -24px;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(20,184,166,.12), transparent 70%);
+  filter: blur(36px); pointer-events: none; z-index: 0;
 }
 @media (prefers-color-scheme: dark) {
-  .preview::before { background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(99,102,241,.30), transparent 70%); }
+  .preview::before { background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(45,212,191,.16), transparent 70%); }
 }
 .preview-frame {
   position: relative; z-index: 1;
   background: #0a0e1a;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: var(--r-2xl);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: var(--r-xl);
   box-shadow:
-    0 32px 64px -24px rgba(15,23,42,.40),
-    0 1px 0 rgba(255,255,255,.06) inset,
-    0 0 0 1px rgba(20,184,166,.10);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
+    0 24px 48px -20px rgba(11,16,32,.40),
+    0 1px 0 rgba(255,255,255,.06) inset;
   overflow: hidden;
 }
 @media (max-width: 600px) {
@@ -619,16 +600,16 @@ footer { content-visibility: auto; contain-intrinsic-size: auto 400px; }
   font-feature-settings: 'cv02','cv03','ss01';
 }
 .why-body p {
-  font-size: 17px; line-height: 1.75;
+  font-size: 17px; line-height: 1.65;
   color: var(--text-2);
-  margin: 0 0 18px;
+  margin: 0 0 20px;
   font-weight: 400;
-  letter-spacing: -.005em;
+  letter-spacing: -0.018em;
   overflow-wrap: anywhere;
   word-break: normal;
   -webkit-hyphens: auto;
   hyphens: auto;
-  text-wrap: pretty;       /* Chrome 117+, Safari 17.5+ — optimizes ragged-right last lines */
+  text-wrap: pretty;
 }
 @media (max-width: 480px) {
   .why-body p { font-size: 16px; line-height: 1.75; margin-bottom: 16px; }
@@ -773,13 +754,13 @@ footer { content-visibility: auto; contain-intrinsic-size: auto 400px; }
 .feature::before {
   content: ''; position: absolute; inset: -1px;
   border-radius: inherit; padding: 1px;
-  background: linear-gradient(135deg, rgba(59,130,246,.6), rgba(99,102,241,.4) 50%, transparent 75%);
+  background: linear-gradient(135deg, rgba(20,184,166,.55), rgba(45,212,191,.30) 50%, transparent 80%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor; mask-composite: exclude;
   opacity: 0; transition: opacity var(--t-med);
   pointer-events: none;
 }
-.feature:hover { transform: translateY(-2px); border-color: transparent; }
+.feature:hover { transform: translateY(-2px); border-color: transparent; box-shadow: var(--shadow-md); }
 .feature:hover::before { opacity: 1; }
 .feature-icon {
   width: 40px; height: 40px;
@@ -809,7 +790,7 @@ footer { content-visibility: auto; contain-intrinsic-size: auto 400px; }
 
 /* ───── HOW ───── */
 .how {
-  background: var(--bg-mesh);
+  background: var(--bg-soft);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   position: relative;
@@ -877,22 +858,21 @@ footer { content-visibility: auto; contain-intrinsic-size: auto 400px; }
 }
 .tier.pro {
   background:
-    radial-gradient(ellipse 480px 240px at 100% 0%, rgba(34,211,238,.28), transparent 60%),
-    radial-gradient(ellipse 360px 200px at 0% 100%, rgba(20,184,166,.18), transparent 60%),
-    #0a0e1a;
-  border: 1px solid #1f2937;
+    radial-gradient(ellipse 480px 260px at 100% 0%, rgba(45,212,191,.18), transparent 60%),
+    radial-gradient(ellipse 360px 220px at 0% 100%, rgba(20,184,166,.10), transparent 60%),
+    #0b0f1a;
+  border: 1px solid #1a2236;
   color: #f1f5f9;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.06),
-    0 0 0 1px rgba(99,102,241,.18),
-    0 32px 64px -20px rgba(20,184,166,.32),
-    0 8px 16px rgba(15,23,42,.18);
+    0 24px 48px -20px rgba(20,184,166,.28),
+    0 4px 12px rgba(11,16,32,.16);
   position: relative;
 }
 .tier.pro::after {
   content: ''; position: absolute; inset: 0;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(99,102,241,.16), transparent 40%);
+  background: linear-gradient(135deg, rgba(45,212,191,.10), transparent 50%);
   pointer-events: none;
 }
 .tier.pro h3 { color: rgba(255,255,255,.55); }
@@ -929,7 +909,7 @@ footer { content-visibility: auto; contain-intrinsic-size: auto 400px; }
 .tier li::before {
   content: ''; position: absolute; left: 0; top: 13px;
   width: 14px; height: 14px;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2314b8a6' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>");
   background-size: contain; background-repeat: no-repeat;
   flex-shrink: 0;
 }
@@ -943,11 +923,11 @@ footer { content-visibility: auto; contain-intrinsic-size: auto 400px; }
 }
 .tier .cta:hover { border-color: var(--text); transform: translateY(-1px); box-shadow: var(--shadow-xs); }
 .tier.pro .cta {
-  background: linear-gradient(180deg, #fff 0%, #f1f5f9 100%);
-  color: var(--text); border: 0;
-  box-shadow: var(--shadow-inset), 0 4px 12px rgba(15,23,42,.18);
+  background: var(--grad-1);
+  color: #fff; border: 0;
+  box-shadow: var(--shadow-inset), 0 4px 12px rgba(20,184,166,.28);
 }
-.tier.pro .cta:hover { transform: translateY(-1px); filter: brightness(1.02); box-shadow: var(--shadow-inset), 0 12px 24px rgba(15,23,42,.24); }
+.tier.pro .cta:hover { transform: translateY(-1px); filter: brightness(1.04); box-shadow: var(--shadow-inset), 0 8px 20px rgba(20,184,166,.36); }
 
 .team-callout {
   max-width: 920px; margin: 28px auto 0;
@@ -999,7 +979,7 @@ footer { content-visibility: auto; contain-intrinsic-size: auto 400px; }
 
 /* ───── CODE BLOCK ───── */
 .code-section {
-  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-mesh) 50%, var(--bg) 100%);
+  background: linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 50%, var(--bg) 100%);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
@@ -1219,6 +1199,118 @@ footer {
 @media (max-width: 720px) {
   .lang-switch .menu { right: auto; left: 0; }
 }
+
+/* ───── PROMO BAR (PHFREE6MO) — teal-coherent, premium SaaS feel ───── */
+.promo-bar {
+  background: linear-gradient(180deg, var(--surface), var(--bg-soft));
+  border-bottom: 1px solid var(--border);
+  padding: 11px 24px;
+  text-align: center;
+  font-size: 13.5px;
+  letter-spacing: -0.012em;
+  color: var(--text-2);
+}
+.promo-inner {
+  display: inline-flex; align-items: center; gap: 10px;
+  flex-wrap: wrap; justify-content: center;
+}
+.promo-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 9px;
+  background: var(--primary-soft);
+  color: var(--primary-2);
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.promo-label::before {
+  content: ""; width: 5px; height: 5px;
+  background: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(20,184,166,.15);
+  animation: promo-pulse 2.4s ease-in-out infinite;
+}
+@keyframes promo-pulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(20,184,166,.15); }
+  50%     { box-shadow: 0 0 0 6px rgba(20,184,166,.04); }
+}
+.promo-text { color: var(--text-2); }
+.promo-text strong { color: var(--text); font-weight: 600; }
+.promo-sep { color: var(--border-strong); font-weight: 300; user-select: none; }
+.promo-code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 3px 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--primary-2);
+  letter-spacing: 0.02em;
+}
+.promo-cta {
+  display: inline-flex; align-items: center; gap: 4px;
+  color: var(--primary);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: color var(--t-fast), gap var(--t-fast);
+}
+.promo-cta:hover { color: var(--primary-2); gap: 7px; }
+.promo-ko {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: -0.018em;
+}
+@media (max-width: 600px) {
+  .promo-bar { padding: 10px 16px; font-size: 12.5px; }
+  .promo-inner { gap: 8px; }
+  .promo-sep { display: none; }
+}
+@media (prefers-color-scheme: dark) {
+  .promo-bar { background: linear-gradient(180deg, var(--bg-soft), var(--bg)); }
+  .promo-code { background: var(--surface-2); color: var(--primary-3); }
+}
+
+/* ───── x402 PILL — agent economy, restrained teal ───── */
+.x402-pill {
+  display: inline-flex; align-items: center; gap: 9px;
+  margin-top: 22px;
+  padding: 7px 14px 7px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text-2);
+  transition: border-color var(--t-fast), color var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast);
+}
+.x402-pill:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+.x402-dot {
+  width: 7px; height: 7px;
+  background: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(20,184,166,.10);
+  flex-shrink: 0;
+}
+.x402-arrow {
+  color: var(--primary);
+  font-weight: 600;
+  transition: transform var(--t-fast);
+}
+.x402-pill:hover .x402-arrow { transform: translateX(2px); }
+@media (prefers-color-scheme: dark) {
+  .x402-pill { background: var(--surface-2); }
+  .x402-dot { box-shadow: 0 0 0 3px rgba(45,212,191,.14); }
+}
 `;
 
 const ICONS = {
@@ -1367,13 +1459,13 @@ ${hreflangTags}
 <link rel="alternate" hreflang="x-default" href="${ORIGIN}/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 ${ldJsonScript}
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link rel="preconnect" href="https://buy.polar.sh">
 <link rel="preconnect" href="https://www.clarity.ms">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
 ${beacon}
 </head>
@@ -1404,16 +1496,17 @@ ${beacon}
   </div>
 </nav>
 
-<!-- PHFREE6MO promo banner — first 50 PH hunters (D-009) -->
-<div style="background: linear-gradient(90deg, rgba(245,158,11,0.12), rgba(168,85,247,0.12)); border-bottom: 1px solid rgba(245,158,11,0.25); padding: 10px 16px; text-align: center; font-size: 13px; line-height: 1.5;">
-  <span style="font-weight: 600;">🎟️ Product Hunt launch promo</span>
-  <span style="color: #94a3b8; margin: 0 8px;">·</span>
-  <span>First 50 sign-ups: <strong style="color: #fbbf24;">Pro free for 6 months</strong></span>
-  <span style="color: #94a3b8; margin: 0 8px;">·</span>
-  <span>Code <code style="background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; font-family: ui-monospace, Menlo, monospace; color: #fbbf24;">PHFREE6MO</code></span>
-  <span style="color: #94a3b8; margin: 0 8px; display: inline-block;">·</span>
-  <a href="https://buy.polar.sh/polar_cl_NZo8xnzthAKCBJcUMLXonHnSBzRdEN7pkGuWe2p34mV" style="color: #a855f7; font-weight: 600; text-decoration: none;">Claim now →</a>
-  ${locale === "ko" ? '<br/><span style="color: #94a3b8; font-size: 12px;">🇰🇷 한국 사업자 — 영문 PDF invoice 자동 + 매출세금계산서 발급 가능 (사업자번호 607-20-94796)</span>' : ""}
+<!-- PHFREE6MO promo banner — first 50 PH hunters (D-009). Teal-coherent. -->
+<div class="promo-bar">
+  <div class="promo-inner">
+    <span class="promo-label">Launch promo</span>
+    <span class="promo-sep">/</span>
+    <span class="promo-text">First 50 sign-ups get <strong>Pro free for 6 months</strong></span>
+    <span class="promo-sep">/</span>
+    <span class="promo-code">PHFREE6MO</span>
+    <a class="promo-cta" href="https://buy.polar.sh/polar_cl_NZo8xnzthAKCBJcUMLXonHnSBzRdEN7pkGuWe2p34mV">Claim <span aria-hidden="true">→</span></a>
+  </div>
+  ${locale === "ko" ? '<div class="promo-ko">한국 사업자 — 영문 PDF invoice 자동 발급 · 매출세금계산서 발급 가능 (사업자번호 607-20-94796)</div>' : ""}
 </div>
 
 <header class="hero">
@@ -1433,12 +1526,12 @@ ${beacon}
       <span class="sep">·</span>
       <span>${t.hero_micro_3}</span>
     </div>
-    <!-- x402 paid API ribbon (agent economy, D-007) -->
-    <div style="margin-top: 18px; display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.25); border-radius: 999px; font-size: 12px; color: #c4b5fd;">
-      <span>🪙</span>
-      <span>Also: paid API for AI agents on Coinbase Bazaar</span>
-      <a href="/docs/api" style="color: #a855f7; text-decoration: none; font-weight: 600;">→ docs</a>
-    </div>
+    <!-- x402 paid API ribbon (agent economy, D-007). Teal-coherent. -->
+    <a href="/docs/api" class="x402-pill" aria-label="Paid API for AI agents on Coinbase Bazaar">
+      <span class="x402-dot"></span>
+      <span>Paid API for AI agents · Coinbase Bazaar</span>
+      <span class="x402-arrow" aria-hidden="true">→</span>
+    </a>
   </div>
 
   <div class="preview">
