@@ -394,7 +394,7 @@ function renderDashboard(tasks: any[], status: any, notes: string, alerts: any[]
       <span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-[10px] font-mono text-amber-400">PHFREE6MO 50개 한정</span>
     </div>
     <h1 class="text-4xl md:text-5xl font-bold tracking-tight leading-tight">🛰️ Mission Control</h1>
-    <p class="mt-3 text-base text-slate-400 max-w-3xl">D-3 PH 런치까지의 작전 본부 — 12 단계 95 컴포넌트 · 5 cron 자율 운영 · 라이브 상태 + 우선순위 큐</p>
+    <p class="mt-3 text-base text-slate-400 max-w-3xl">이건 한 명의 솔로 창업자가 PH 런치 D-${daysToLaunch}에 어떻게 운영하는지 보여줍니다 — 12 단계 · 약 95 컴포넌트 · 5 cron 자율 운영 · 14 시크릿 · 12 외부 통합 · 3 GitHub repos.</p>
     <div class="mt-6 flex flex-wrap gap-3">
       <a href="/admin/architecture" class="bg-blue-600 hover:bg-blue-500 px-5 py-2.5 rounded-md font-medium text-sm transition-colors">🗺️ 12-단계 아키텍처 보기 →</a>
       <a href="/admin/smoke" class="bg-slate-800 hover:bg-slate-700 px-5 py-2.5 rounded-md text-sm transition-colors border border-slate-700">🧪 Smoke 상태</a>
@@ -1783,6 +1783,71 @@ function renderArchitecturePage(d: any): string {
       <div class="mt-1.5 text-lg font-semibold font-mono text-slate-100">${value}</div>
     </div>`;
 
+  // Mr. Notion-style: entire business laid out on a single page (좌→우 swim lane)
+  const blueprintLane = `
+<section class="bg-slate-950 border border-blue-900/50 rounded-lg p-5 mb-6">
+  <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+    <div>
+      <h2 class="text-base font-semibold text-slate-100">📐 Single-page Blueprint — 모든 단계 좌→우 흐름</h2>
+      <p class="text-[11px] text-slate-500 mt-1">Mr. Notion 패턴: "entire business laid out on a single page" · 가로 스크롤로 12 단계 한눈에</p>
+    </div>
+    <span class="text-[11px] text-slate-500 font-mono">${phaseDefs.length} 단계 · 약 95 컴포넌트</span>
+  </div>
+  <div class="overflow-x-auto -mx-2 px-2">
+    <div class="flex gap-3 pb-2" style="min-width: 2400px;">
+      ${phaseDefs.map((p) => {
+        const liveItems = p.items.filter((i) => i.status === "live").length;
+        const topItems = p.items.slice(0, 6);
+        return `
+        <div class="w-64 shrink-0 bg-slate-900 border border-blue-900/40 rounded-lg p-4 hover:border-blue-500 transition-colors">
+          <div class="flex items-baseline gap-2 mb-1">
+            <span class="text-[10px] font-mono text-slate-500">단계 ${String(p.num).padStart(2, "0")}</span>
+            <span class="text-lg">${p.icon}</span>
+          </div>
+          <h3 class="text-sm font-semibold text-blue-300 mb-1">${p.title}</h3>
+          <p class="text-[10px] text-slate-400 mb-3">${p.subtitle}</p>
+          <div class="text-[10px] font-mono text-emerald-400 mb-2">✅ ${liveItems}/${p.items.length} 운영중</div>
+          <ul class="space-y-1 border-t border-slate-800 pt-2">
+            ${topItems.map((it) => `<li class="text-[10px] text-slate-300 leading-snug">• ${it.name.length > 28 ? it.name.slice(0, 26) + "…" : it.name}</li>`).join("")}
+            ${p.items.length > 6 ? `<li class="text-[10px] text-slate-500 italic">+${p.items.length - 6}개 더</li>` : ""}
+          </ul>
+        </div>`;
+      }).join("")}
+    </div>
+  </div>
+</section>`;
+
+  // Tools/Integrations icon grid (Mr. Notion 패턴: 우측 상단 software grid)
+  const integrations = [
+    { icon: "☁️", name: "Cloudflare", note: "Workers·D1·KV·DNS" },
+    { icon: "💳", name: "Polar.sh", note: "MoR + Stripe" },
+    { icon: "🪙", name: "Coinbase CDP", note: "x402 facilitator" },
+    { icon: "✉️", name: "Resend", note: "메일" },
+    { icon: "📨", name: "Telegram", note: "Bot API" },
+    { icon: "📊", name: "MS Clarity", note: "히트맵·리플레이" },
+    { icon: "📬", name: "Gmail GAS", note: "3-tier" },
+    { icon: "🔍", name: "F5Bot", note: "5 키워드" },
+    { icon: "🐙", name: "freetier-sentinel", note: "GitHub public" },
+    { icon: "🔒", name: "autobiz", note: "GitHub private" },
+    { icon: "🌐", name: "indie-creator-toolkit", note: "GitHub Pages" },
+    { icon: "🧠", name: "claude-mem 13", note: "Apache-2.0" },
+  ];
+  const toolsGrid = `
+<section class="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-6">
+  <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+    <h2 class="text-base font-semibold text-slate-100">🛠️ Tools, Integrations & Repos — 12종</h2>
+    <span class="text-[11px] text-slate-500 font-mono">Mr. Notion 패턴: "every component has its own software"</span>
+  </div>
+  <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+    ${integrations.map((i) => `
+      <div class="aspect-square bg-slate-950 border border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center hover:border-blue-500 transition-colors text-center">
+        <div class="text-3xl mb-1">${i.icon}</div>
+        <div class="text-[10px] text-slate-200 font-medium leading-tight">${i.name}</div>
+        <div class="text-[9px] text-slate-500 mt-0.5 leading-tight">${i.note}</div>
+      </div>`).join("")}
+  </div>
+</section>`;
+
   const body = `
 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
   ${stat("Users", String(d.users))}
@@ -1793,6 +1858,10 @@ function renderArchitecturePage(d: any): string {
   ${stat("Incidents", incidentBadge)}
   ${stat("P0·P1·P2", `${d.taskCounts.p0.done}/${d.taskCounts.p0.total} · ${d.taskCounts.p1.done}/${d.taskCounts.p1.total} · ${d.taskCounts.p2.done}/${d.taskCounts.p2.total}`)}
 </div>
+
+${blueprintLane}
+
+${toolsGrid}
 
 <section class="bg-slate-900 border border-slate-800 rounded-lg p-5 mb-6">
   <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
@@ -1902,7 +1971,7 @@ setTimeout(() => location.reload(), 60000);
 </script>
 `;
 
-  return chapterLayout("architecture", "🗺️ Architecture", `Live structural map · auto-refresh 60s · ${d.daysToLaunch}`, body, { smokeOk: d.smokeOk, smokeTotal: d.smokeTotal, memoryCount: 19 });
+  return chapterLayout("architecture", "🗺️ Architecture — entire system on a single page", `freetier-sentinel + autobiz 시스템의 전체 blueprint — 12 단계 · 약 95 컴포넌트 · 좌→우 흐름 · 12 외부 통합. 60초마다 자동 새로고침. ${d.daysToLaunch}.`, body, { smokeOk: d.smokeOk, smokeTotal: d.smokeTotal, memoryCount: 19 });
 }
 
 // ──────────────────────────────────────────────────────────────────────────
