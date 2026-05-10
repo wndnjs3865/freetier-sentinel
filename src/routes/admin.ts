@@ -1848,7 +1848,33 @@ function renderArchitecturePage(d: any): string {
   </div>
 </section>`;
 
+  // Mr. Notion TOP 5 pattern: NORTH STAR + Objective/Audience/Success Signal
+  const northStar = `
+<section class="bg-slate-950 border border-blue-900/50 rounded-lg p-6 mb-6">
+  <div class="text-center pb-4 border-b border-blue-900/30">
+    <div class="text-[10px] font-mono uppercase tracking-widest text-blue-400 mb-1.5">★ NORTH STAR ★</div>
+    <h2 class="text-xl md:text-2xl font-bold tracking-tight">FREETIER SENTINEL BLUEPRINT · v1.0 · EXECUTION STANDARD</h2>
+    <p class="text-[11px] text-slate-500 mt-1.5 font-mono">${d.daysToLaunch} · 12 단계 · 약 95 컴포넌트 · 12 외부 통합</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5 text-sm">
+    <div>
+      <div class="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1.5">▸ OBJECTIVE</div>
+      <p class="text-slate-200 leading-relaxed">PH 5/12 self-hunt 런치 + post-launch <strong class="text-blue-300">agent economy</strong>. Solo founder, $0 마케팅 비용, EOY 2026까지 $540/mo MRR.</p>
+    </div>
+    <div>
+      <div class="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1.5">▸ AUDIENCE</div>
+      <p class="text-slate-200 leading-relaxed">Solo dev (consumer SaaS) + AI 에이전트 (x402 paid API) <strong class="text-blue-300">이중 청중</strong>. Free-tier 모니터링과 agent-friendly 데이터 동시 제공.</p>
+    </div>
+    <div>
+      <div class="text-[10px] font-mono uppercase tracking-wider text-slate-500 mb-1.5">▸ SUCCESS SIGNAL</div>
+      <p class="text-slate-200 leading-relaxed">PH 첫날 <strong class="text-amber-300">5K+ visitor</strong> · 100+ sign-up · 50 <strong class="text-amber-300">PHFREE6MO 소진</strong> · Bazaar 첫 <strong class="text-amber-300">USDC settle</strong>.</p>
+    </div>
+  </div>
+</section>`;
+
   const body = `
+${northStar}
+
 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
   ${stat("Users", String(d.users))}
   ${stat("Services", String(d.services))}
@@ -1982,6 +2008,22 @@ setTimeout(() => location.reload(), 60000);
 type PhaseStatus = "live" | "wip" | "planned" | "archived" | "secret";
 interface PhaseItem { name: string; note: string; status: PhaseStatus }
 interface Phase { num: number; icon: string; title: string; subtitle: string; items: PhaseItem[] }
+
+// Mr. Notion TOP 4 pattern: numbered framework label per phase
+const PHASE_FRAMEWORK: Record<number, { label: string; tools: string }> = {
+  1:  { label: "THE FOUNDATION (The Bedrock)",      tools: "☁️ Cloudflare · 🗄️ D1 · 🔑 KV · ⏱️ Cron" },
+  2:  { label: "THE IDENTITY (The Gate)",            tools: "✉️ Resend · 🔐 AES-GCM · 🍪 Cookie" },
+  3:  { label: "THE ROUTING (The Map)",              tools: "🛣️ 19 routes · 🌍 5 locales · 🤝 webhook" },
+  4:  { label: "THE PULSE (The Heartbeat)",          tools: "🧪 Smoke · 🪙 Bazaar · 📈 Metrics · 📧 Digest" },
+  5:  { label: "THE COMMERCE (The Engine Room)",     tools: "💳 Polar · 🟦 Stripe Connect · 🇰🇷 Hometax" },
+  6:  { label: "THE AGENT ECONOMY (The New Frontier)", tools: "🪙 CDP · ⛓️ Base USDC · 🏪 Bazaar" },
+  7:  { label: "THE GROWTH (The Megaphone)",         tools: "🚀 PH · 🐦 X · 🤖 Reddit · 🎓 IH · 🍊 HN" },
+  8:  { label: "THE AUTONOMY (The Auto-Pilot)",      tools: "🧪 Smoke · 📬 Gmail GAS · 📨 Telegram" },
+  9:  { label: "THE INTELLIGENCE (The Brain)",       tools: "🧠 claude-mem · 🪝 Hooks · 📚 Memory" },
+  10: { label: "THE OBSERVABILITY (The Mirror)",     tools: "📊 Clarity · 📈 CF Analytics · 🛰️ /admin" },
+  11: { label: "THE GUARDRAILS (The Rules)",         tools: "🔒 14 secrets · 🛡️ HSTS · 🔐 AES-GCM" },
+  12: { label: "THE PERIPHERY (The Allies)",         tools: "🌐 8 services · 🐙 3 GitHub repos" },
+};
 
 function buildPhaseDefs(d: any): Phase[] {
   return [
@@ -2129,9 +2171,10 @@ function renderPhaseCards(phases: Phase[]): string {
         </div>
         ${statusPill(it.status)}
       </li>`).join("");
+    const fw = PHASE_FRAMEWORK[p.num];
     return `
       <section class="module-card bg-slate-900 border border-slate-800 rounded-lg p-5 flex flex-col">
-        <header class="flex items-start justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
+        <header class="flex items-start justify-between gap-2 mb-2 pb-3 border-b border-slate-800">
           <div>
             <div class="flex items-center gap-2">
               <span class="text-[10px] font-mono text-slate-500">단계 ${String(p.num).padStart(2, "0")}</span>
@@ -2145,6 +2188,8 @@ function renderPhaseCards(phases: Phase[]): string {
             <div class="text-[10px] text-slate-500 uppercase tracking-wider">운영중</div>
           </div>
         </header>
+        <div class="text-[10px] font-mono uppercase tracking-wider text-blue-400 mb-1.5">${fw?.label || ""}</div>
+        <div class="text-[11px] text-slate-400 mb-3 pb-3 border-b border-slate-800/60">${fw?.tools || ""}</div>
         <ul class="flex-1">${itemRows}</ul>
       </section>`;
   };
