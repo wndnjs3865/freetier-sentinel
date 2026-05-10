@@ -16,13 +16,13 @@ const PAGE_CSS = `
 @media (prefers-color-scheme: dark){:root{--text:#ecf0f9;--text-2:#a3aec5;--muted:#6c7891;--border:#1f2940;--border-strong:#2c3853;--primary:#2dd4bf;--primary-soft:rgba(20,184,166,.18);--bg:#0a0e1a;--surface:#11172a;--err:#fb7185;--shadow:0 24px 48px -16px rgba(0,0,0,.5);}}
 *{box-sizing:border-box}
 html,body{height:100%}
-body{font-family:'Satoshi','Inter',-apple-system,system-ui,sans-serif;background:var(--bg);color:var(--text);margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased;font-feature-settings:'cv02','cv03','ss01';position:relative;overflow-x:hidden}
+body{font-family:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Segoe UI','Apple SD Gothic Neo',sans-serif;background:var(--bg);color:var(--text);margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px;letter-spacing:-0.02em;line-height:1.6;-webkit-font-smoothing:antialiased;font-feature-settings:'kern','liga','calt';position:relative;overflow-x:hidden}
 body::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(20,184,166,.10),transparent 60%),radial-gradient(ellipse 40% 30% at 80% 80%,rgba(34,211,238,.08),transparent 60%);pointer-events:none;z-index:0}
 .card{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:42px 36px;max-width:440px;width:100%;text-align:center}
 @media (max-width:480px){.card{padding:32px 24px;border-radius:16px}}
 .brand{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14.5px;color:var(--text);margin-bottom:24px;letter-spacing:-0.01em;text-decoration:none}
 .brand-logo{width:24px;height:24px;border-radius:6px;background:var(--grad);color:white;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 1px 0 rgba(15,23,42,.06)}
-h1{font-family:'Satoshi','Inter',system-ui,sans-serif;font-size:24px;letter-spacing:-0.02em;font-weight:600;margin:0 0 6px;line-height:1.2}
+h1{font-family:inherit;font-size:24px;letter-spacing:-0.045em;font-weight:600;margin:0 0 6px;line-height:1.15}
 .lede{color:var(--text-2);font-size:15px;margin:0 0 18px;line-height:1.55}
 .email-pill{display:inline-block;background:var(--primary-soft);color:var(--primary);padding:7px 14px;border-radius:999px;font-weight:600;font-size:13px;margin:6px 0 24px;word-break:break-all;font-family:'JetBrains Mono',ui-monospace,monospace;max-width:100%;overflow-wrap:anywhere}
 .code-input{width:100%;padding:18px 16px;font-size:28px;font-weight:600;letter-spacing:0.4em;text-align:center;border:1.5px solid var(--border-strong);border-radius:12px;background:var(--surface);color:var(--text);font-family:'JetBrains Mono',ui-monospace,monospace;outline:none;transition:border-color 140ms,box-shadow 140ms}
@@ -61,11 +61,11 @@ const head = (beacon: string, title = "Sign in — FreeTier Sentinel") => `<!DOC
 <meta name="color-scheme" content="light dark">
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>${PAGE_CSS}</style>${beacon}</head><body>`;
 
 function genCode(): string {

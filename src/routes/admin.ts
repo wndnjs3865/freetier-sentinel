@@ -356,7 +356,10 @@ function renderDashboard(tasks: any[], status: any, notes: string, alerts: any[]
 <title>Mission Control · FreeTier Sentinel</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Pretendard", system-ui, sans-serif; }
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+  body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', sans-serif; letter-spacing: -0.02em; line-height: 1.6; font-feature-settings: 'kern','liga','calt'; }
+  h1, h2, h3, h4 { font-family: inherit; letter-spacing: -0.035em; line-height: 1.15; font-weight: 600; }
+  h1 { letter-spacing: -0.045em; }
   input[type="checkbox"]:checked { accent-color: #3b82f6; }
   .chapter-nav { position: sticky; top: 0; z-index: 50; background: rgba(2,6,23,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #1e293b; }
   .chapter-nav-inner { max-width: 80rem; margin: 0 auto; padding: 0 16px; display: flex; gap: 2px; overflow-x: auto; }
@@ -2338,7 +2341,10 @@ function chapterLayout(activeId: string, title: string, subtitle: string, body: 
 <title>${title} · FreeTier Sentinel</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Pretendard", system-ui, sans-serif; }
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+  body { font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', sans-serif; letter-spacing: -0.02em; line-height: 1.6; font-feature-settings: 'kern','liga','calt'; }
+  h1, h2, h3, h4 { font-family: inherit; letter-spacing: -0.035em; line-height: 1.15; font-weight: 600; }
+  h1 { letter-spacing: -0.045em; }
   .hero-grad { background: radial-gradient(ellipse at top, rgba(59,130,246,0.12), transparent 60%), radial-gradient(ellipse at bottom right, rgba(168,85,247,0.08), transparent 60%); }
   .module-card { transition: transform .15s, border-color .15s, box-shadow .15s; }
   .module-card:hover { transform: translateY(-2px); border-color: #3b82f6; box-shadow: 0 8px 24px -8px rgba(59,130,246,0.25); }

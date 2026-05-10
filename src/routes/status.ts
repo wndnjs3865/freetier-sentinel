@@ -120,11 +120,15 @@ function statusColor(p: number): string {
 const CSS = String.raw`
 * { box-sizing: border-box; }
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  background: #f4f7fc; color: #0a0e1a;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  background: #fbfcfe; color: #0b1020;
   margin: 0; line-height: 1.6;
+  letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'kern','liga','calt';
 }
+h1, h2, h3, h4 { letter-spacing: -0.035em; line-height: 1.15; font-weight: 600; }
+h1 { letter-spacing: -0.045em; }
 .wrap { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
 @media (max-width: 600px) { .wrap { padding: 40px 18px 60px; } }
 .brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; color: #0a0e1a; text-decoration: none; margin-bottom: 24px; }
@@ -201,9 +205,11 @@ export async function handleStatus(_req: Request, env: Env): Promise<Response> {
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://freetier-sentinel.dev/status">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
 ${analyticsHeads(env)}
 </head>

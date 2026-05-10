@@ -13,11 +13,11 @@ import type { Env } from "../index";
 const SHARED_HEAD = `<meta charset="utf-8">
 <meta name="viewport" content="width=1280">
 <meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,600,700&display=swap" rel="stylesheet">`;
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">`;
 
 const SHARED_CSS = `
 :root {
@@ -30,9 +30,9 @@ const SHARED_CSS = `
   --grad-1: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #22d3ee 100%);
   --grad-text: linear-gradient(120deg, #0d9488 0%, #14b8a6 60%, #2dd4bf 90%, #22d3ee 100%);
   --shadow-glass: 0 24px 48px -16px rgba(20,184,166,.20), 0 1px 0 rgba(20,184,166,.06);
-  --font-display: 'Satoshi','Inter',-apple-system,system-ui,sans-serif;
-  --font-body: 'Inter',-apple-system,system-ui,sans-serif;
-  --font-mono: 'JetBrains Mono',ui-monospace,monospace;
+  --font-display: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', sans-serif;
+  --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 1280px; height: 720px; overflow: hidden; }
@@ -40,10 +40,13 @@ body {
   font-family: var(--font-body);
   background: var(--bg);
   color: var(--text);
+  letter-spacing: -0.02em;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: 'cv02','cv03','cv11','ss01';
+  font-feature-settings: 'kern','liga','calt';
   position: relative;
 }
+h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.045em; line-height: 1.1; font-weight: 600; }
 body::before {
   content: ''; position: absolute; inset: 0;
   background:

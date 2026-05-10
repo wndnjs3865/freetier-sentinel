@@ -100,13 +100,17 @@ const CSS = String.raw`
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  background: #f4f7fc;
-  color: #0a0e1a;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'Apple SD Gothic Neo', sans-serif;
+  background: #fbfcfe;
+  color: #0b1020;
   margin: 0;
   line-height: 1.6;
+  letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'kern','liga','calt';
 }
+h1, h2, h3, h4 { letter-spacing: -0.035em; line-height: 1.15; font-weight: 600; }
+h1 { letter-spacing: -0.045em; }
 a { color: #14b8a6; text-decoration: none; }
 a:hover { color: #0d9488; text-decoration: underline; }
 .container { max-width: 760px; margin: 0 auto; padding: 32px 24px 80px; }
@@ -199,9 +203,8 @@ export async function handleChangelog(req: Request, env: Env): Promise<Response>
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://freetier-sentinel.dev/changelog">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>${CSS}</style>${analyticsHeads(env)}</head><body>
 <div class="container">
   <a href="/" class="back">← Back to home</a>

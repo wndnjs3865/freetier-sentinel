@@ -4,14 +4,17 @@ import { analyticsHeads } from "../lib/analytics";
 const CSS = String.raw`
 * { box-sizing: border-box; }
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-feature-settings: 'cv02','cv03','cv11','ss01';
-  background: #f4f7fc;
-  color: #0a0e1a;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  font-feature-settings: 'kern','liga','calt';
+  background: #fbfcfe;
+  color: #0b1020;
   margin: 0;
   line-height: 1.65;
+  letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
 }
+h1, h2, h3, h4 { letter-spacing: -0.035em; line-height: 1.2; font-weight: 600; }
+h1 { letter-spacing: -0.045em; }
 .container {
   max-width: 760px; margin: 32px auto;
   padding: 56px 48px 72px;
@@ -88,9 +91,11 @@ const privacyHtml = (beacon: string) => `<!DOCTYPE html>
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://freetier-sentinel.dev/privacy">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
 ${beacon}
 </head>
@@ -182,9 +187,11 @@ const termsHtml = (beacon: string) => `<!DOCTYPE html>
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://freetier-sentinel.dev/terms">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
 ${beacon}
 </head>

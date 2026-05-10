@@ -4,51 +4,54 @@ import { analyticsHeads } from "../lib/analytics";
 
 const CSS = String.raw`
 :root {
-  /* Indigo-leaning palette (matches root.ts top-1% upgrade). */
-  --bg: #f6f8fc; --bg-mesh: #e9eef8; --surface: #fff; --surface-2: #eef2fa;
-  --text: #0a0e1a; --text-2: #424b62; --muted: #64748b;
-  --border: #dde3ee; --border-strong: #c4cdde;
-  --primary: #14b8a6; --primary-2: #0d9488; --primary-3: #2dd4bf; --primary-soft: #ccfbf1;
-  --accent: #22d3ee;
+  /* Premium SaaS — root.ts와 통일. teal 로고 톤 + Pretendard. */
+  --bg: #fbfcfe; --bg-soft: #f3f5f9; --surface: #fff; --surface-2: #f7f8fb;
+  --text: #0b1020; --text-2: #475068; --muted: #6e7790;
+  --border: #e6e9f0; --border-strong: #cbd1de;
+  --primary: #14b8a6; --primary-2: #0d9488; --primary-3: #2dd4bf; --primary-soft: rgba(20,184,166,.10);
   --ok: #10b981; --warn: #f59e0b; --err: #f43f5e;
-  --grad-1: linear-gradient(135deg,#0d9488,#14b8a6);
-  --grad-pro: linear-gradient(135deg,#0d9488,#14b8a6,#22d3ee);
-  --shadow-xs: 0 1px 2px rgba(20,184,166,.05);
-  --shadow-sm: 0 1px 3px rgba(20,184,166,.06), 0 4px 12px rgba(20,184,166,.04);
-  --shadow-md: 0 4px 12px rgba(20,184,166,.08), 0 16px 40px rgba(20,184,166,.06);
-  --r-sm: 8px; --r-md: 12px; --r-lg: 16px;
+  --grad-1: linear-gradient(135deg,#0d9488 0%,#14b8a6 55%,#2dd4bf 100%);
+  --grad-pro: linear-gradient(135deg,#0d9488,#14b8a6,#2dd4bf);
+  --shadow-xs: 0 1px 2px rgba(11,16,32,.04);
+  --shadow-sm: 0 1px 2px rgba(11,16,32,.04), 0 2px 8px rgba(11,16,32,.03);
+  --shadow-md: 0 8px 24px -10px rgba(11,16,32,.10), 0 1px 0 rgba(11,16,32,.02);
+  --r-sm: 8px; --r-md: 12px; --r-lg: 18px; --r-xl: 24px;
   --t-fast: 140ms cubic-bezier(.4,0,.2,1);
+  --font-body: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0a0e1a; --bg-mesh: #131a2c; --surface: #11172a; --surface-2: #161e34;
-    --text: #ecf0f9; --text-2: #a3aec5; --muted: #6c7891;
-    --border: #1f2940; --border-strong: #2c3853;
-    --primary: #2dd4bf; --primary-2: #5eead4; --primary-3: #99f6e4; --primary-soft: rgba(20,184,166,.18);
-    --shadow-xs: 0 1px 2px rgba(0,0,0,.30);
-    --shadow-sm: 0 1px 3px rgba(0,0,0,.30), 0 4px 12px rgba(0,0,0,.20);
-    --shadow-md: 0 4px 12px rgba(0,0,0,.40), 0 16px 40px rgba(0,0,0,.30);
+    --bg: #07090f; --bg-soft: #0c0f18; --surface: #0f1320; --surface-2: #141828;
+    --text: #f4f6fb; --text-2: #a8b1c6; --muted: #6e7892;
+    --border: #1a1f30; --border-strong: #2a3248;
+    --primary: #2dd4bf; --primary-2: #5eead4; --primary-3: #99f6e4; --primary-soft: rgba(45,212,191,.12);
+    --shadow-xs: 0 1px 2px rgba(0,0,0,.32);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.32), 0 2px 8px rgba(0,0,0,.20);
+    --shadow-md: 0 8px 24px -10px rgba(0,0,0,.50), 0 1px 0 rgba(255,255,255,.03);
   }
-  /* Dashboard surfaces that have hardcoded white-bg references */
   .stat:hover { box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 8px 24px -8px rgba(0,0,0,.40); }
   .stat { box-shadow: inset 0 1px 0 rgba(255,255,255,.04), var(--shadow-xs); }
-  .bottom-nav { background: rgba(10,14,26,.92); }
+  .bottom-nav { background: rgba(7,9,15,.92); }
   .hamburger, .mobile-menu .mm-close { background: var(--surface); }
-  .add-form input:focus, .add-form select:focus { box-shadow: 0 0 0 4px rgba(45,212,191,.20); }
+  .add-form input:focus, .add-form select:focus { box-shadow: 0 0 0 4px rgba(45,212,191,.18); }
   .status-pill.ok   { color: #6ee7b7; }
   .status-pill.warn { color: #fcd34d; }
   .status-pill.err, .status-pill.critical { color: #fda4af; }
 }
 *{box-sizing:border-box}
 body {
-  font-family: 'Inter',-apple-system,system-ui,sans-serif;
+  font-family: var(--font-body);
   background: var(--bg); color: var(--text);
   margin: 0; line-height: 1.6;
+  letter-spacing: -0.02em;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: 'cv02','cv03','cv11','ss01';
+  font-feature-settings: 'kern','liga','calt';
 }
-h1, h2, h3, h4 { font-family: 'Satoshi', 'Inter', system-ui, sans-serif; letter-spacing: -.02em; }
+h1, h2, h3, h4 { font-family: var(--font-body); letter-spacing: -0.035em; line-height: 1.15; font-weight: 600; }
+h1 { letter-spacing: -0.045em; }
 a{color:var(--primary);text-decoration:none}a:hover{color:var(--primary-2)}
 button{font-family:inherit;cursor:pointer}
 
@@ -925,6 +928,51 @@ body.menu-open { overflow: hidden; }
 /* ──── HELPERS ──── */
 .muted { color: var(--muted); }
 .mt-0 { margin-top: 0; }
+
+/* ──── PH PROMO BOX (teal-coherent, premium SaaS) ──── */
+.ph-promo-box {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 12.5px;
+  letter-spacing: -0.012em;
+  color: var(--text-2);
+  display: flex; align-items: center; gap: 9px;
+  flex-wrap: wrap;
+}
+.ph-promo-box strong { color: var(--text); font-weight: 600; }
+.ph-promo-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 8px;
+  background: var(--primary-soft);
+  color: var(--primary-2);
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.ph-promo-label::before {
+  content: ""; width: 5px; height: 5px;
+  background: var(--primary);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(20,184,166,.14);
+}
+.ph-promo-code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  padding: 2px 7px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  color: var(--primary-2);
+  font-weight: 500;
+}
+@media (prefers-color-scheme: dark) {
+  .ph-promo-code { background: var(--bg-soft); color: var(--primary-3); }
+}
 `;
 
 const ICONS = {
@@ -1106,8 +1154,10 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
             <li>${checkSvg} 30-day history</li>
             <li>${checkSvg} Cancel anytime · 7-day refund</li>
           </ul>
-          <div style="margin-top: 12px; padding: 8px 12px; background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); border-radius: 8px; font-size: 12px; color: #fbbf24;">
-            🎟️ <strong>PH launch promo</strong>: code <code style="background: rgba(0,0,0,0.3); padding: 1px 5px; border-radius: 3px; font-family: ui-monospace, Menlo, monospace;">PHFREE6MO</code> — first 50 sign-ups get Pro free for 6 months.
+          <div class="ph-promo-box">
+            <span class="ph-promo-label">Launch promo</span>
+            <span>First 50 sign-ups: <strong>Pro free for 6 months</strong></span>
+            <code class="ph-promo-code">PHFREE6MO</code>
           </div>
         </div>
         <div class="upgrade-actions">
@@ -1168,13 +1218,13 @@ export async function handleDash(req: Request, env: Env): Promise<Response> {
 <meta name="theme-color" content="#f6f8fc" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0e1a" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link rel="preconnect" href="https://buy.polar.sh">
 <link rel="preconnect" href="https://www.clarity.ms">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
 ${analyticsHeads(env)}
 </head>

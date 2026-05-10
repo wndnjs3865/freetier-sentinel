@@ -134,15 +134,17 @@ const CSS = String.raw`
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-feature-settings: 'cv02','cv03','cv11','ss01';
-  font-size: 15px; line-height: 1.55;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  font-feature-settings: 'kern','liga','calt';
+  font-size: 15px; line-height: 1.6;
+  letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 }
-a { color: var(--primary); text-decoration: none; }
+a { color: var(--primary); text-decoration: none; transition: color 140ms; }
 a:hover { color: var(--primary-2); }
-button { font-family: inherit; cursor: pointer; }
-h1, h2, h3, h4 { font-family: 'Satoshi', 'Inter', system-ui, sans-serif; letter-spacing: -.02em; }
+button { font-family: inherit; cursor: pointer; letter-spacing: -0.012em; }
+h1, h2, h3, h4 { font-family: inherit; letter-spacing: -0.035em; line-height: 1.15; font-weight: 600; }
+h1 { letter-spacing: -0.045em; }
 
 .wrap { max-width: 760px; margin: 0 auto; padding: 32px 22px 80px; }
 .crumbs { font-size: 13.5px; color: var(--muted); margin-bottom: 22px; display: flex; gap: 10px; align-items: center; }
@@ -578,11 +580,11 @@ export async function handleAccountPage(req: Request, env: Env): Promise<Respons
 <title>Account · FreeTier Sentinel</title>
 <meta name="theme-color" content="#14b8a6">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>${CSS}</style>
 ${analyticsHeads(env)}
 </head>

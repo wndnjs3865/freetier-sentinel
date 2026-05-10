@@ -29,9 +29,11 @@ export async function handleSecurity(_req: Request, env: Env): Promise<Response>
 <meta name="twitter:image" content="https://freetier-sentinel.dev/og.png">
 <link rel="canonical" href="https://freetier-sentinel.dev/security">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     /* Brand-aligned palette (matches root.ts) — subtle blue keying. */
@@ -47,11 +49,14 @@ export async function handleSecurity(_req: Request, env: Env): Promise<Response>
   * { box-sizing: border-box }
   body {
     margin: 0; background: var(--bg); color: var(--text);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    font-feature-settings: 'cv02','cv03','cv11','ss01';
-    font-size: 16px; line-height: 1.65;
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    font-feature-settings: 'kern','liga','calt';
+    font-size: 16px; line-height: 1.6;
+    letter-spacing: -0.02em;
     -webkit-font-smoothing: antialiased;
   }
+  h1, h2, h3, h4 { font-family: inherit; letter-spacing: -0.035em; line-height: 1.15; font-weight: 600; }
+  h1 { letter-spacing: -0.045em; }
   a { color: var(--primary); text-decoration: none; }
   a:hover { color: var(--primary-2); }
   code { background: var(--surface-2); border: 1px solid var(--border); padding: 1px 7px; border-radius: 5px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13.5px; color: var(--text); }
