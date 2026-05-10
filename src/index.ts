@@ -51,7 +51,7 @@ import { handleDash } from "./routes/dash";
 import { handleApiServices, handleApiAlerts, handleCheckNow, handleTestAlert } from "./routes/api";
 import { handleNotify } from "./routes/notify";
 import { handleInboxPage, handleInboxSync, handleInboxDone, handleInboxList } from "./routes/inbox";
-import { handlePolarWebhook } from "./routes/polar";
+import { handlePolarWebhook } from "./domains/billing/webhooks";
 import { handleVsDatadog } from "./routes/vs";
 import { handleLaunchHero, handleLaunchDashboard, handleLaunchAlerts, handleLaunchPng, handleLaunchThumbnail, handleLaunchDemo } from "./routes/launch";
 import { handleSecurity } from "./routes/security";
