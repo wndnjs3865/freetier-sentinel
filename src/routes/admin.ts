@@ -366,6 +366,9 @@ function renderDashboard(tasks: any[], status: any, notes: string, alerts: any[]
   .chapter-tab .badge { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 10px; background: #1e293b; color: #94a3b8; }
   .chapter-tab.coming { color: #475569; cursor: not-allowed; }
   .chapter-tab.coming:hover { color: #475569; background: transparent; }
+  .hero-grad { background: radial-gradient(ellipse at top, rgba(59,130,246,0.12), transparent 60%), radial-gradient(ellipse at bottom right, rgba(168,85,247,0.08), transparent 60%); }
+  .module-card { transition: transform .15s, border-color .15s, box-shadow .15s; }
+  .module-card:hover { transform: translateY(-2px); border-color: #3b82f6; box-shadow: 0 8px 24px -8px rgba(59,130,246,0.25); }
 </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
@@ -382,25 +385,29 @@ function renderDashboard(tasks: any[], status: any, notes: string, alerts: any[]
   </div>
 </nav>
 
+<!-- Hero (Operator's Blueprint) -->
+<section class="hero-grad border-b border-slate-800">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 pt-10 pb-8">
+    <div class="flex items-center gap-3 mb-3 flex-wrap">
+      <span class="text-[10px] font-mono uppercase tracking-widest text-slate-500">FreeTier Sentinel · Operator's Blueprint</span>
+      <span class="px-2 py-0.5 rounded-full bg-slate-800/80 text-[10px] font-mono ${daysToLaunch <= 1 ? "text-red-400" : daysToLaunch <= 3 ? "text-amber-400" : "text-emerald-400"}">${dStr}</span>
+      <span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-[10px] font-mono text-amber-400">PHFREE6MO 50개 한정</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold tracking-tight leading-tight">🛰️ Mission Control</h1>
+    <p class="mt-3 text-base text-slate-400 max-w-3xl">D-3 PH 런치까지의 작전 본부 — 12 단계 95 컴포넌트 · 5 cron 자율 운영 · 라이브 상태 + 우선순위 큐</p>
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href="/admin/architecture" class="bg-blue-600 hover:bg-blue-500 px-5 py-2.5 rounded-md font-medium text-sm transition-colors">🗺️ 12-단계 아키텍처 보기 →</a>
+      <a href="/admin/smoke" class="bg-slate-800 hover:bg-slate-700 px-5 py-2.5 rounded-md text-sm transition-colors border border-slate-700">🧪 Smoke 상태</a>
+      <a href="/inbox" class="bg-slate-800 hover:bg-slate-700 px-5 py-2.5 rounded-md text-sm transition-colors border border-slate-700">📬 Inbox</a>
+      <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 px-3 py-2.5 rounded-md text-sm transition-colors border border-slate-700" title="새로고침">↻</button>
+    </div>
+  </div>
+</section>
+
 <div class="max-w-7xl mx-auto p-4 md:p-6">
 
-  <!-- Header -->
+  <!-- Status strip (live data) -->
   <header class="mb-6">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-      <div>
-        <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
-          🛰️ Mission Control
-        </h1>
-        <p class="text-sm text-slate-400 mt-1">FreeTier Sentinel · Operator Console</p>
-      </div>
-      <div class="flex items-center gap-4">
-        <div class="text-right">
-          <div class="text-xs text-slate-400">PH Launch (5/12)</div>
-          <div class="text-2xl font-bold ${daysToLaunch <= 1 ? "text-red-400" : daysToLaunch <= 3 ? "text-amber-400" : "text-emerald-400"}">${dStr}</div>
-        </div>
-        <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded border border-slate-700 text-sm" title="Refresh">↻</button>
-      </div>
-    </div>
 
     <!-- Status strip -->
     <div class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
@@ -2054,18 +2061,18 @@ function renderPhaseCards(phases: Phase[]): string {
         ${statusPill(it.status)}
       </li>`).join("");
     return `
-      <section class="bg-slate-900 border border-slate-800 rounded-lg p-5 flex flex-col">
+      <section class="module-card bg-slate-900 border border-slate-800 rounded-lg p-5 flex flex-col">
         <header class="flex items-start justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
           <div>
             <div class="flex items-center gap-2">
               <span class="text-[10px] font-mono text-slate-500">단계 ${String(p.num).padStart(2, "0")}</span>
-              <span class="text-base">${p.icon}</span>
+              <span class="text-2xl">${p.icon}</span>
             </div>
-            <h3 class="text-base font-semibold text-slate-100 mt-1">${p.title}</h3>
+            <h3 class="text-lg font-semibold text-slate-100 mt-2">${p.title}</h3>
             <p class="text-[11px] text-slate-500 mt-0.5">${p.subtitle}</p>
           </div>
           <div class="text-right shrink-0">
-            <div class="text-lg font-mono font-semibold text-emerald-400">${liveCount}</div>
+            <div class="text-2xl font-mono font-semibold text-emerald-400">${liveCount}</div>
             <div class="text-[10px] text-slate-500 uppercase tracking-wider">운영중</div>
           </div>
         </header>
@@ -2111,6 +2118,13 @@ function chapterLayout(activeId: string, title: string, subtitle: string, body: 
   const tabActive = "text-slate-50 border-blue-500";
   const navHtml = tabs.map((t) => `<a href="${t.href}" class="${tabBase} ${t.id === activeId ? tabActive : tabIdle}">${t.label}${t.badge}</a>`).join("");
 
+  // Compute D-N for hero urgency banner
+  const today = new Date();
+  const launch = new Date("2026-05-12T07:01:00Z"); // 16:01 KST
+  const daysToLaunch = Math.ceil((launch.getTime() - today.getTime()) / 86400000);
+  const dStr = daysToLaunch > 0 ? `D-${daysToLaunch}` : daysToLaunch === 0 ? "🚀 LAUNCH DAY" : `+${-daysToLaunch}일 경과`;
+  const dColor = daysToLaunch <= 1 ? "text-red-400" : daysToLaunch <= 3 ? "text-amber-400" : "text-emerald-400";
+
   return `<!doctype html>
 <html lang="ko" class="dark">
 <head>
@@ -2121,6 +2135,9 @@ function chapterLayout(activeId: string, title: string, subtitle: string, body: 
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   body { font-family: -apple-system, BlinkMacSystemFont, "Inter", "Pretendard", system-ui, sans-serif; }
+  .hero-grad { background: radial-gradient(ellipse at top, rgba(59,130,246,0.12), transparent 60%), radial-gradient(ellipse at bottom right, rgba(168,85,247,0.08), transparent 60%); }
+  .module-card { transition: transform .15s, border-color .15s, box-shadow .15s; }
+  .module-card:hover { transform: translateY(-2px); border-color: #3b82f6; box-shadow: 0 8px 24px -8px rgba(59,130,246,0.25); }
 </style>
 ${opts.extraHead || ""}
 </head>
@@ -2132,15 +2149,19 @@ ${opts.extraHead || ""}
   </div>
 </nav>
 
-<div class="max-w-7xl mx-auto p-4 md:p-6">
-
-  <header class="mb-6 flex items-end justify-between gap-4 flex-wrap">
-    <div>
-      <h1 class="text-2xl md:text-3xl font-bold tracking-tight">${title}</h1>
-      <p class="text-sm text-slate-400 mt-1">${subtitle}</p>
+<!-- Hero (urgency banner + title) -->
+<section class="hero-grad border-b border-slate-800">
+  <div class="max-w-7xl mx-auto px-4 md:px-6 pt-10 pb-8">
+    <div class="flex items-center gap-3 mb-3">
+      <span class="text-[10px] font-mono uppercase tracking-widest text-slate-500">FreeTier Sentinel · Operator's Blueprint</span>
+      <span class="px-2 py-0.5 rounded-full bg-slate-800/80 text-[10px] font-mono ${dColor}">${dStr}</span>
     </div>
-    <div class="text-xs text-slate-400 font-mono">${new Date().toISOString().slice(0, 19)}Z</div>
-  </header>
+    <h1 class="text-4xl md:text-5xl font-bold tracking-tight leading-tight">${title}</h1>
+    <p class="mt-3 text-base text-slate-400 max-w-3xl">${subtitle}</p>
+  </div>
+</section>
+
+<div class="max-w-7xl mx-auto p-4 md:p-6">
 
   ${body}
 
