@@ -1783,37 +1783,83 @@ function renderArchitecturePage(d: any): string {
       <div class="mt-1.5 text-lg font-semibold font-mono text-slate-100">${value}</div>
     </div>`;
 
-  // Mr. Notion-style: entire business laid out on a single page (좌→우 swim lane)
+  // 사용자 직접 design (4 grok imagine 이미지) 정확히 재현 — zigzag + center cyan timeline
   const blueprintLane = `
-<section class="bg-slate-950 border border-blue-900/50 rounded-lg p-5 mb-6">
-  <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-    <div>
-      <h2 class="text-base font-semibold text-slate-100">📐 Single-page Blueprint — 모든 단계 좌→우 흐름</h2>
-      <p class="text-[11px] text-slate-500 mt-1">Mr. Notion 패턴: "entire business laid out on a single page" · 가로 스크롤로 12 단계 한눈에</p>
-    </div>
-    <span class="text-[11px] text-slate-500 font-mono">${phaseDefs.length} 단계 · 약 95 컴포넌트</span>
+<section class="relative bg-slate-950 border border-slate-800 rounded-2xl p-6 md:p-8 mb-6 overflow-hidden">
+  <!-- Hero title -->
+  <div class="text-center mb-10 relative z-10">
+    <h2 class="text-2xl md:text-4xl font-bold tracking-tight leading-tight">
+      <span class="text-slate-100">FreeTier Sentinel AI</span><br/>
+      <span class="bg-gradient-to-r from-violet-400 via-cyan-300 to-purple-400 bg-clip-text text-transparent">ROADMAP Blueprint</span>
+      <span class="text-cyan-300"> ✨ NORTH STAR ✨</span>
+    </h2>
+    <p class="text-[10px] md:text-xs font-mono uppercase tracking-widest text-slate-400 mt-3">
+      ENTIRE SYSTEM ON A SINGLE PAGE · 2026 EDITION · 95 COMPONENTS
+    </p>
   </div>
-  <div class="overflow-x-auto -mx-2 px-2">
-    <div class="flex gap-3 pb-2" style="min-width: 2400px;">
-      ${phaseDefs.map((p) => {
-        const liveItems = p.items.filter((i) => i.status === "live").length;
-        const topItems = p.items.slice(0, 6);
-        return `
-        <div class="w-64 shrink-0 bg-slate-900 border border-blue-900/40 rounded-lg p-4 hover:border-blue-500 transition-colors">
-          <div class="flex items-baseline gap-2 mb-1">
-            <span class="text-[10px] font-mono text-slate-500">단계 ${String(p.num).padStart(2, "0")}</span>
-            <span class="text-lg">${p.icon}</span>
+
+  <!-- Center vertical glow line (desktop) -->
+  <div class="hidden md:block absolute left-1/2 top-32 bottom-24 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-cyan-400/60 to-transparent" style="box-shadow: 0 0 16px rgba(34,211,238,0.5), 0 0 32px rgba(34,211,238,0.2);"></div>
+
+  <!-- 12 phase cards alternating left/right with center number dot -->
+  <div class="relative space-y-5">
+    ${phaseDefs.map((p, idx) => {
+      const isLeft = idx % 2 === 0;
+      const liveItems = p.items.filter((i) => i.status === "live").length;
+      const allLive = liveItems === p.items.length;
+      const statusBadge = allLive
+        ? `<span class="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0">COMPLETE</span>`
+        : `<span class="text-[9px] font-mono px-2 py-0.5 rounded bg-violet-500/20 text-violet-300 border border-violet-500/40 shrink-0">PARTIAL</span>`;
+      const num = String(p.num).padStart(2, "0");
+      const fw = PHASE_FRAMEWORK[p.num];
+      const title = fw?.label.replace(/ \(.*\)/, "") || p.title;
+      const description = fw?.tools.replace(/ · /g, ", ") || p.subtitle;
+      const accentColor = isLeft ? "cyan" : "purple";
+      const borderClass = isLeft ? "border-cyan-500/20 hover:border-cyan-400/60" : "border-purple-500/20 hover:border-purple-400/60";
+      const titleColor = isLeft ? "text-cyan-200" : "text-purple-200";
+      const glowStyle = isLeft
+        ? "box-shadow: 0 0 24px rgba(34,211,238,0.08), inset 0 1px 0 rgba(34,211,238,0.05);"
+        : "box-shadow: 0 0 24px rgba(168,85,247,0.08), inset 0 1px 0 rgba(168,85,247,0.05);";
+
+      const card = `
+        <div class="backdrop-blur-sm bg-slate-900/40 border ${borderClass} rounded-2xl p-5 transition-all" style="${glowStyle}">
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <div class="flex items-baseline gap-2 flex-wrap min-w-0">
+              <span class="text-2xl shrink-0">${p.icon}</span>
+              <h3 class="text-base font-bold ${titleColor} tracking-tight">${title}</h3>
+            </div>
+            ${statusBadge}
           </div>
-          <h3 class="text-sm font-semibold text-blue-300 mb-1">${p.title}</h3>
-          <p class="text-[10px] text-slate-400 mb-3">${p.subtitle}</p>
-          <div class="text-[10px] font-mono text-emerald-400 mb-2">✅ ${liveItems}/${p.items.length} 운영중</div>
-          <ul class="space-y-1 border-t border-slate-800 pt-2">
-            ${topItems.map((it) => `<li class="text-[10px] text-slate-300 leading-snug">• ${it.name.length > 28 ? it.name.slice(0, 26) + "…" : it.name}</li>`).join("")}
-            ${p.items.length > 6 ? `<li class="text-[10px] text-slate-500 italic">+${p.items.length - 6}개 더</li>` : ""}
-          </ul>
+          <p class="text-[11px] text-slate-400 leading-relaxed">${description}</p>
+          <div class="text-[10px] font-mono text-slate-500 mt-2">${liveItems}/${p.items.length} 항목 운영중</div>
         </div>`;
-      }).join("")}
-    </div>
+
+      const numberDot = `
+        <div class="hidden md:flex w-12 h-12 rounded-full bg-slate-950 border-2 border-cyan-400 items-center justify-center text-cyan-300 font-mono font-bold text-sm shrink-0 mx-auto" style="box-shadow: 0 0 20px rgba(34,211,238,0.6), 0 0 40px rgba(34,211,238,0.2);">
+          ${num}
+        </div>`;
+
+      const mobileNumber = `<div class="md:hidden text-cyan-400 font-mono font-bold text-xs mb-2">${num}</div>`;
+
+      return isLeft
+        ? `<div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-center">
+            <div class="md:text-right">${mobileNumber}${card}</div>
+            ${numberDot}
+            <div class="hidden md:block"></div>
+          </div>`
+        : `<div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-6 items-center">
+            <div class="hidden md:block"></div>
+            ${numberDot}
+            <div>${mobileNumber}${card}</div>
+          </div>`;
+    }).join("")}
+  </div>
+
+  <!-- Footer -->
+  <div class="text-center mt-10 pt-4 border-t border-slate-800/60 relative z-10">
+    <p class="text-[11px] font-mono text-slate-400">
+      <span class="text-cyan-300/80">95 Components</span> · <span class="text-emerald-300/80">100% Mapped</span> · <span class="text-blue-300/80">Cloudflare Edge</span> · <span class="text-purple-300/80">Solo Founder AI Agent Economy</span>
+    </p>
   </div>
 </section>`;
 
