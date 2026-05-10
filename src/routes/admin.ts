@@ -1903,74 +1903,52 @@ ${toolsGrid}
       <span class="px-2 py-0.5 rounded-full bg-slate-700/30 text-slate-400">📦 아카이브</span>
     </div>
   </div>
-  <p class="text-[11px] text-slate-500 mb-3">사용자/AI 에이전트 요청이 어떤 경로로 처리되고 외부 시스템과 어떻게 연결되는지 보여주는 시스템 흐름도.</p>
-  <div class="overflow-x-auto py-3">
+  <p class="text-[11px] text-slate-500 mb-3">출처: <a href="https://github.com/mermaid-js/mermaid" class="text-blue-400 hover:underline">mermaid-js/mermaid v11</a> — <code class="bg-slate-800 px-1.5 py-0.5 rounded text-[10px]">architecture-beta</code> diagram (cloud/database/disk/server/internet 아이콘 표준 + group 구조).</p>
+  <div class="overflow-x-auto py-3 bg-slate-950 rounded-lg p-4">
 <pre class="mermaid text-sm">
-flowchart LR
-  classDef user fill:#1e293b,stroke:#64748b,color:#e2e8f0
-  classDef edge fill:#0c4a6e,stroke:#0284c7,color:#e0f2fe
-  classDef core fill:#1e3a8a,stroke:#3b82f6,color:#dbeafe,font-weight:bold
-  classDef data fill:#064e3b,stroke:#10b981,color:#d1fae5
-  classDef ext fill:#451a03,stroke:#f59e0b,color:#fef3c7
-  classDef ai fill:#3b0764,stroke:#a855f7,color:#f3e8ff
+architecture-beta
+    group cf(cloud)[Cloudflare 인프라]
+    group ext(cloud)[외부 서비스]
+    group ai(cloud)[AI 도구 + 로컬]
 
-  USER([👤 사용자<br/>브라우저])
-  AGENT([🤖 AI 에이전트<br/>x402 클라이언트])
-  CLAUDE([💻 Claude Code<br/>로컬 PRoot])
-  CRON([⏰ Cron 4종<br/>30분·1시간·6시간·매일])
+    service edge(internet)[CF Edge] in cf
+    service worker(server)[Worker isolate] in cf
+    service d1(database)[D1 12 tables] in cf
+    service kv(disk)[KV namespace] in cf
 
-  EDGE[CF Edge<br/>HSTS · 캐시 · DDoS]
-  WORKER[Worker isolate<br/>TypeScript 약 3,800줄<br/>routes 19 · jobs 5]
+    service polar(internet)[Polar MoR] in ext
+    service cdp(internet)[Coinbase CDP] in ext
+    service resend(internet)[Resend Mail] in ext
+    service tg(internet)[Telegram Bot] in ext
+    service clarity(internet)[Clarity] in ext
+    service gmail(internet)[Gmail GAS] in ext
+    service f5(internet)[F5Bot] in ext
+    service github(disk)[GitHub 3 repos] in ext
 
-  D1[(D1 SQLite<br/>12 tables<br/>${d.users}u · ${d.services}s)]
-  KV[(KV namespace<br/>세션·smoke·메트릭)]
+    service claude(server)[Claude Code] in ai
+    service hooks(server)[3 Hooks] in ai
+    service mem(database)[claude-mem 13] in ai
 
-  POLAR[💳 Polar.sh<br/>결제 MoR<br/>+ Stripe Connect]
-  CDP[🪙 Coinbase CDP<br/>x402 facilitator<br/>USDC Base]
-  RESEND[✉️ Resend<br/>매직링크 메일]
-  TG[📨 Telegram<br/>알림 봇]
-  CLARITY[📊 Microsoft Clarity<br/>히트맵·세션 리플레이]
-  CFA[📈 CF Web Analytics]
-  GMAIL[📬 Gmail GAS<br/>3-tier 자동 분류]
-  F5BOT[🔍 F5Bot<br/>5개 키워드 멘션]
-  GITHUB[(🐙 GitHub<br/>3 repos<br/>tool·autobiz·seo)]
+    edge:R --> L:worker
+    worker:B --> T:d1
+    worker:B --> T:kv
 
-  HOOKS[🪝 Claude Code Hooks<br/>SessionStart·UserPromptSubmit·Stop]
-  MEM[🧠 claude-mem 13.0.0<br/>19 active + 10 archive]
+    worker:R --> L:polar
+    worker:R --> L:cdp
+    worker:R --> L:resend
+    worker:R --> L:tg
 
-  USER --> EDGE
-  AGENT --> EDGE
-  EDGE --> WORKER
-  CRON -.->|scheduled| WORKER
+    f5:R --> L:gmail
+    gmail:R --> L:claude
+    claude:R --> L:hooks
+    hooks:R --> L:mem
+    claude:T --> B:worker
+    claude:B --> T:github
 
-  WORKER --> D1
-  WORKER --> KV
-
-  WORKER -->|webhook| POLAR
-  WORKER -->|verify·settle| CDP
-  WORKER -->|매직링크| RESEND
-  WORKER -->|smoke·alerts| TG
-
-  USER -.->|JS beacon| CLARITY
-  USER -.->|JS beacon| CFA
-
-  GMAIL -->|critical flag| CLAUDE
-  CLAUDE --> HOOKS
-  HOOKS --> MEM
-  CLAUDE -->|wrangler deploy| WORKER
-  CLAUDE -->|git push| GITHUB
-
-  F5BOT -.->|email| GMAIL
-
-  class USER,AGENT,CLAUDE user
-  class CRON edge
-  class EDGE edge
-  class WORKER core
-  class D1,KV data
-  class POLAR,CDP,RESEND,TG,CLARITY,CFA,GMAIL,F5BOT,GITHUB ext
-  class HOOKS,MEM ai
+    clarity:T --> B:edge
 </pre>
   </div>
+  <p class="text-[10px] text-slate-500 mt-3 text-center">📐 사용자/AI 에이전트 → CF Edge → Worker → {D1, KV, 외부 12종} · Cron 4종 자율 운영 · 로컬 Claude Code 흐름</p>
 </section>
 
 ${phaseCardsHtml}
