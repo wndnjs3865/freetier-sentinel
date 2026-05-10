@@ -21,6 +21,7 @@ crons = [
   "0 * * * *",       # bazaar indexing poll (every hour at :00)
   "0 */6 * * *",     # FT services usage check (every 6 hours)
   "0 0 * * *",       # daily digest (00 UTC = 09 KST)
+  "0 12 * * *",      # daily backup D1 → KV (12 UTC = 21 KST)
 ]
 
 [vars]

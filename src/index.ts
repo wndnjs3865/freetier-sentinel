@@ -69,6 +69,7 @@ import { runSmoke } from "./jobs/smoke";
 import { runBazaarPoll } from "./jobs/bazaar";
 import { runDailyDigest } from "./jobs/digest";
 import { runHourlyMetrics } from "./jobs/metrics";
+import { runDailyBackup } from "./jobs/backup";
 
 export default {
   async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -207,6 +208,8 @@ export default {
 
     if (cron === "0 0 * * *") {
       ctx.waitUntil(runDailyDigest(env));
+    } else if (cron === "0 12 * * *") {
+      ctx.waitUntil(runDailyBackup(env));
     } else if (cron === "0 */6 * * *") {
       ctx.waitUntil(runScheduledCheck(env));
     } else if (cron === "0 * * * *") {
